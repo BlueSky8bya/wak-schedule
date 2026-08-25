@@ -1,0 +1,164 @@
+# WHITEHAVEN Agent Harness Manifest — wak-schedule
+# 사람이 읽는 문서를 대체하지 않는다. 빠른 라우팅·검증 명령·BLOCKING 인덱스가 목적.
+
+schema_version: "1.1"
+protocol_source: "project-initializing_260712.md"
+protocol_date: "2026-07-12"
+initialized_at: "2026-08-26"
+last_harness_review: "2026-08-26"
+
+project:
+  name: "우왁굳 일정표 (wak-schedule)"
+  version: "0.1.0"
+  type:
+    - web
+    - frontend
+    - backend-actions
+  status: "pre-deploy" # 코드 동작, Supabase·Vercel 미연결
+
+risk_profiles:
+  - GENERAL
+  - AUTH
+  - SECURITY
+  - PRIVACY
+  - DESTRUCTIVE_DATA
+# PRODUCTION_INFRA: 비활성 — Vercel 첫 배포가 재평가 트리거 (docs/agent/RISK_PROFILE.md)
+
+reference_roots:
+  - path: "C:/Projects/VIC Schedule studio"
+    type: "origin repository"
+    access: "read-only 참고. 수정 금지"
+  - path: "db/_vic-legacy/"
+    type: "removed-feature SQL archive"
+    access: "적용 금지. 참고만"
+
+# ── BLOCKING 규칙 ─────────────────────────────────────────────
+# enforcement 규약(프로토콜 §12):
+#   MACHINE    = 실제 script/CI/hook이 존재하고 '실행이 확인'됨
+#   UNENFORCED = 기계 강제 없음 — manual gate·owner·evidence로 지킨다
+# 테스트 파일이 있어도 자동 트리거(CI)가 초록 실행으로 확인되기 전에는 MACHINE이 아니다.
+blocking_rules:
+  - id: "BR-PUBLIC-001"
+    rule: "공개 표면(app/(public)·api/public)은 public-loader만 import — 스튜디오 로더·service-role·스튜디오 샘플 금지"
+    source: ".claude/rules/public-private-boundary.md"
+    enforcement: "UNENFORCED"
+    mechanism: "tests/unit/public-boundary.test.ts (vitest — CI 초록 확인 후 MACHINE 승격)"
+    trigger: "npm test"
+    manual_gate: "공개 표면 파일 변경 시 npm test 실행 결과를 Done Report에 기재"
+    owner: "Agent"
+    evidence: "vitest 출력"
+  - id: "BR-CACHE-001"
+    rule: "공개 화면에 영향 주는 쓰기 액션마다 revalidatePath('/')+revalidatePath('/studio')+revalidatePublicSchedule() 필수"
+    source: "CLAUDE.md#자주-쓰는-사실"
+    enforcement: "UNENFORCED"
+    mechanism: "tests/unit/public-cache-revalidate.test.ts (액션 실제 실행 + 소스 스윕)"
+    trigger: "npm test"
+    manual_gate: "쓰기 액션 추가/변경 시 npm test 실행 결과 기재"
+    owner: "Agent"
+    evidence: "vitest 출력"
+  - id: "BR-DESIGN-001"
+    rule: "디자인 토큰은 app/globals.css :root 단일 출처 — 컴포넌트에 px 하드코딩 금지"
+    source: "CLAUDE.md#디자인-규칙"
+    enforcement: "UNENFORCED"
+    mechanism: "tests/unit/apple-redesign-token-usage.test.ts"
+    trigger: "npm test"
+    manual_gate: "UI 스타일 변경 시 npm test 실행 결과 기재"
+    owner: "Agent"
+    evidence: "vitest 출력"
+  - id: "BR-PAGING-001"
+    rule: "DB 다행 조회는 lib/db/paginate.fetchAllRows 사용 — PostgREST 1000행 cap을 직접 우회하는 재구현 금지"
+    source: "lib/db/paginate.ts 주석 (실측 사고 2건)"
+    enforcement: "UNENFORCED"
+    mechanism: "tests/unit/paginate.test.ts"
+    trigger: "npm test"
+    manual_gate: "다행 조회 코드 작성 시 fetchAllRows 사용 확인"
+    owner: "Agent"
+    evidence: "vitest 출력"
+  - id: "BR-DTO-001"
+    rule: "스튜디오 → 공개 DTO는 필드 명시 조립 — 객체 spread 금지"
+    source: ".claude/rules/public-private-boundary.md"
+    enforcement: "UNENFORCED"
+    mechanism: "tests/unit/public-dto.test.ts (런타임 키 검사 — spread 자체는 못 잡는다, 부분 강제)"
+    trigger: "npm test"
+    manual_gate: "공개 DTO 조립 코드 리뷰 시 spread 부재를 눈으로 확인"
+    owner: "Agent"
+    evidence: "vitest 출력 + 코드 리뷰"
+  - id: "BR-KST-001"
+    rule: "시간은 항상 KST(Asia/Seoul)"
+    source: "CLAUDE.md#절대-규칙 1"
+    enforcement: "UNENFORCED"
+    mechanism: null
+    trigger: "before task completion"
+    manual_gate: "날짜/시간 코드 변경 시 lib/calendar의 KST 헬퍼 사용 확인, Date 직접 연산 금지"
+    owner: "Agent"
+    evidence: "Done Report"
+  - id: "BR-AUTHZ-001"
+    rule: "서버 액션은 클라이언트 게이트와 별개로 권한을 다시 검사"
+    source: "CLAUDE.md#절대-규칙 4"
+    enforcement: "UNENFORCED"
+    mechanism: null
+    trigger: "before task completion"
+    manual_gate: "서버 액션 추가/변경 시 resolveCurrentActor + canEditSchedule 경로 확인"
+    owner: "Agent"
+    evidence: "Done Report (해당 액션의 권한 검사 라인 인용)"
+  - id: "BR-ENUM-001"
+    rule: "visibility_scope enum 값은 'public' 하나 — 코드에서 이 불변식 우회 금지"
+    source: "CLAUDE.md#절대-규칙 6, db/migrations/0001"
+    enforcement: "UNENFORCED"
+    mechanism: "DB enum 자체가 강제하나, DB가 아직 미적용(T-1 전) — 적용·verify-db 통과 후 MACHINE 재평가"
+    trigger: "T-1 완료 시"
+    manual_gate: "visibility_scope 관련 변경 시 ADR-0001 확인"
+    owner: "Agent"
+    evidence: "verify-db.mjs 출력 (T-1 후)"
+  - id: "BR-EDIT-001"
+    rule: "일정·태그 생성/수정/삭제는 owner(+developer)만"
+    source: "CLAUDE.md#절대-규칙 3"
+    enforcement: "UNENFORCED"
+    mechanism: "db/policies/0001_rls.sql (미적용 — T-1 후 MACHINE 재평가)"
+    trigger: "T-1 완료 시"
+    manual_gate: "쓰기 경로 변경 시 RLS 정책과 앱 권한 검사 양쪽 확인"
+    owner: "Agent"
+    evidence: "Done Report"
+  - id: "BR-EXPORT-001"
+    rule: "포스터 캡처 표면은 [data-export-surface], 폭 1840 고정, 화면 맞춤은 scale만 — 내부 재배치 금지"
+    source: ".claude/rules/export.md"
+    enforcement: "UNENFORCED"
+    mechanism: null
+    trigger: "before task completion"
+    manual_gate: "포스터 표면 변경 시 export.md 규칙 대조"
+    owner: "Agent"
+    evidence: "Done Report"
+
+entrypoints:
+  agents: "AGENTS.md"
+  claude_adapter: "CLAUDE.md"
+  constitution: "docs/agent/CONSTITUTION.md"
+  current_state: "docs/agent/CURRENT_STATE.md"
+  project_map: "docs/agent/PROJECT_MAP.md"
+  risk_profile: "docs/agent/RISK_PROFILE.md"
+  definition_of_done: "docs/agent/DEFINITION_OF_DONE.md"
+  changelog: "docs/agent/CHANGELOG_AGENT.md"
+  decision_index: "docs/agent/DECISION_INDEX.md"
+  active_plan: "docs/agent/plans/ACTIVE_PLAN.md"
+
+commands:
+  install: "npm install"
+  dev: "npm run dev"
+  typecheck: "npm run typecheck"
+  lint: "npm run lint"
+  test: "npm test"
+  build: "npm run build   # exit code를 확인한다 — tail만 보지 말 것"
+  e2e: "npm run test:e2e        # NOT RUN — dev 서버+Supabase 필요 (tests/README.md)"
+  visual: "npm run test:visual  # NOT RUN — 동일"
+  db_apply: "node scripts/apply-db.mjs db/migrations/<file>.sql  # 멱등, .env.local 필요"
+  db_verify: "node scripts/verify-db.mjs"
+
+version_policy: "semver" # package.json 0.1.0
+
+agent_policy:
+  default_task_risk: "L1"
+  ask_before_production_dependency: true
+  ask_before_destructive_command: true
+  ask_before_public_api_break: true
+  auto_commit: false   # 단, 사용자가 세션에서 승인한 마일스톤 커밋은 예외
+  auto_push: false

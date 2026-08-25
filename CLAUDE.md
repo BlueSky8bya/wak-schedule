@@ -2,6 +2,11 @@
 
 스트리머 우왁굳님의 방송 일정 사이트. 관리자가 편집실에서 일정을 짜고, 시청자는 공개 포스터에서 본다.
 
+**WHITEHAVEN Harness 사용.** 시작 순서와 불변 원칙은 `AGENTS.md` → `docs/agent/` 참조:
+현재 상태 `docs/agent/CURRENT_STATE.md` · 라우팅 `docs/agent/PROJECT_MAP.md` ·
+결정 `docs/agent/DECISION_INDEX.md` · 완료 기준 `docs/agent/DEFINITION_OF_DONE.md` ·
+BLOCKING 규칙 분류 `agent-harness.yaml`. L2/L3는 `docs/agent/plans/ACTIVE_PLAN.md` 먼저.
+
 **핵심 약속:** 시청자에게 나가는 것은 공개 일정 데이터뿐이다. 발행 전(draft) 일정과 아직 시각이
 안 된 최초공개(떡밥)의 내용은 공개 API·공개 화면에 절대 실리지 않는다.
 

@@ -1,0 +1,36 @@
+# CI — BLOCKING 규칙의 기계 강제 장치 (agent-harness.yaml 참조)
+#
+# 이 워크플로우가 초록으로 도는 동안에만 BR-PUBLIC-001·BR-CACHE-001·BR-DESIGN-001·
+# BR-PAGING-001이 MACHINE이다. 워크플로우를 끄거나 스텝을 지우면 매니페스트의
+# enforcement를 UNENFORCED로 되돌려야 한다(Enforcement Honesty).
+#
+# Vercel은 lint 에러로 배포를 막는다 — 여기서 먼저 잡아 프로덕션이 옛 빌드에
+# 갇히는 사고를 막는다(CLAUDE.md 작업 절차).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      # 빌드에 Supabase 키가 필요 없다(미설정 시 샘플 데이터 폴백) — 키를 CI에 넣지 않는다.
+      - run: npm run build

@@ -1,7 +1,7 @@
 # Active ExecPlan
 
 Plan ID: PLAN-20260826-002
-Status: In Progress
+Status: Completed
 Task Risk: L3 (DESTRUCTIVE_DATA — 실 DB 첫 적용)
 Created: 2026-08-26
 Updated: 2026-08-26
@@ -50,7 +50,10 @@ M5. (사용자 로그인 후) 0002 + 0013 시드 → 재verify
 - M4 완료: 전 체인 31/31 재실행 오류 0, verify-db 통과(테이블 11·정책 12·함수 3·
   admins=blackspace665). db/README ⚠ 삭제. dev 스모크: /=200, /api/public/wak/events가
   실 DB 빈 캘린더 응답, /api/live=200.
-- M5 대기: 소유자(whiteheaven231233@gmail.com) 구글 로그인 후 0002+0013 시드.
+- M5 완료: Google OAuth 설정(사용자) → whiteheaven231233 첫 로그인 → 시드 8개
+  (0002 + 팔레트 0006~0012 + 0013) 전부 OK. DB 확인: calendars 1(wak, 소유자 일치),
+  palette 13, tags 10(플레이스홀더 — T-2 대상), events 3(샘플), co_owners 1.
+  공개 API의 빈 응답은 시드 전 300초 캐시 — 재시작/TTL로 해소.
 
 ### 2026-08-26 (준비)
 

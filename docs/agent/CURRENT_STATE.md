@@ -6,14 +6,13 @@ Harness Protocol: project-initializing_260712.md (schema 1.1)
 
 ## Current Objective
 
-T-1 마무리: Google OAuth 설정 + 소유자 첫 로그인 → 캘린더 시드(0002·0013) (PLAN-20260826-002 M5).
+T-1 완료. 다음: T-3 메모 구현(ADR-0009) 또는 T-2 태그 확정 — 사용자와 순서 결정.
 
 ## Current Status
 
 - **동작함**: 코드 전체 — tsc·eslint·vitest(197)·next build 전부 exit 0 (2026-08-26).
   Supabase 없이 샘플 데이터 폴백으로 dev가 뜬다.
-- **한 번도 안 됨**: Playwright(e2e·visual, VIC 기준 스펙), Vercel 배포, 라이브 배지 실동작,
-  캘린더 시드 0002(소유자 첫 로그인 필요).
+- **한 번도 안 됨**: Playwright(e2e·visual, VIC 기준 스펙), Vercel 배포, 라이브 배지 실동작.
 - **적용됨(2026-08-26)**: DB 스키마 전 체인 — Supabase 서울, verify 통과 (ISSUE-001 해소).
 - **확정 반영(2026-08-26)**: 기념일=생일(7/24)뿐, D+ 기준 2008-11-01 임시 (ADR-0008 Accepted).
 - **정리됨(M1, 커밋 6dc3aff)**: 죽은 크론(vercel.json·workflow), middleware matcher
@@ -21,7 +20,7 @@ T-1 마무리: Google OAuth 설정 + 소유자 첫 로그인 → 캘린더 시�
 
 ## Active Work
 
-없음. 직전: PLAN-20260826-001 완료(`plans/completed/`) — M1 6dc3aff, M2 516432a, M3 a0b966f.
+없음. 직전: PLAN-20260826-002(T-1) 완료. 그 전: PLAN-20260826-001 완료(`plans/completed/`) — M1 6dc3aff, M2 516432a, M3 a0b966f.
 CI 초록 확인 → BLOCKING 4건 MACHINE (BR-PUBLIC·CACHE·DESIGN·PAGING).
 
 ## Known Issues
@@ -29,7 +28,9 @@ CI 초록 확인 → BLOCKING 4건 MACHINE (BR-PUBLIC·CACHE·DESIGN·PAGING).
 ### ISSUE-001 — DB SQL 체인 미검증
 Status: **Resolved 2026-08-26** · 실 Supabase 첫 적용 완료, 전 체인 멱등 재실행 오류 0.
 잡은 버그 3건(시드 slug vic·verify-db 호스트·멱등 가드)은 CHANGELOG CHG-005/006.
-남은 것: 소유자 로그인 후 캘린더 시드(M5).
+캘린더 시드까지 완료(2026-08-26): calendars 1 · palette 13 · tags 10 · 샘플 events 3.
+소유자 로그인 → 편집실 진입 확인(사용자). Google OAuth: 로컬(localhost:3000) 구성 완료 —
+Vercel 배포 시 Site URL·Redirect 추가 필요.
 
 ### ISSUE-002 — Playwright 스펙이 VIC 기준
 Status: Open · Evidence: `tests/README.md`

@@ -6,7 +6,7 @@ Harness Protocol: project-initializing_260712.md (schema 1.1)
 
 ## Current Objective
 
-Harness 도입 마무리(M3: CI) 후 T-1(Supabase 연결 + DB 첫 적용, L3)로 진입.
+T-1: Supabase 연결 + DB 첫 적용 (L3). Harness 도입은 완료(PLAN-20260826-001).
 
 ## Current Status
 
@@ -19,7 +19,8 @@ Harness 도입 마무리(M3: CI) 후 T-1(Supabase 연결 + DB 첫 적용, L3)로
 
 ## Active Work
 
-`docs/agent/plans/ACTIVE_PLAN.md` (PLAN-20260826-001) — M1 완료, M2 진행 중, M3 대기.
+없음. 직전: PLAN-20260826-001 완료(`plans/completed/`) — M1 6dc3aff, M2 516432a, M3 a0b966f.
+CI 초록 확인 → BLOCKING 4건 MACHINE (BR-PUBLIC·CACHE·DESIGN·PAGING).
 
 ## Known Issues
 
@@ -53,9 +54,8 @@ Status: Open · Evidence: `public-loader`의 `loadLiveEventHeartCounts`
 
 ## Next Exact Steps
 
-1. M2 커밋 → M3: `.github/workflows/ci.yml` 추가, push 후 초록 확인, BLOCKING 4건 MACHINE 승격
-2. T-1: 사용자가 Supabase 프로젝트 생성 → `.env.local` → `db/README.md` 순서로 적용 → verify
-3. 이후 순서는 사용자와 상의 (T-2 태그 / T-3 메모 / T-4 트래픽 / T-5 Playwright / T-6 브랜딩)
+1. T-1: 사용자가 Supabase 프로젝트 생성 → `.env.local` → `db/README.md` 순서로 적용 → verify
+2. 이후 순서는 사용자와 상의 (T-2 태그 / T-3 메모 / T-4 트래픽 / T-5 Playwright / T-6 브랜딩)
 
 ## Last Verified
 

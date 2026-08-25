@@ -1,7 +1,7 @@
 # Active ExecPlan
 
 Plan ID: PLAN-20260826-001
-Status: In Progress
+Status: Completed
 Task Risk: L2
 Created: 2026-08-26
 Updated: 2026-08-26
@@ -97,7 +97,7 @@ Validation: `npx tsc --noEmit` · `npx eslint . --max-warnings=0` · `npx vitest
 
 Rollback: 이 마일스톤의 커밋 하나를 `git revert`
 
-Status: In Progress
+Status: Done
 
 ### M2 — Harness 생성
 
@@ -116,7 +116,7 @@ Validation: 문서 내 상대 링크가 전부 실재 경로인지 확인 + 위 
 
 Rollback: `docs/agent/` 삭제 + `AGENTS.md` 삭제 + `CLAUDE.md`·`docs/sop.md` 되돌리기
 
-Status: Pending
+Status: Done (커밋 516432a)
 
 ### M3 — CI로 BLOCKING 4건 MACHINE 승격
 
@@ -133,19 +133,19 @@ Validation: `gh run list --workflow=ci.yml` 최신 실행이 success
 
 Rollback: `ci.yml` 삭제 + manifest의 4건을 `UNENFORCED`로 환원
 
-Status: Pending
+Status: Done (커밋 a0b966f, CI run success 확인)
 
 ## Final Acceptance Criteria
 
-- [ ] M1 4개 명령 통과
-- [ ] `/api/live`가 미들웨어 matcher에서 제외되고 회귀 테스트가 그것을 검사한다
-- [ ] 죽은 크론 참조가 저장소에 없다
-- [ ] Harness 필수 문서 8종 존재
-- [ ] ADR 8건 존재, `DECISION_INDEX.md`에서 찾을 수 있다
-- [ ] BLOCKING 규칙 10건이 전부 `MACHINE` 또는 `UNENFORCED`로 분류됨(`UNKNOWN` 없음)
-- [ ] `DEFINITION_OF_DONE.md`에 Verification Capability Boundary 표가 있다
-- [ ] `NEXT_SESSION.md`가 handoff로 이관되고 루트에서 사라졌다
-- [ ] provenance 3줄이 `agent-harness.yaml`에 있다
+- [x] M1 4개 명령 통과
+- [x] `/api/live`가 미들웨어 matcher에서 제외되고 회귀 테스트가 그것을 검사한다
+- [x] 죽은 크론 참조가 저장소에 없다
+- [x] Harness 필수 문서 8종 존재
+- [x] ADR 8건 존재, `DECISION_INDEX.md`에서 찾을 수 있다
+- [x] BLOCKING 규칙 10건이 전부 `MACHINE` 또는 `UNENFORCED`로 분류됨(`UNKNOWN` 없음)
+- [x] `DEFINITION_OF_DONE.md`에 Verification Capability Boundary 표가 있다
+- [x] `NEXT_SESSION.md`가 handoff로 이관되고 루트에서 사라졌다
+- [x] provenance 3줄이 `agent-harness.yaml`에 있다
 
 ## Validation Commands
 
@@ -171,3 +171,9 @@ M1은 코드 변경이라 revert 시 즉시 원복. M2는 신규 파일 위주�
 - 사용자 승인: 순서(A-01), Risk Profile(A-02), CI 강제(A-03).
 - PR-01 기록: BLOCKING 4건은 강제 장치 없음 — 초기 등록 전부 `UNENFORCED`.
 - SOOP BJ 아이디 `ecvhao` 수령.
+
+### 2026-08-26 — 완료
+
+- M1 커밋 6dc3aff / M2 커밋 516432a / M3 커밋 a0b966f, push 완료.
+- CI 초록 확인(GitHub API, run a0b966f completed success) → BLOCKING 4건 MACHINE 승격.
+- BLOCKING 분류 최종: MACHINE 4 / UNENFORCED 6 (BR-ENUM·BR-EDIT는 T-1 후 재평가).

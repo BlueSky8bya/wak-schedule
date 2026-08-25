@@ -124,10 +124,12 @@ const DAEBOREUM_YEARLY: Record<string, string> = {
   "2028-02-09": "🌕 정월대보름"
 };
 
-// 스트리머 방송 시작일(이 날부터 D+ 기록). 우왁굳님은 2008년 말에 게임 방송을 시작했지만
-// 정확한 날짜가 공개돼 있지 않다 → SOOP(구 아프리카TV) 복귀 첫 방송일을 기준으로 삼는다.
-// ⚠ 다른 기준을 쓰기로 하면 이 상수 하나만 바꾸면 된다(레일 "D+" 카드와 100일 마일스톤이 함께 따라간다).
-const DEBUT_ISO = "2024-02-04";
+// [WH-CHANGE v0.1.0 | FIX | 2026-08-26 | CHG-20260826-004]
+// Reason: 시청자 화면 D+는 '방송 인생 전체'를 세야 한다는 사용자 결정(ADR-0008 Accepted).
+//   시작은 2008년 11월(아프리카TV)까지만 확인돼 일자는 1일로 임시 고정 — 정확한 날짜가
+//   확인되면 이 상수 하나만 고친다(레일 "D+" 카드·N주년·100일 마일스톤이 함께 따라간다).
+// Related: docs/agent/decisions/ADR-0008-dplus-epoch.md
+const DEBUT_ISO = "2008-11-01";
 
 function daysSinceDebut(isoDate: string): number {
   const [y1, m1, d1] = DEBUT_ISO.split("-").map(Number);
@@ -142,10 +144,10 @@ export function debutDPlus(isoDate: string): number | null {
 }
 
 // 스트리머(우왁굳) 기념일 — 매년 같은 양력 날짜에 표기.
-// 출처: 위키백과·나무위키(2026-08 확인). 날짜가 틀렸다면 여기만 고치면 달력 전체에 반영된다.
+// 사용자 확정(2026-08-26): 매년 기념은 생일 하나만 둔다(ADR-0008). 다른 날(이세돌 데뷔 등)을
+// 다시 띄우고 싶으면 여기 한 줄 추가하면 된다.
 const STREAMER_ANNUAL: Record<string, (isoDate: string) => string | null> = {
-  "07-24": () => "🎂 왁굳형 생일", // 1987-07-24
-  "12-17": (iso) => `🎤 이세돌 데뷔 ${Number(iso.slice(0, 4)) - 2021}주년` // 2021-12-17 RE:WIND
+  "07-24": () => "🎂 왁굳형 생일" // 1987-07-24 (본명 오영택, 위키백과·나무위키)
 };
 
 // 기준일 표기: 당일, 매년 그 날짜는 "N주년", 그 외 100일 단위는 "D+".
@@ -156,11 +158,11 @@ function debutMark(isoDate: string): string | null {
     return null;
   }
   if (days === 0) {
-    return "🎉 숲 복귀 첫 방송"; // 기준일 당일(= 1년차 시작, D+1)
+    return "🎉 첫 방송"; // 기준일 당일(= 1년차 시작, D+1)
   }
-  // 매년 복귀 첫 방송일(2/4)은 N주년으로 표기 (2025=1주년)
-  if (isoDate.slice(5) === "02-04") {
-    return `🎉 숲 복귀 ${Number(isoDate.slice(0, 4)) - 2024}주년`;
+  // 매년 방송 시작일(11/1 임시)은 N주년으로 표기 (2009=1주년)
+  if (isoDate.slice(5) === DEBUT_ISO.slice(5)) {
+    return `🎉 방송 ${Number(isoDate.slice(0, 4)) - Number(DEBUT_ISO.slice(0, 4))}주년`;
   }
   // 그 외에는 100일 단위 D+ 마일스톤 (데뷔일 D+1 기준)
   const dplus = days + 1;
@@ -171,13 +173,9 @@ function debutMark(isoDate: string): string | null {
 }
 
 // 스트리머 기념일 — 그 해 그 날짜에만 한 번 표기(과거 기록).
-// ⚠ TODO: 왁굳형 연혁 중 달력에 띄우고 싶은 날을 여기에 더한다(팬들이 반가워할 날들).
-//    지금은 출처가 분명한 것만 넣었다.
-const STREAMER_ONCE: Record<string, string> = {
-  "2016-08-01": "🎈 트위치 이적", // 2016년 8월(정확한 일자 미확인 — 확인되면 고칠 것)
-  "2021-12-17": "🎤 이세계아이돌 데뷔",
-  "2024-02-04": "🌳 숲(아프리카TV) 복귀 첫 방송"
-};
+// 사용자 확정(2026-08-26): 지금은 비워 둔다(ADR-0008 — 생일·D+만). 연혁을 띄우고 싶어지면
+// "YYYY-MM-DD": "표기" 형태로 추가한다(예: 트위치 이적 2016-08-??, 이세돌 데뷔 2021-12-17).
+const STREAMER_ONCE: Record<string, string> = {};
 
 // 연도별 24절기 — 표기만(빨간날 아님). 천문 계산(태양 황경)으로 KST 날짜 산출, 2023~2031.
 const MARKS_YEARLY: Record<string, string> = {

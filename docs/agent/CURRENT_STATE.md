@@ -14,6 +14,7 @@ T-1: Supabase 연결 + DB 첫 적용 (L3). Harness 도입은 완료(PLAN-2026082
   Supabase 없이 샘플 데이터 폴백으로 dev가 뜬다.
 - **한 번도 안 됨**: DB 적용(SQL 체인 미검증, `db/README.md` ⚠), Playwright(e2e·visual,
   VIC 기준 스펙), Vercel 배포, 라이브 배지 실동작.
+- **확정 반영(2026-08-26)**: 기념일=생일(7/24)뿐, D+ 기준 2008-11-01 임시 (ADR-0008 Accepted).
 - **정리됨(M1, 커밋 6dc3aff)**: 죽은 크론(vercel.json·workflow), middleware matcher
   VIC 이름, 죽은 vi.mock, package-lock name, `SOOP_BJ_ID=ecvhao`.
 
@@ -48,14 +49,15 @@ Status: Open · Evidence: `public-loader`의 `loadLiveEventHeartCounts`
 
 ## Open Decisions
 
-- ADR-0008 (D+ 기준일) — 사용자 확정 대기, Proposed
 - A-04: 개인 도구(caveman 스킬·copilot-instructions) 저장소 잔류 여부
-- A-05: T-3 '그 달 메모' 공개/관리자 전용 — 정보 경계 결정, 구현 전 ADR 필요
+- T-7(VOD 버튼): VOD 링크 출처 — 관리자 수동 입력 vs SOOP API 자동 (착수 전 결정)
+- T-8(하트 티어): 왁굳형 시청자 규모 기준 임계값 — 사용자 숫자 필요
 
 ## Next Exact Steps
 
 1. T-1: 사용자가 Supabase 프로젝트 생성 → `.env.local` → `db/README.md` 순서로 적용 → verify
-2. 이후 순서는 사용자와 상의 (T-2 태그 / T-3 메모 / T-4 트래픽 / T-5 Playwright / T-6 브랜딩)
+2. T-3 메모(사양 확정 — ADR-0009, 남은 판단 3개는 구현 계획에서)
+3. 이후: T-2 태그 / T-4 트래픽 / T-5 Playwright / T-6 브랜딩 / T-7 VOD 버튼 / T-8 하트 티어
 
 ## Last Verified
 

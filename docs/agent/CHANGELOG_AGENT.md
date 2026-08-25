@@ -28,3 +28,14 @@ Rollback: 커밋 revert (재도입하려면 라우트부터 만들어야 한다)
 Change: `agent-harness.yaml`, `docs/agent/**` 생성, ADR-0001~0008 백필,
 `NEXT_SESSION.md` → handoff 이관, `AGENTS.md` 신규, `docs/sop.md` 아카이브.
 Rollback: M2 커밋 revert.
+
+### CHG-20260826-004 — FIX — 기념일·D+ 사용자 확정 반영
+
+Problem: 초안(fcde3c6)이 위키 추정 — 연례 표기 과다, D+ 기준이 숲 복귀일(2024)이라
+방송 인생 전체를 못 셌다.
+Change: STREAMER_ANNUAL=생일만, STREAMER_ONCE 비움, DEBUT_ISO=2008-11-01(일자 임시).
+오늘 D+6508, 11-01=방송 N주년.
+Files: `lib/calendar/holidays.ts`
+Validation: tsc·eslint·vitest 197 PASS
+Rollback: 이 커밋 revert
+Related: ADR-0008 (Accepted)

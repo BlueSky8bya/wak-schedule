@@ -1,0 +1,181 @@
+/* Route loading keeps destination geometry recognizable without exposing content. */
+@keyframes cal-skel-shimmer {
+  from {
+    background-position: calc(var(--space-6) * -15) 0;
+  }
+
+  to {
+    background-position: calc(var(--space-6) * 15) 0;
+  }
+}
+
+@keyframes cal-skel-note-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.cal-skel-stage {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-4);
+  background: var(--surface-2);
+}
+
+.cal-skel-stage-studio {
+  background: var(--studio-workbench);
+}
+
+.cal-skel-card {
+  display: none;
+}
+
+.cal-skel-note {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  animation: cal-skel-note-pulse var(--dur-spring-bouncy) var(--ease) infinite
+    alternate;
+}
+
+@media (max-width: 640px) {
+  .cal-skel-stage {
+    justify-content: flex-start;
+    padding: calc(var(--space-6) * 2) var(--space-4)
+      calc(var(--space-6) + var(--safe-bottom));
+  }
+
+  .cal-skel-card {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    border: var(--stroke-hairline) solid var(--line);
+    border-radius: var(--r-xl);
+    background: var(--surface);
+    padding: var(--space-card);
+    box-shadow: var(--shadow-2);
+  }
+
+  .cal-skel-note {
+    order: 2;
+    color: var(--muted);
+    font-size: var(--text-body);
+    font-weight: var(--weight-semibold);
+  }
+
+  .cal-skel-note-label,
+  .cal-skel-rail,
+  .cal-skel-editor {
+    display: none;
+  }
+
+  .cal-skel-main {
+    min-width: 0;
+  }
+
+  .cal-skel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-1) 0 var(--space-3);
+  }
+
+  .cal-skel-spark {
+    color: var(--accent-strong);
+    font-size: var(--text-display);
+    opacity: 0.7;
+  }
+
+  .cal-skel-title {
+    color: var(--ink);
+    font-size: var(--text-display);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-tight);
+    opacity: 0.85;
+  }
+
+  .cal-skel-monthbar {
+    display: flex;
+    justify-content: center;
+    padding-bottom: var(--space-4);
+  }
+
+  .cal-skel-month {
+    display: block;
+    width: calc(var(--space-6) * 4);
+    height: var(--space-5);
+    border-radius: var(--r-pill);
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--muted) 8%, transparent) 25%,
+      color-mix(in srgb, var(--muted) 18%, transparent) 37%,
+      color-mix(in srgb, var(--muted) 8%, transparent) 63%
+    );
+    background-size: calc(var(--space-6) * 15) 100%;
+    animation: cal-skel-shimmer var(--dur-spring-bouncy) var(--ease) infinite
+      alternate;
+  }
+
+  .cal-skel-weekrow,
+  .cal-skel-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-1);
+  }
+
+  .cal-skel-weekrow {
+    margin-bottom: var(--space-1);
+  }
+
+  .cal-skel-weekday {
+    color: var(--muted);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-bold);
+    text-align: center;
+  }
+
+  .cal-skel-cell {
+    aspect-ratio: 1;
+    border-radius: var(--r-sm);
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--muted) 5%, transparent) 25%,
+      color-mix(in srgb, var(--muted) 14%, transparent) 37%,
+      color-mix(in srgb, var(--muted) 5%, transparent) 63%
+    );
+    background-size: calc(var(--space-6) * 15) 100%;
+    animation: cal-skel-shimmer var(--dur-spring-bouncy) var(--ease) infinite
+      alternate;
+  }
+
+  .cal-skel-cell:nth-child(7n + 2) {
+    animation-delay: var(--dur-1);
+  }
+
+  .cal-skel-cell:nth-child(7n + 4) {
+    animation-delay: var(--dur-2);
+  }
+
+  .cal-skel-cell:nth-child(7n + 6) {
+    animation-delay: var(--dur-3);
+  }
+}
+
+html[data-reduce-motion] .cal-skel-note,
+html[data-reduce-motion] .cal-skel-month,
+html[data-reduce-motion] .cal-skel-cell {
+  animation: none;
+}

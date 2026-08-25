@@ -1,0 +1,1709 @@
+/* ── 월드컵 일정 표기(day-mark) — 편집실·시청자 포스터 공통. 깔끔한 칩 스타일. ── */
+.day-mark.wc,
+.day-mark.wc-korea,
+.day-mark.wc-final {
+  display: inline-flex;
+  align-items: center;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: var(--tracking-tight);
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  line-height: var(--lh-body);
+}
+/* 단계(개막/32강/16강/8강/4강/3·4위전): 잔디 초록 칩. */
+.day-mark.wc {
+  color: #1f7a47;
+  background: #e6f5ec;
+  box-shadow: inset 0 0 0 1px rgb(31 122 71 / 22%);
+}
+/* 한국 경기: 깔끔한 흰 칩 + 한국 레드 테두리·글씨(가독성↑, 과하지 않게). */
+.day-mark.wc-korea {
+  color: #cd2e3a;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1.5px #cd2e3a,
+    0 1px 4px rgb(205 46 58 / 18%);
+}
+/* 결승: 금빛 칩. */
+.day-mark.wc-final {
+  color: #946200;
+  background: #fdf3d6;
+  box-shadow: inset 0 0 0 1px rgb(184 134 11 / 35%);
+}
+
+/* 배포 버전(커밋 해시) — 왼쪽 아래 아주 연하고 작게. 클릭/캡처 방해 안 함. */
+.build-tag {
+  position: fixed;
+  left: 6px;
+  bottom: 5px;
+  z-index: 1;
+  color: rgb(120 120 120 / 32%);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 모바일은 하단 고정 바에 가려져 안 보여서 왼쪽 위로 올린다. */
+@media (max-width: 640px) {
+  .build-tag {
+    top: 4px;
+    bottom: auto;
+    z-index: 60;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   디자인 토큰 — 단일 관리처(SINGLE SOURCE OF TRUTH)
+   색·간격·라운드·그림자·모션을 여기서만 정의한다. globals.css는 루트 레이아웃에서
+   항상 로드되므로 이 :root 변수는 모든 컴포넌트 CSS(studio-shell·public-poster 등)에서
+   바로 쓸 수 있다. 값을 바꾸려면 여기 한 줄만 고치면 전역에 반영된다.
+   - 간격: --space-1..6 (4/8/12/16/24/32, 8pt 스케일)
+   - 라운드: --r-sm/md/card/lg/xl/pill (8/12/14/16/20/999)
+   - 그림자: --shadow-1/2/3   · 모션: --ease/--ease-spring, --dur-1..3
+   하드코딩 px·곡선 대신 항상 이 토큰을 참조할 것(border-radius·timing 등은 변수화 완료).
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+
+  /* 색 */
+  --ink: #1c2433;
+  --ink-soft: #3b4255;
+  --muted: #6b7384;
+  --line: #ece0c9;
+  --line-soft: #f4ecdb;
+  --paper: #f8efda;
+  --surface: #fffdf6;
+  --surface-2: #fdf6e8;
+  --studio-workbench: #eae6e0;
+  /* 브랜드 시그니처 팔레트 — TODO(색 확정): 지금 값은 VIC에서 물려받은 것이다.
+     보라=무대/선택, 핑크=팬심/하트). 노랑·초록 위 글자는 흰색 금지(짙은 잉크 사용). */
+  --accent: #ffc83d; /* 비타민 옐로(주 CTA·오늘·강조). 위 글자=--on-accent */
+  --accent-strong: #a9760a; /* 라이트 배경 위 골드 텍스트(대비용, 그대로 진하게) */
+  --accent-soft: #fff7d6; /* 노랑 wash 배경 */
+  --on-accent: #4a3500;
+  --green: #38b76a; /* 비타민 그린(팬 참여·작업자). 위 글자=짙은 잉크 */
+  --green-soft: #e9fff2;
+  --coral: #f26d5b;
+  --amber: #f4b740;
+  --violet: #5b34f0; /* 무대/선택/포커스(흰 글자). 기존보다 채도↑ */
+  --violet-soft: #f3eeff;
+  --pink: #ff5f8f; /* 토리 핑크 — 하트·팬 반응 */
+  --pink-soft: #ffe8f1;
+  /* 배치 3 첫 소비: Studio 선택·저장 상태. 기반 색을 참조해 테마 재매핑을 그대로 따른다. */
+  --status-success: var(--green);
+  --status-warning: var(--amber);
+  --status-danger: var(--coral);
+  --status-success-fill: var(--surface);
+  --status-warning-fill: var(--surface);
+  --status-danger-fill: var(--surface);
+  --focus-ring: var(--violet);
+  --selection-fill: var(--violet-soft);
+  --selection-overlay: var(--violet);
+  --selection-overlay-opacity: 0.14;
+  --selection-border: var(--violet);
+  /* 브랜드 별칭(의미 명시용; 위 시맨틱 토큰과 동일 값) */
+  --brand-yellow: var(--accent);
+  --brand-green: var(--green);
+  --brand-violet: var(--violet);
+  --tori-pink: var(--pink);
+
+  /* 글래스(떠 있는 표면) */
+  --glass: rgb(255 255 255 / 72%);
+  --glass-strong: rgb(255 255 255 / 86%);
+  --glass-border: rgb(255 255 255 / 70%);
+  /* 재질(애플 materials 근사, HCI 벤치마크 C1) — 떠 있는 표면(팝오버·모달)이 불투명 판이 아니라
+     '같은 공간 위 유리'로 읽히게. 반드시 @supports (backdrop-filter) 가드 안에서 기존 불투명
+     배경을 덮어쓰는 식으로 쓸 것(미지원 브라우저는 원래 배경 유지). export surface 안 금지. */
+  --material-bg: rgb(255 254 250 / 78%);
+  --material-bg-strong: rgb(255 255 255 / 86%);
+  --material-blur: blur(18px) saturate(1.7);
+
+  /* ── 타이포 역할 토큰(C2, 애플 리디자인 기반) ─────────────────────────────
+     SF 스타일 '역할' 스케일 — px 산재(한 패널에 10~18px 11종) 대신 6역할로 수렴한다.
+     값은 현재 관행의 대표값 스냅(정의 시점 시각 변화 0). 화면별 리디자인 슬라이스에서
+     점진 치환하고, 웹(≥641px) 상향이 필요한 역할은 그 화면 미디어쿼리에서 토큰을 재정의. */
+  --text-caption: 11px; /* 보조 각주·배지 소문자 */
+  --text-label: 12.5px; /* 필드 라벨·범례·힌트 */
+  --text-body: 13.5px; /* 본문·목록 */
+  --text-ui: 15px; /* 버튼·칩·세그먼트 */
+  --text-input: 16px; /* 입력칸(iOS 확대 방지 하한) */
+  --text-title: 18px; /* 패널 제목 */
+  --text-display: 20px; /* 화면 제목·월 표기 */
+  --text-hero: 28px;
+  --lh-body: 1.5;
+  --lh-relaxed: 1.65;
+  --tracking-tight: -0.01em;
+  --tracking-ui: 0.01em;
+  --weight-semibold: 700;
+  --weight-bold: 800;
+
+  /* 간격 (4/8 스케일) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-control-x: var(--space-4);
+  --space-control-y: var(--space-2);
+  --space-card: var(--space-4);
+  --space-panel: var(--space-5);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Apple HIG 계열 아이콘 control의 최소 hit target: 32 + 12 = 44. */
+  --control-hit: calc(var(--space-6) + var(--space-3));
+  --stroke-hairline: 1px;
+  --sheet-width-md: 560px;
+  --sheet-width-lg: 720px;
+
+  /* 라운드 */
+  --r-sm: 8px;
+  --r-md: 12px;
+  /* 편집실 카드 공통 둥글기 — 15곳에서 일관 사용하던 14px을 토큰으로 박아 일관성 잠금. */
+  --r-card: 14px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-pill: 999px;
+  --r-control: var(--r-md);
+
+  /* 그림자 (부드럽게 단계화) */
+  --shadow-1: 0 1px 2px rgb(17 24 39 / 5%), 0 1px 3px rgb(17 24 39 / 4%);
+  --shadow-2: 0 4px 14px rgb(17 24 39 / 7%);
+  --shadow-3: 0 16px 40px rgb(17 24 39 / 14%);
+
+  /* ── 달력 워크스페이스 z-스케일 (구조 규칙) ──────────────────────────
+     .studio-day는 일부러 쌓임 맥락을 만들지 않는다 — 멀티데이 띠·포커스 링이 이웃 칸
+     경계 위로 이어져야 해서다. 그 대가로 **칸 자식들과 워크스페이스 부유 레이어(편집
+     팝오버 등)가 한 쌓임 맥락에서 직접 겨룬다.** 층을 파일 곳곳에 리터럴로 흩뿌리면
+     "업도움 띠 머리(z:7)가 팝오버(z:6) 위로" 같은 역전이 조용히 생긴다(2026-08 실측).
+     규칙: 칸 내부 콘텐츠 = 1~9 · 워크스페이스 부유(팝오버) = 10~19 ·
+     화면 고정 오버레이(미니 메뉴 60, 시트 85, 모달 10000대)는 그 위 기존 값 유지.
+     이 맥락에 새 층을 추가할 땐 리터럴 금지 — 여기서 토큰을 선언하고 받아 쓴다. */
+  --z-cal-cell-head: 1; /* 날짜 머리글 */
+  --z-cal-range: 3; /* 칸 범위 선택 음영 */
+  --z-cal-dim: 4; /* 다른 달 흐림 베일 */
+  --z-cal-select-ring: 5; /* 선택/오늘 링(::after) */
+  --z-cal-leader: 5; /* 팝오버→앵커 칸 리더 라인 */
+  --z-cal-focus-ring: 6; /* 키보드 포커스 링(::after) */
+  --z-cal-ribbon: 6; /* 업도움 띠 조각 */
+  --z-cal-ribbon-head: 7; /* 띠 시작 조각(라벨이 뒤 조각 위로 흘러야 함) */
+  --z-cal-cell-raised: 8; /* 포커스로 띄운 칸 자체 */
+  --z-cal-pop: 12; /* 편집 팝오버 — 칸 내부(1~9) 전부보다 위 */
+
+  /* ── 모션 ───────────────────────────────────────────────────────────
+     숫자 근거(직접 확인한 출처): 눌렀을 때 화면 반응 ≤100ms(RAIL), 상호작용이 '끝난 느낌' <400ms
+     (Doherty threshold), UI 애니메이션은 100~500ms 대역이고 500ms를 넘기면 굼떠 보인다(NN/g).
+     들어오는 건 감속(ease-out)으로 안착점을 예고하고, 나가는 건 가속(ease-in)으로 빨리 비운다.
+     그리드 등장은 항목당 지연을 아주 짧게 주되 '전체 시퀀스 ≤500ms'를 넘기지 않는다(Carbon). */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* 들어옴: 감속(decelerate) — 목적지를 눈이 미리 예측한다. */
+  --ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  /* 나감: 가속(accelerate) — 화면을 빨리 비운다(들어옴보다 짧게). */
+  --ease-exit: cubic-bezier(0.3, 0, 0.8, 0.15);
+  /* 통통 튀는 오버슈트 — 버튼을 뗄 때 살짝 넘쳤다 안착하는 '손맛'(스프링). */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* ── 진짜 스프링(linear() 샘플링) — 애플 HCI 벤치마크(docs/ux/apple-hci-benchmark-report.md A1).
+     베지어 오버슈트(--ease-spring)는 '도착 직전 감속'이 물리와 달라 미묘하게 인공적이다.
+     스프링 방정식을 점으로 구운 아래 두 곡선은 시작이 빠르고(즉각 반응) 잔진동으로 안착한다.
+     duration은 잔진동까지 포함한 '정착 시간' 전체를 줘야 한다(--dur-spring-*와 짝으로 쓸 것).
+     미지원 브라우저 폴백: var(--spring-smooth, var(--ease-spring)) 체인으로 참조. */
+  /* 부드러운 스프링(살짝 넘침 후 안착, response≈0.5) — 시트·패널 등장, 레이아웃 슬라이드용 */
+  --spring-smooth: linear(
+    0, 0.0069, 0.0261, 0.0555, 0.0916, 0.1349, 0.1839, 0.2375, 0.2944,
+    0.3535, 0.414, 0.475, 0.5359, 0.5961, 0.655, 0.7122, 0.7675, 0.8204,
+    0.8709, 0.9187, 0.9425, 0.9866, 1.0245, 1.0565, 1.083, 1.1045, 1.1212,
+    1.1337, 1.1425, 1.1479, 1.1504, 1.1483, 1.1414, 1.1319, 1.1207, 1.1085,
+    1.096, 1.0835, 1.0714, 1.06, 1.0495, 1.04, 1.0315, 1.0241, 1.0177,
+    1.0124, 1.008, 1.0044, 1.0017, 0.9996, 0.9982, 0.9972, 0.9967, 0.9966,
+    0.997, 0.9975, 0.998, 0.9985, 0.999, 0.9995, 1
+  );
+  /* 통통 스프링(damping≈0.6 젤리) — 버튼 릴리스·하트·보상 순간 전용(평시 전이 금지) */
+  --spring-bouncy: linear(
+    0, 0.009, 0.035, 0.078, 0.136, 0.207, 0.288, 0.376, 0.468, 0.561,
+    0.654, 0.743, 0.827, 0.905, 0.975, 1.036, 1.088, 1.131, 1.164, 1.187,
+    1.201, 1.207, 1.205, 1.196, 1.181, 1.162, 1.139, 1.114, 1.088, 1.061,
+    1.036, 1.012, 0.99, 0.972, 0.956, 0.944, 0.935, 0.93, 0.928, 0.929,
+    0.932, 0.938, 0.945, 0.953, 0.962, 0.971, 0.98, 0.988, 0.996, 1.002,
+    1.007, 1.011, 1.013, 1.014, 1.013, 1.012, 1.01, 1.008, 1.006, 1.003,
+    1.001, 1, 0.999, 0.999, 1
+  );
+  --dur-spring-smooth: 0.5s;
+  --dur-spring-bouncy: 0.6s;
+  --dur-1: 120ms; /* 토글·체크 같은 즉각 피드백 */
+  --dur-2: 180ms;
+  --dur-3: 240ms;
+  --dur-4: 300ms; /* 시트·모달 들어옴 */
+  --dur-5: 500ms; /* 가장 큰 전환(달 넘김) — 이 위로는 굼뜨다 */
+}
+
+/* 지원 브라우저는 기반 surface와 섞어 테마 remap을 따른다. 미지원 환경도 위 fallback으로 의미 유지. */
+@supports (color: color-mix(in srgb, currentColor, transparent)) {
+  :root {
+    --status-success-fill: color-mix(in srgb, var(--status-success) 8%, var(--surface));
+    --status-warning-fill: color-mix(in srgb, var(--status-warning) 8%, var(--surface));
+    --status-danger-fill: color-mix(in srgb, var(--status-danger) 9%, var(--surface));
+    --selection-fill: color-mix(in srgb, var(--violet) 10%, var(--surface));
+    --selection-overlay: color-mix(in srgb, var(--violet) 14%, transparent);
+    --selection-overlay-opacity: 1;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  /* 모바일에서 버튼/링크 탭 시 요소 모양대로 파란 사각형이 깜빡이는 것 제거(직접 만든
+     눌림 모션으로 피드백을 주므로 기본 하이라이트는 필요 없다). */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── 전역 조작감 베이스라인 ──
+   모든 상호작용 요소의 상태 변화(배경·테두리·글자·그림자)가 툭 끊기지 않고 부드럽게 이어지게
+   기본 트랜지션을 깔아준다. :where()로 특이도 0 → 각 컴포넌트가 정의한 모션이 항상 우선하고,
+   아무 모션도 없던 '정적인' 컨트롤에만 이 기본값이 채워진다. transform은 제외한다(드래그·스티커
+   처럼 매 프레임 transform을 바꾸는 곳이 느려지지 않게 — 눌림 스케일은 컴포넌트별로 따로 준다). */
+@media (min-width: 0px) {
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="switch"],
+    [role="option"]
+  ) {
+    transition:
+      background-color 0.16s var(--ease, ease),
+      border-color 0.16s var(--ease, ease),
+      color 0.16s var(--ease, ease),
+      box-shadow 0.18s var(--ease, ease),
+      opacity 0.16s var(--ease, ease);
+  }
+}
+/* 진짜 버튼(<button>)은 transform도 트랜지션에 포함해 '누르면 살짝 들어갔다 복귀'를 전역으로
+   준다. 드래그는 <div role=button>·스티커라 여기 안 걸리고, 자체 :active를 둔 버튼(.button,
+   드래그 핸들 등)은 특이도가 높아 그대로 우선한다. → 모션 없던 버튼에만 기본 손맛이 채워진다. */
+@media (min-width: 0px) {
+  :where(button) {
+    transition:
+      background-color 0.16s var(--ease, ease),
+      border-color 0.16s var(--ease, ease),
+      color 0.16s var(--ease, ease),
+      box-shadow 0.18s var(--ease, ease),
+      opacity 0.16s var(--ease, ease),
+      /* 릴리스(뗌)는 진짜 스프링으로 통통 복귀 — 애플식 '누름=빠르게, 복귀=탄성'(A2). */
+        transform var(--dur-spring-bouncy, 0.18s) var(--spring-bouncy, var(--ease-spring, ease));
+  }
+  :where(button):active:not(:disabled) {
+    transform: scale(0.95);
+    /* 누르는 순간은 즉각(≤100ms) 가라앉아야 반응으로 느껴진다 — 복귀용 스프링 duration이
+       누름에도 걸리면 굼뜨다. transition-property 순서(bg·border·color·shadow·opacity·transform)
+       와 1:1로 맞춘 duration 목록으로 transform만 짧게 덮는다. */
+    transition-duration: 0.16s, 0.16s, 0.16s, 0.18s, 0.16s, 0.07s;
+    transition-timing-function:
+      var(--ease, ease), var(--ease, ease), var(--ease, ease), var(--ease, ease),
+      var(--ease, ease), var(--ease-exit, ease);
+  }
+}
+/* 화면에선 감추고 스크린리더에만 읽히는 텍스트(표준 visually-hidden 패턴). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 일관된 포커스 링(키보드 이동 시) — 특이도 0이라 컴포넌트가 자유로이 덮을 수 있다. */
+:where(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: var(--accent, #7c5cf5);
+  box-shadow: 0 0 0 3px rgb(124 92 245 / 18%);
+}
+:where(a, button, [role="button"], [role="tab"], [role="switch"], summary):focus-visible {
+  outline: 2px solid var(--accent, #7c5cf5);
+  outline-offset: 2px;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family:
+    "Pretendard",
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+/* 키보드 포커스 링 (접근성) */
+:where(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* 등장 모션 유틸 */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* (.fade-up 유틸 클래스 제거 — 참조 0. @keyframes fade-up은 studio-shell.css에서 계속 쓴다) */
+/* 첫 진입 스태거 등장에 쓰는 공통 키프레임(편집실 그리드·아젠다 공용). 칸마다 --ri 인덱스로
+   딜레이를 줘 "차르륵" 순차로 떠오른다.
+   ※ opacity는 일부러 안 건드린다(0에서 시작 X) — opacity 0인 요소는 LCP 후보에서 빠져,
+     스태거 딜레이만큼 LCP가 늦게 측정됐다(모바일 아젠다 LCP가 2초 늦던 주원인). 위치(translateY)
+     캐스케이드는 LCP 타이밍에 영향 없으니 그대로 둬서 '차르륵' 등장 느낌은 유지한다. */
+@keyframes cal-cell-rise {
+  from {
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* B1 기념일 축하 연출(컨페티 + 토스트) */
+.celebrate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+.celebrate-overlay .confetti {
+  position: absolute;
+  top: -16px;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.3, 0.2, 0.6, 1);
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+}
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateY(102vh) rotate(540deg);
+    opacity: 0.95;
+  }
+}
+.celebrate-toast {
+  /* ⚠ 가운데 정렬을 transform으로 하지 않는다 — 이 요소의 등장 애니메이션이 transform을
+     쓰면 그 값이 translateX(-50%)를 **덮어써** 반쯤 오른쪽으로 밀리고, 좁은 화면에서는
+     그대로 잘린다(2026-08-05 모바일 실측: 390px에서 삭제 스낵바가 6px 넘쳐 잘림).
+     left/right + margin auto는 transform과 서로 간섭하지 않는다. */
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
+  border-radius: var(--r-pill);
+  background: var(--glass-strong);
+  padding: 10px 20px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow: var(--shadow-3);
+  backdrop-filter: blur(8px);
+  animation: pop-in var(--dur-spring-smooth, var(--dur-3)) var(--spring-smooth, var(--ease)) both;
+}
+
+/* 값이 바뀔 때 '탁' 튀는 숫자(스코어 등) — PopNumber 컴포넌트가 변화 시 .pop을 잠깐 붙인다. */
+.pop-number {
+  display: inline-block;
+}
+.pop-number.pop {
+  animation: pop-number 0.42s var(--spring-bouncy, var(--ease-spring, ease));
+}
+@keyframes pop-number {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+html[data-reduce-motion] .pop-number.pop {
+  animation: none;
+}
+
+/* (세로 전용 잠금 .portrait-lock 제거 — P0-RESP-1. 가로 휴대폰은 MOBILE_QUERY의
+   (max-height ≤640 + coarse) 절이 이미 모바일 레이아웃을 적용해 정상 사용 가능하다.
+   전면 차단 오버레이는 그 사용을 막는 데다, aria-hidden인데 뒤 UI가 포커스 가능해
+   스크린리더/키보드 사용자를 보이지 않는 UI에 가두는 접근성 결함이었다.) */
+
+/* 특별한 날 탭 → 그 자리에서 색종이가 '팡' 터지는 점(point) 폭죽(빵빠레). 위 celebrate-overlay가
+   상단에서 비처럼 내리는 것과 달리, 탭한 좌표에서 방사형으로 흩어진다. fixed라 export 표면 밖이고
+   pointer-events:none이라 일정 조작을 방해하지 않는다. 입자 생성은 JS가 '동작 줄이기'면 건너뛴다. */
+.burst-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 62;
+  overflow: hidden;
+  pointer-events: none;
+}
+.burst {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+/* 한국 승 큰 폭죽의 가운데 트로피 — 솟구쳤다 사라진다. */
+.burst-core {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 30px;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 25%));
+  animation: burst-core-pop 1100ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes burst-core-pop {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+  35% { transform: translate(-50%, -92%) scale(1.25); opacity: 1; }
+  70% { transform: translate(-50%, -98%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, -124%) scale(0.95); opacity: 0; }
+}
+.burst-bit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 13px;
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: burst-fly;
+  animation-timing-function: cubic-bezier(0.15, 0.7, 0.35, 1);
+  animation-fill-mode: both;
+}
+.burst-bit.emoji {
+  width: auto;
+  height: auto;
+  font-size: 16px;
+  line-height: 1;
+}
+.burst.big .burst-bit.emoji { font-size: 19px; }
+@keyframes burst-fly {
+  0% { transform: translate(-50%, -50%) scale(0.4) rotate(0deg); opacity: 0; }
+  12% { opacity: 1; }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+/* 모션 최소화 선호 시 애니메이션·전환 제거 */
+
+/* (.app-shell / .page-band / .constrain 레이아웃 유틸 제거 — 참조 0) */
+
+.eyebrow {
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0 var(--space-control-x);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: #cdd3df;
+  box-shadow: var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+/* 누르면 살짝 작아졌다(스프링) 떼면 부드럽게 복귀 — 모든 버튼에 일관된 '손맛'.
+   transform이 위에서 var(--dur-1) ease로 트랜지션돼 툭 끊기지 않고 자연스럽게 이어진다. */
+.button:active:not(:disabled) {
+  transform: scale(0.96);
+  box-shadow: var(--shadow-1);
+}
+
+.button:disabled {
+  cursor: default;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.button.primary {
+  border-color: transparent;
+  background: linear-gradient(180deg, #ffd44f, var(--accent));
+  color: var(--on-accent);
+  font-weight: 900;
+}
+
+.button.primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--accent), #e0a414);
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+.button.danger {
+  border-color: #fbcaca;
+  background: #fff5f5;
+  color: #b42318;
+}
+.button.danger:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #f3a3a3;
+}
+
+.placeholder-page {
+  display: grid;
+  min-height: 100vh;
+  align-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 32px;
+  text-align: center;
+}
+
+.placeholder-page h1 {
+  margin: 0;
+}
+
+.placeholder-page p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.auth-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  background:
+    radial-gradient(90% 60% at 50% 0%, #eef5f4 0%, transparent 55%),
+    radial-gradient(80% 60% at 100% 100%, #efeaff 0%, transparent 55%),
+    linear-gradient(180deg, #fbf7f1, #f4f6fb);
+  padding: 24px;
+}
+
+.auth-panel {
+  display: grid;
+  width: min(460px, 100%);
+  gap: var(--space-4); /* 16 — 14 정리 */
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl); /* 20 (토큰화) */
+  background: #ffffff;
+  padding: var(--space-6) var(--space-5); /* 32/24 — 28→32 스케일 */
+  box-shadow: 0 24px 60px -30px rgb(80 60 140 / 38%);
+  animation: auth-pop 0.42s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
+}
+@keyframes auth-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* 로그인 카드 — 첫인상이라 따뜻하게 중앙 정렬 + 브랜드 마크. */
+.auth-panel-login {
+  justify-items: center;
+  text-align: center;
+}
+.auth-panel-login .eyebrow {
+  letter-spacing: 0.08em;
+}
+.auth-panel-login h1 {
+  font-size: 24px;
+}
+.auth-panel-login form {
+  width: 100%;
+}
+.auth-panel-login .button.primary {
+  width: 100%;
+  min-height: 46px;
+  font-size: 15px;
+}
+.auth-brand {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-xl); /* 20 (토큰화) */
+  font-size: 32px;
+  background: linear-gradient(135deg, #eef5f4, #efeaff);
+  box-shadow: 0 10px 22px -10px rgb(120 110 160 / 50%);
+  margin-bottom: 2px;
+  animation: auth-brand-float 3.2s ease-in-out infinite;
+}
+.auth-brand-spark {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 18px;
+  animation: auth-spark 2.4s ease-in-out infinite;
+}
+@keyframes auth-brand-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes auth-spark {
+  0%,
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.25) rotate(12deg);
+    opacity: 1;
+  }
+}
+@media (max-width: 640px) {
+  .auth-panel {
+    padding: 24px 18px;
+  }
+}
+
+.auth-panel h1,
+.auth-panel p {
+  margin: 0;
+}
+
+.auth-panel p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.auth-panel form,
+.auth-panel label {
+  display: grid;
+  gap: 8px;
+}
+
+.auth-panel label {
+  font-weight: 800;
+}
+
+.auth-panel input {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 0 12px;
+}
+
+.auth-warning {
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.auth-warning {
+  border: 1px solid #f2c172;
+  background: #fff7ed;
+  color: #9a3412;
+}
+/* OAuth 실패를 날 것의 쿼리스트링 대신 친절한 복구 카드로. 바로 아래 로그인 버튼이 재시도. */
+.auth-error-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid #f3b9b1;
+  border-radius: var(--r-md); /* 12 (토큰화) */
+  background: #fff5f3;
+  padding: var(--space-3); /* 12 — 12/14 정리 */
+}
+.auth-error-card .auth-error-emoji {
+  font-size: 18px;
+  line-height: 1.4;
+}
+.auth-error-card p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #b4453a;
+}
+.inapp-notice {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+.inapp-notice p {
+  margin: 0;
+  font-weight: 600;
+}
+.inapp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+/* 크롬 자동전환 중 짧게 보이는 표시(빈 화면 방지). 전환되면 곧 사라진다. */
+.inapp-trying {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 8px;
+  color: var(--muted, #6b5b34);
+  font-size: 14px;
+  font-weight: 700;
+}
+.inapp-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgb(120 120 120 / 25%);
+  border-top-color: rgb(120 120 120 / 80%);
+  border-radius: 50%;
+  animation: inapp-spin 0.7s linear infinite;
+}
+@keyframes inapp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* (.auth-success / .role-route-list* 제거 — 참조 0) */
+
+.trusted-members-page {
+  align-content: start;
+  justify-items: stretch;
+  padding-top: 48px;
+}
+
+.trusted-members-panel {
+  display: grid;
+  width: min(760px, 100%);
+  gap: var(--space-4); /* 16 */
+  justify-self: center;
+  border: 1px solid var(--line);
+  /* 큰 패널은 큰 radius로(auth-panel·month-grid와 같은 결) — 8px은 큰 박스에 너무 각졌다. */
+  border-radius: var(--r-lg); /* 16 */
+  background: var(--surface);
+  padding: var(--space-5); /* 24 */
+  text-align: left;
+}
+
+.trusted-members-panel h1,
+.trusted-members-panel p {
+  margin: 0;
+}
+
+.trusted-members-panel p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.trusted-member-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 150px auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.trusted-member-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.trusted-member-form input,
+.trusted-member-form select {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 0 10px;
+}
+
+.trusted-member-list {
+  display: grid;
+  gap: 8px;
+}
+
+.trusted-member-list article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fbfcfe;
+  padding: 12px;
+}
+
+.trusted-member-list span {
+  color: var(--muted);
+}
+
+.trusted-member-list em {
+  border-radius: var(--r-pill);
+  background: #e8f4f4;
+  color: var(--accent-strong);
+  padding: 4px 8px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .trusted-member-form,
+  .trusted-member-list article {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 비공개 레이어 설정/잠금해제 패널 */
+.private-layer-shell {
+  max-width: 560px;
+  margin: 40px auto;
+  display: grid;
+  gap: 16px;
+}
+/* (.private-layer-controls / -status / -block* / .auth-notice 제거 — 참조 0) */
+
+/* 최소화된 로그인 게이트 */
+.auth-minimal {
+  place-items: center;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+.google-login {
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 28px;
+  border: 1px solid #e3e6ec;
+  border-radius: var(--r-pill);
+  background: #ffffff;
+  color: #3c4043;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: var(--shadow-2);
+  transition:
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+.google-login:hover:not(:disabled) {
+  box-shadow: var(--shadow-3);
+  transform: translateY(-1px);
+}
+.google-login:disabled {
+  opacity: 0.5;
+}
+
+/* 비공개 비밀번호 입력 행 (입력칸 + 확인) */
+.passcode-input-row {
+  display: flex;
+  gap: 8px;
+}
+.passcode-input-row input {
+  flex: 1;
+  /* 입력칸이 콘텐츠 기본 최소폭(min-width:auto)에 막혀 안 줄면, "확인 중…" 버튼이 모달 밖으로
+     밀려 잘린다. 0으로 풀어 입력칸이 양보하고 버튼이 항상 안에 들어오게 한다. */
+  min-width: 0;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 16px;
+}
+.passcode-input-row .button {
+  min-height: 46px;
+  padding: 0 18px;
+  /* 좁은 화면에서도 "확인"이 한 글자씩 줄바꿈되지 않게(입력칸에 눌려도 버튼 폭 유지). */
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Batch 10: private unlock surface. Permission and unlock flows remain unchanged. */
+.private-layer-page {
+  min-height: 100svh;
+  background: var(--surface-2);
+  padding: var(--space-6) var(--space-4);
+}
+
+.private-layer-shell {
+  max-width: none;
+  width: min(100%, var(--sheet-width-md));
+  margin: 0 auto;
+  gap: var(--space-4);
+  border: var(--stroke-hairline) solid var(--status-danger);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-3);
+}
+
+.private-layer-shell h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-display);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.private-layer-shell h1::before {
+  margin-right: var(--space-2);
+  color: var(--status-danger);
+  content: "🔒";
+}
+
+.passcode-box {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.passcode-box > input,
+.passcode-input-row input {
+  min-height: var(--control-hit);
+  border: var(--stroke-hairline) solid var(--line);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  color: var(--ink);
+  padding-inline: var(--space-3);
+  font-size: var(--text-input);
+  box-shadow: inset 0 0 0 var(--stroke-hairline) transparent;
+}
+
+.passcode-box > input:focus,
+.passcode-input-row input:focus {
+  border-color: var(--selection-border);
+  outline: 0;
+  box-shadow: 0 0 0 var(--space-1) var(--selection-overlay);
+}
+
+.passcode-input-row {
+  gap: var(--space-2);
+}
+
+.passcode-input-row .button,
+.passcode-actions .button,
+.passcode-box > .button {
+  min-height: var(--control-hit);
+  border-radius: var(--r-control);
+  padding-inline: var(--space-4);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+}
+
+/* '비밀번호 변경'(잠금 폼의 직속 버튼)만 — 전폭 슬래브 대신 조용한 텍스트 버튼.
+   주 동작(확인)과 시각 위계를 가르고, 모달이 버튼 두 덩이로 무거워 보이던 것을 덜어낸다. */
+.passcode-box > .button {
+  justify-self: center;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.passcode-box > .button:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.passcode-submit {
+  min-width: calc(var(--control-hit) + var(--space-6));
+}
+
+.passcode-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.private-layer-shell .auth-warning,
+.passcode-box .auth-warning {
+  margin: 0;
+  border: var(--stroke-hairline) solid var(--status-danger);
+  border-radius: var(--r-control);
+  background: var(--status-danger-fill);
+  color: var(--status-danger);
+  padding: var(--space-3);
+  font-size: var(--text-body);
+  line-height: var(--lh-body);
+}
+
+@media (max-width: 640px) {
+  .private-layer-page {
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-3) var(--space-2) 0;
+  }
+
+  .private-layer-shell {
+    width: 100%;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    padding: var(--space-5) var(--space-4)
+      calc(var(--space-5) + env(safe-area-inset-bottom));
+  }
+
+  .passcode-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .passcode-actions {
+    position: sticky;
+    bottom: 0;
+  }
+}
+
+html[data-reduce-motion] .passcode-box input,
+html[data-reduce-motion] .passcode-box .button {
+  animation: none;
+  transition: none;
+}
+
+/* (.memo-editor* 메모 편집기 제거 — 참조 0) */
+
+/* ── 업 도움 끈(레인) ─────────────────────────────────────────────────
+   날짜 범위를 가로지르는 하이라이트 띠. 시작/끝만 둥글게, 중간은 이어짐. 겹치면 레인이 아래로 쌓인다.
+   편집실·시청자 포스터·꾸미기가 같은 끈을 그리므로 정의는 여기 한 곳뿐(단일 출처).
+   z-index 4 — 일정 카드(이어진 막대 포함, 최대 3)보다 항상 위. 어느 날짜가 강조된 기간인지는
+   카드에 가려지면 안 된다. 다른 달 베일(::after, 4)·스티커 레이어(5)는 그대로 위에 남는다. */
+.support-bar {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  height: 17px;
+  /* 대각선 무늬 제거(2026-08-03, 사용자 결정) — 글자 가독성을 해쳤다. 은은한 장미 그라데이션
+     단색 띠 + 진한 장미 글자. 흰 하이라이트 한 줄로 '눌리는 리본' 질감. */
+  background: linear-gradient(180deg, #ffc9d3, #ffadbe);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 55%);
+  color: #9f1239;
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none; /* 링크(<a>)로 렌더될 때도 밑줄 없이 리본 그대로 */
+  transition:
+    filter 0.16s var(--ease, ease),
+    box-shadow 0.16s var(--ease, ease),
+    transform 0.16s var(--ease, ease);
+}
+/* 시작 조각은 넘침 허용 — 제목·CTA가 (같은 색으로 이어진) 띠 위로 흘러가 칸 폭에 안 잘린다.
+   z-index를 한 단계 올려 뒤 조각들이 글자를 덮지 않게 한다. */
+.support-bar.sb-head {
+  overflow: visible;
+  z-index: 5;
+}
+.support-bar.sb-head span {
+  position: relative;
+  z-index: 1;
+}
+.support-bar span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 0 6px;
+  font-size: 10.5px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+/* ── 하루짜리 업 도움 ────────────────────────────────────────────────────
+   여러 날짜짜리는 시작 조각이 넘침을 허용해 제목·CTA를 오른쪽 띠 위로 흘려보낸다. 하루짜리는
+   흘려보낼 띠가 없어서, 같은 규칙을 쓰면 글자가 **남의 날짜 칸 위**로 삐져나온다.
+   그래서 칸 안에서 끝나는 별도 모양으로 그린다: 넘침을 자르고, 제목은 말줄임, 클릭 유도는
+   화살표 한 글자로 압축(뜻은 aria-label에 그대로 남는다). 편집실·시청자 화면 공통. */
+.support-bar.sb-solo {
+  overflow: hidden;
+}
+
+.support-bar.sb-solo span {
+  width: 100%;
+  gap: 4px;
+  padding: 0 5px;
+  font-size: 10px;
+}
+
+.support-bar .sb-title {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 화살표는 오른쪽 끝에 고정 — 제목이 길어도 '누를 수 있다'는 신호가 먼저 잘리면 안 된다. */
+.support-bar.sb-solo .sb-go {
+  flex: none;
+  margin-left: auto;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  color: rgb(159 18 57 / 78%);
+  transition: transform 0.16s var(--ease, ease);
+}
+
+.support-bar.sb-solo.is-clickable.is-hover .sb-go {
+  transform: translateX(2px);
+}
+
+html[data-reduce-motion] .support-bar.sb-solo.is-clickable.is-hover .sb-go {
+  transform: none;
+}
+
+/* '도와주러 가기 →' — 띠의 남는 가로 폭을 클릭 유도 문구로 활용(시청자 화면 전용 렌더). */
+.support-bar .sb-cta {
+  font-style: normal;
+  font-weight: 800;
+  font-size: 10px;
+  color: rgb(159 18 57 / 78%);
+  border-bottom: 1px dotted rgb(159 18 57 / 45%);
+  transition: transform 0.16s var(--ease, ease), color 0.16s var(--ease, ease);
+}
+
+/* ── 태그 색 무늬(패턴) — 제거됨(2026-07-18) ──────────────────────────────
+   예전엔 비슷한 색을 무늬(대각선/점/격자)로 갈라 색맹 구분 단서로 썼다. 커스텀 색(Phase 1)에서
+   왁굳형이 hue를 자유롭게 골라 '진짜 다른 색'으로 구분하기로 하고, 텍스처가 글자 가독성을 해쳐
+   무늬를 전면 제거했다. 카드·칩은 단색이다. (편집기의 색 풀 분리 로직·색 생성기의 gen-* key는
+   Phase 1의 HSLuv 피커로 대체될 때 함께 정리한다.) */
+
+/* ── 강제색 모드(P2-A11Y-2) ────────────────────────────────────────────────
+   Windows 고대비 등 forced-colors는 저자 배경색을 지운다 — 이 앱에서 태그 '색'은 장식이
+   아니라 정보(일정 유형 구분·색 견본) 그 자체라, 색이 정보인 표면만 저자 색을 유지한다.
+   텍스트·버튼·포커스 링 등 나머지는 시스템 색을 그대로 따른다(가독성 우선). */
+@media (forced-colors: active) {
+  .studio-event-pill,        /* 편집실 달력 일정 칩 */
+  .public-event,             /* 시청자 포스터 일정 카드 */
+  .agenda-event,             /* 모바일 아젠다 일정 카드 */
+  .agenda-legend-tag i,      /* 태그 필터 색 견본 점 */
+  .tp-chip,                  /* 태그 선택 칩 */
+  .pill-dots i,              /* 추가 대분류 색 점 줄 */
+  .sticker-item {            /* 꾸미기 스티커(이모지·도형 색) */
+    forced-color-adjust: none;
+  }
+}
+
+/* ── #5 동작 줄이기(reduce motion) ─────────────────────────────────────────
+   사용자가 '동작 줄이기'를 켜면(<html data-reduce-motion>) 끊임없이 반복되는 '장식용' 모션만
+   끈다 — 눈 피로↓. 의미 있는 모션(스피너·저장 점·라이브·드래그 안내선·누름 피드백·등장/삭제)은
+   그대로 둬서 상태를 계속 알 수 있게 한다. OS의 prefers-reduced-motion은 별개로 각 컴포넌트가
+   이미 존중한다(이 토글은 그 위에 얹는 명시적 사용자 설정).
+   - 제목 양옆 ✨, 오늘 강조 호흡/맥동, 인기 불꽃 깜빡임, 로그인 화면 둥실, 스티커 상시 효과 */
+html[data-reduce-motion] .title-spark,
+html[data-reduce-motion] .studio-poster-title span,
+html[data-reduce-motion] .flame,
+html[data-reduce-motion] .public-day.today,
+html[data-reduce-motion] .agenda-day.today .agenda-when strong,
+html[data-reduce-motion] .auth-brand,
+html[data-reduce-motion] .auth-brand-spark,
+html[data-reduce-motion] .sticker-anim-float,
+html[data-reduce-motion] .sticker-anim-twinkle,
+html[data-reduce-motion] .sticker-anim-jiggle,
+html[data-reduce-motion] .sticker-anim-spin,
+html[data-reduce-motion] .sticker-anim-pulse {
+  animation: none !important;
+}
+
+/* ── #28 눈 편한 테마(eye comfort) ─────────────────────────────────────────
+   오래 보는 작업자용 — 채도·눈부심을 낮추고 + 청색광(블루라이트)을 줄여 따뜻하게 만든다.
+   눈 피로의 핵심은 밝기보다 청색광이라, sepia로 살짝 데우고(흰 배경=크림 종이 톤) 밝기를 조금
+   더 내려 눈부심을 줄인다. 글자 대비는 유지(legibility). filter를 'html'에만 걸어 fixed/sticky의
+   컨테이닝 블록을 깨지 않는다(html=뷰포트라 위치 변동 없음). 캡쳐(포스터 PNG)는 Playwright가
+   별도 컨텍스트라 영향 없음. prefers-contrast: more면 따뜻함을 줄여 대비 우선. */
+html[data-eye-comfort] {
+  filter: saturate(0.8) brightness(0.96) sepia(0.1);
+}
+/* 고대비 선호 사용자에겐 sepia(청색광 감소)를 줄여 또렷함을 우선한다. */
+@media (prefers-contrast: more) {
+  html[data-eye-comfort] {
+    filter: saturate(0.88) brightness(0.97) sepia(0.04);
+  }
+}
+
+/* ── 네트워크 상태 표시(오프라인 배지 / 온라인 복귀 토스트) ──────────────────
+   오프라인이면 SW가 공개 일정 스냅샷을 보여주는데, 사용자가 '왜 안 바뀌지'로 오해하지 않게
+   인앱으로 상태를 알린다. body 직속 고정 — 포스터 export surface 바깥이라 캡쳐엔 안 잡힌다. */
+.netstat {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* 모바일은 상단 좌측 — 우상단 로그인 버튼과 같은 줄(대칭). 배지가 작아 중심이 위로 붙으므로 top을
+     조금 내려 로그인 버튼과 수평 정렬. 하단엔 하트/필터/오늘 바가 있어 못 둔다. */
+  top: calc(env(safe-area-inset-top, 0px) + var(--space-4));
+  z-index: 9000;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--space-4));
+  pointer-events: none; /* 배지가 일정 클릭 막지 않게 */
+}
+.netstat-badge,
+.netstat-toast {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-hit);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: var(--stroke-hairline) solid;
+  border-radius: var(--r-pill);
+  font-size: var(--text-label);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  box-shadow: var(--shadow-2);
+  animation: netstat-rise var(--dur-3) var(--ease-enter) both;
+}
+/* 오프라인 — 호박/주황 경고 톤(공개 일정만 보고 있다는 신호) */
+.netstat-badge {
+  background: var(--status-warning-fill);
+  color: var(--ink-soft);
+  border-color: var(--status-warning);
+}
+.netstat-dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: 50%;
+  background: var(--status-warning);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-warning) 50%, transparent);
+  animation: netstat-pulse var(--dur-spring-bouncy) var(--ease-exit) infinite;
+}
+.netstat-sub {
+  font-weight: 700;
+  opacity: 0.82;
+  display: none; /* 모바일 축약: '오프라인'만. 웹에선 아래 media에서 다시 보인다. */
+}
+/* 온라인 복귀 — 초록 확인 토스트(2.6s 뒤 사라짐) */
+.netstat-toast {
+  background: var(--status-success-fill);
+  color: var(--ink-soft);
+  border-color: var(--status-success);
+}
+.netstat-check {
+  color: var(--status-success);
+  font-size: var(--text-ui);
+  font-weight: var(--weight-bold);
+}
+
+/* 위치 중립(상단/하단 어디든 자연스럽게) — scale+fade만 */
+@keyframes netstat-rise {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes netstat-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-warning) 50%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 var(--space-2) transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* 웹: 모바일과 같은 좌측 상단(시선이 가장 먼저 닿는 곳, 사용자가 오프라인을 놓치지 않게).
+   폭 넉넉하니 텍스트는 축약하지 않고 '· 마지막 동기화 N분 전'까지 다 보여준다. */
+@media (min-width: 641px) {
+  .netstat {
+    top: calc(env(safe-area-inset-top, 0px) + var(--space-4));
+    padding-left: var(--space-5);
+  }
+  .netstat-badge,
+  .netstat-toast {
+    font-size: var(--text-ui);
+    padding: var(--space-2) var(--space-4);
+  }
+  .netstat-sub {
+    display: inline; /* 웹은 폭 넉넉 → 전체 텍스트 */
+  }
+}
+
+/* 동작 줄이기: 등장·펄스 애니 끄기 */
+html[data-reduce-motion] .netstat-badge,
+html[data-reduce-motion] .netstat-toast,
+html[data-reduce-motion] .netstat-dot {
+  animation: none !important;
+}
+
+/* Batch 11: login and in-app browser states. OAuth flow stays unchanged. */
+.auth-page {
+  min-height: 100svh;
+  background: var(--surface-2);
+  padding: var(--space-5);
+}
+
+.auth-panel {
+  width: min(var(--sheet-width-md), 100%);
+  gap: var(--space-4);
+  border: var(--stroke-hairline) solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  padding: var(--space-6) var(--space-5);
+  box-shadow: var(--shadow-3);
+}
+
+.auth-panel-login .eyebrow {
+  color: var(--violet);
+  font-size: var(--text-label);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-ui);
+}
+
+.auth-panel-login h1 {
+  color: var(--ink);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-body);
+}
+
+.auth-panel p {
+  color: var(--muted);
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+}
+
+.auth-brand {
+  width: calc(var(--control-hit) + var(--space-5));
+  height: calc(var(--control-hit) + var(--space-5));
+  margin-bottom: var(--space-1);
+  border-radius: var(--r-xl);
+  background: var(--selection-fill);
+  color: var(--violet);
+  box-shadow: var(--shadow-2);
+}
+
+.auth-panel-login .button.primary,
+.google-login,
+.inapp-actions .button {
+  min-height: var(--control-hit);
+  border-radius: var(--r-control);
+  padding-inline: var(--space-control-x);
+  font-size: var(--text-ui);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-ui);
+}
+
+.google-login {
+  border: var(--stroke-hairline) solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-1);
+}
+
+.google-login:hover:not(:disabled) {
+  border-color: var(--selection-border);
+  background: var(--selection-fill);
+  box-shadow: var(--shadow-2);
+}
+
+.auth-warning,
+.auth-error-card {
+  width: 100%;
+  border-radius: var(--r-control);
+  padding: var(--space-3);
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+}
+
+.auth-warning {
+  border: var(--stroke-hairline) solid var(--status-warning);
+  background: var(--status-warning-fill);
+  color: var(--ink-soft);
+}
+
+.auth-error-card {
+  gap: var(--space-2);
+  border: var(--stroke-hairline) solid var(--status-danger);
+  background: var(--status-danger-fill);
+}
+
+.auth-error-card p {
+  color: var(--status-danger);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  line-height: var(--lh-relaxed);
+}
+
+.inapp-notice {
+  gap: var(--space-2);
+}
+
+.inapp-actions {
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.inapp-trying {
+  min-height: var(--control-hit);
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-2);
+  color: var(--muted);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+}
+
+.inapp-spinner {
+  width: var(--space-4);
+  height: var(--space-4);
+  border: calc(var(--stroke-hairline) * 2) solid var(--line);
+  border-top-color: var(--violet);
+}
+
+@supports ((-webkit-backdrop-filter: var(--material-blur)) or (backdrop-filter: var(--material-blur))) {
+  .auth-panel {
+    background: var(--material-bg-strong);
+    -webkit-backdrop-filter: var(--material-blur);
+    backdrop-filter: var(--material-blur);
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-page:has(.auth-panel-login),
+  .auth-page:has(.auth-minimal) {
+    align-items: end;
+    padding: var(--space-3) var(--space-2) 0;
+  }
+
+  .auth-panel-login,
+  .auth-minimal {
+    width: 100%;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    padding: var(--space-5)
+      var(--space-4)
+      calc(var(--space-5) + env(safe-area-inset-bottom));
+  }
+
+  .auth-panel-login .button.primary,
+  .google-login,
+  .inapp-actions .button {
+    width: 100%;
+  }
+
+  .inapp-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+html[data-reduce-motion] .auth-panel,
+html[data-reduce-motion] .auth-error-card,
+html[data-reduce-motion] .auth-brand,
+html[data-reduce-motion] .auth-brand-spark,
+html[data-reduce-motion] .inapp-spinner {
+  animation: none;
+}
+
+html[data-reduce-motion] .auth-panel .button {
+  transition: none;
+}
+
+/* Batch 15: recovery and route-status surfaces. Data and retry behavior stay unchanged. */
+.system-state-body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--surface-2);
+  font-family: inherit;
+}
+
+.system-state-page {
+  display: grid;
+  place-items: center;
+}
+
+.system-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.system-state-card .eyebrow {
+  margin: 0;
+  color: var(--violet);
+  font-size: var(--text-label);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-ui);
+}
+
+.system-state-card h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-body);
+}
+
+.system-state-card > p:not(.eyebrow, .error-digest) {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+}
+
+.system-state-icon {
+  display: inline-grid;
+  min-width: var(--control-hit);
+  min-height: var(--control-hit);
+  place-items: center;
+  border: var(--stroke-hairline) solid var(--selection-border);
+  border-radius: var(--r-control);
+  background: var(--selection-fill);
+  color: var(--violet);
+  font-size: var(--text-ui);
+  font-weight: var(--weight-bold);
+  box-shadow: var(--shadow-1);
+}
+
+.system-state-icon-danger {
+  border-color: var(--status-danger);
+  background: var(--status-danger-fill);
+  color: var(--status-danger);
+}
+
+.system-state-card .error-digest {
+  width: 100%;
+  margin: var(--space-1) 0 0;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  padding: var(--space-2) var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-caption);
+  line-height: var(--lh-body);
+  overflow-wrap: anywhere;
+}
+
+.system-state-action {
+  min-height: var(--control-hit);
+  margin-top: var(--space-2);
+  border-radius: var(--r-control);
+  padding-inline: var(--space-control-x);
+  font-size: var(--text-ui);
+  font-weight: var(--weight-semibold);
+}
+
+.system-loading-page .insight-skel {
+  border-radius: var(--r-control);
+}
+
+@supports (
+  (-webkit-backdrop-filter: var(--material-blur)) or
+    (backdrop-filter: var(--material-blur))
+) {
+  .netstat-badge,
+  .netstat-toast {
+    background: var(--material-bg-strong);
+    -webkit-backdrop-filter: var(--material-blur);
+    backdrop-filter: var(--material-blur);
+  }
+}
+
+@media (max-width: 640px) {
+  .system-state-page {
+    align-items: end;
+    padding: var(--space-3) var(--space-2) 0;
+  }
+
+  .system-state-card {
+    width: 100%;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    padding: var(--space-5) var(--space-4)
+      calc(var(--space-5) + var(--safe-bottom));
+  }
+
+  .system-state-action {
+    width: 100%;
+  }
+}
+
+html[data-reduce-motion] .system-state-card,
+html[data-reduce-motion] .system-state-icon,
+html[data-reduce-motion] .system-state-action {
+  animation: none;
+  transition: none;
+}

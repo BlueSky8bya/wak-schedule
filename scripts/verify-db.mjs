@@ -8,16 +8,37 @@ const env = Object.fromEntries(
 );
 const ref = env.NEXT_PUBLIC_SUPABASE_URL.match(/https:\/\/([a-z0-9]+)\.supabase\.co/)[1];
 
-const client = new Client({
-  host: `aws-1-ap-northeast-2.pooler.supabase.com`,
-  port: 5432,
-  user: `postgres.${ref}`,
-  password: env.SUPABASE_DB_PASSWORD,
-  database: "postgres",
-  ssl: { rejectUnauthorized: false },
-  connectionTimeoutMillis: 8000
-});
-await client.connect();
+// [WH-CHANGE v0.1.0 | FIX | 2026-08-26 | CHG-20260826-005]
+// Reason: pooler 호스트가 aws-1로 하드코딩돼 있었는데 프로젝트가 aws-0 클러스터에 배정되면
+//   ENOTFOUND(tenant not found)로 죽는다. apply-db.mjs와 같은 후보 폴백을 쓴다.
+const candidates = [
+  { host: `aws-0-ap-northeast-2.pooler.supabase.com`, port: 5432, user: `postgres.${ref}` },
+  { host: `aws-1-ap-northeast-2.pooler.supabase.com`, port: 5432, user: `postgres.${ref}` },
+  { host: `db.${ref}.supabase.co`, port: 5432, user: "postgres" }
+];
+
+let client = null;
+for (const cfg of candidates) {
+  const c = new Client({
+    ...cfg,
+    password: env.SUPABASE_DB_PASSWORD,
+    database: "postgres",
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 8000
+  });
+  try {
+    await c.connect();
+    await c.query("select 1");
+    client = c;
+    break;
+  } catch {
+    await c.end().catch(() => {});
+  }
+}
+if (!client) {
+  console.error("모든 후보 접속 실패.");
+  process.exit(2);
+}
 
 const tables = await client.query(
   `select count(*)::int as n from information_schema.tables where table_schema='public'`

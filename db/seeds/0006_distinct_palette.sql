@@ -3,7 +3,7 @@
 do $$
 declare v_cal uuid;
 begin
-  select id into v_cal from public.calendars where slug = 'vic';
+  select id into v_cal from public.calendars where slug = 'wak';
   if v_cal is null then return; end if;
 
   update public.color_palette set name='회색', bg_color='#c2c7d0', text_color='#1f2937', border_color='#8b91a0' where calendar_id=v_cal and key='gray';

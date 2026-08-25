@@ -2,7 +2,7 @@
 do $$
 declare v_cal uuid;
 begin
-  select id into v_cal from public.calendars where slug = 'vic';
+  select id into v_cal from public.calendars where slug = 'wak';
   if v_cal is null then return; end if;
 
   insert into public.color_palette (calendar_id, key, name, bg_color, text_color, border_color, sort_order)

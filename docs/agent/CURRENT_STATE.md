@@ -6,14 +6,15 @@ Harness Protocol: project-initializing_260712.md (schema 1.1)
 
 ## Current Objective
 
-T-1: Supabase 연결 + DB 첫 적용 (L3). Harness 도입은 완료(PLAN-20260826-001).
+T-1 마무리: Google OAuth 설정 + 소유자 첫 로그인 → 캘린더 시드(0002·0013) (PLAN-20260826-002 M5).
 
 ## Current Status
 
 - **동작함**: 코드 전체 — tsc·eslint·vitest(197)·next build 전부 exit 0 (2026-08-26).
   Supabase 없이 샘플 데이터 폴백으로 dev가 뜬다.
-- **한 번도 안 됨**: DB 적용(SQL 체인 미검증, `db/README.md` ⚠), Playwright(e2e·visual,
-  VIC 기준 스펙), Vercel 배포, 라이브 배지 실동작.
+- **한 번도 안 됨**: Playwright(e2e·visual, VIC 기준 스펙), Vercel 배포, 라이브 배지 실동작,
+  캘린더 시드 0002(소유자 첫 로그인 필요).
+- **적용됨(2026-08-26)**: DB 스키마 전 체인 — Supabase 서울, verify 통과 (ISSUE-001 해소).
 - **확정 반영(2026-08-26)**: 기념일=생일(7/24)뿐, D+ 기준 2008-11-01 임시 (ADR-0008 Accepted).
 - **정리됨(M1, 커밋 6dc3aff)**: 죽은 크론(vercel.json·workflow), middleware matcher
   VIC 이름, 죽은 vi.mock, package-lock name, `SOOP_BJ_ID=ecvhao`.
@@ -26,8 +27,9 @@ CI 초록 확인 → BLOCKING 4건 MACHINE (BR-PUBLIC·CACHE·DESIGN·PAGING).
 ## Known Issues
 
 ### ISSUE-001 — DB SQL 체인 미검증
-Status: Open · Evidence: `db/README.md` ⚠ 문단
-VIC 64개 마이그레이션에서 축소 재작성 — 첫 적용 시 오류 가능. T-1의 본 작업.
+Status: **Resolved 2026-08-26** · 실 Supabase 첫 적용 완료, 전 체인 멱등 재실행 오류 0.
+잡은 버그 3건(시드 slug vic·verify-db 호스트·멱등 가드)은 CHANGELOG CHG-005/006.
+남은 것: 소유자 로그인 후 캘린더 시드(M5).
 
 ### ISSUE-002 — Playwright 스펙이 VIC 기준
 Status: Open · Evidence: `tests/README.md`

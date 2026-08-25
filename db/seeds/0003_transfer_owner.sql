@@ -29,7 +29,7 @@ begin
 
   update public.calendars
   set owner_id = v_owner
-  where slug = 'vic';
+  where slug = 'wak';
 
   raise notice '캘린더(vic) 소유자를 %로 이전했습니다.', v_owner_email;
 end $$;

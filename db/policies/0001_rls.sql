@@ -1,3 +1,6 @@
+-- [WH-CHANGE v0.1.0 | FIX | 2026-08-26 | CHG-20260826-006]
+-- Reason: 멱등 계약(db/README.md) 위반 — create policy는 재실행에서 already exists로
+--   실패한다. 각 create policy 앞에 drop policy if exists를 둔다(정의 변경도 안전).
 -- 행 수준 보안(RLS) — 축소 모델.
 --
 -- 이 프로젝트의 데이터 모델은 VIC(빅토리) 원본보다 훨씬 단순하다:
@@ -61,40 +64,48 @@ as $$
   select public.is_calendar_owner(target_calendar_id) or public.is_developer();
 $$;
 
+drop policy if exists "public can read public calendars" on public.calendars;
 create policy "public can read public calendars"
-on public.calendars for select
+  on public.calendars for select
 using (is_public = true);
 
+drop policy if exists "owners can manage calendars" on public.calendars;
 create policy "owners can manage calendars"
-on public.calendars for all
+  on public.calendars for all
 using (public.is_calendar_admin(id))
 with check (public.is_calendar_admin(id));
 
 -- 공개 읽기의 유일한 조건: 발행된(draft 아닌) 행. visibility_scope는 값이 하나뿐이라
 -- 조건에 넣지 않아도 같은 의미지만, 의도를 문서화하려고 명시해 둔다.
+drop policy if exists "public can read public events" on public.events;
 create policy "public can read public events"
-on public.events for select
+  on public.events for select
 using (visibility_scope = 'public' and status <> 'draft');
 
+drop policy if exists "owners can manage events" on public.events;
 create policy "owners can manage events"
-on public.events for all
+  on public.events for all
 using (public.is_calendar_admin(calendar_id))
 with check (public.is_calendar_admin(calendar_id));
 
+drop policy if exists "public can read active tags" on public.broadcast_tags;
 create policy "public can read active tags"
-on public.broadcast_tags for select
+  on public.broadcast_tags for select
 using (is_active = true);
 
+drop policy if exists "public can read palette" on public.color_palette;
 create policy "public can read palette"
-on public.color_palette for select
+  on public.color_palette for select
 using (true);
 
+drop policy if exists "owners can manage tags" on public.broadcast_tags;
 create policy "owners can manage tags"
-on public.broadcast_tags for all
+  on public.broadcast_tags for all
 using (public.is_calendar_admin(calendar_id))
 with check (public.is_calendar_admin(calendar_id));
 
+drop policy if exists "owners can manage palette" on public.color_palette;
 create policy "owners can manage palette"
-on public.color_palette for all
+  on public.color_palette for all
 using (public.is_calendar_admin(calendar_id))
 with check (public.is_calendar_admin(calendar_id));

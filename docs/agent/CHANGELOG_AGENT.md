@@ -39,3 +39,20 @@ Files: `lib/calendar/holidays.ts`
 Validation: tsc·eslint·vitest 197 PASS
 Rollback: 이 커밋 revert
 Related: ADR-0008 (Accepted)
+
+### CHG-20260826-005 — FIX — verify-db pooler 호스트 하드코딩
+
+Problem: aws-1 풀러 하드코딩 — 프로젝트가 aws-0 클러스터면 ENOTFOUND로 죽음(실측).
+Change: apply-db와 같은 후보 폴백(aws-0→aws-1→직접연결).
+Files: `scripts/verify-db.mjs`
+
+### CHG-20260826-006 — FIX — SQL 멱등 계약 위반 수정 + 시드 slug 잔재
+
+Problem: 첫 실 DB 적용(T-1)에서 ① 시드 9파일이 slug 'vic' 참조(캘린더 오생성/시드
+no-op) ② 0001 재실행 시 "type event_status already exists" ③ 정책 파일 재실행 시
+"policy ... already exists" — db/README의 "모든 파일 멱등" 계약 위반.
+Change: 시드 slug 'wak'화 + `tests/unit/seed-slug.test.ts`(재유입 차단), 0001 enum
+duplicate_object 가드 + create table if not exists, 정책 drop policy if exists 선행.
+Validation: 전 체인 31/31 멱등 재실행 오류 0, verify-db 통과, vitest 208.
+Files: `db/seeds/*.sql`, `db/migrations/0001_initial_schema.sql`,
+`db/policies/{0001_rls,0003_event_tags}.sql`, `scripts/verify-db.mjs`

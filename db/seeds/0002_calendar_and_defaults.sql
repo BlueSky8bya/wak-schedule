@@ -29,14 +29,14 @@ begin
     raise exception '소유자 계정(%)이 auth.users에 없습니다. 먼저 그 계정으로 앱에 1회 로그인한 뒤 다시 실행하세요.', v_owner_email;
   end if;
 
-  -- 1) 캘린더 (slug = vic)
+  -- 1) 캘린더 (slug = wak — lib/config/site.ts CALENDAR_SLUG와 일치해야 한다)
   insert into public.calendars (owner_id, slug, display_name, title, timezone, is_public)
-  values (v_owner, 'vic', '우왁굳 일정표', '우왁굳 일정표', 'Asia/Seoul', true)
+  values (v_owner, 'wak', '우왁굳 일정표', '우왁굳 일정표', 'Asia/Seoul', true)
   on conflict (slug) do update set owner_id = excluded.owner_id
   returning id into v_cal;
 
   if v_cal is null then
-    select id into v_cal from public.calendars where slug = 'vic';
+    select id into v_cal from public.calendars where slug = 'wak';
   end if;
 
   -- 2) 팔레트 10색 (휴뱅용 회색 포함)

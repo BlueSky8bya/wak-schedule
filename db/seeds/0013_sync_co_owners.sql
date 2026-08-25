@@ -12,7 +12,7 @@
 do $$
 declare
   v_emails text := nullif(current_setting('app.owner_emails', true), '');
-  v_slug text := 'vic';
+  v_slug text := 'wak';
   v_calendar uuid;
   v_email text;
   v_uid uuid;

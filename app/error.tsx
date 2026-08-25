@@ -1,5 +1,7 @@
 "use client";
 
+import { SITE_NAME } from "@/lib/config/site";
+
 export default function Error({
   error,
   reset,
@@ -19,7 +21,7 @@ export default function Error({
         >
           !
         </span>
-        <p className="eyebrow">VIC Studio</p>
+        <p className="eyebrow">{SITE_NAME}</p>
         <h1 id="error-title">문제가 발생했어요</h1>
         <p>페이지를 불러오는 중 오류가 났습니다. 다시 시도해 주세요.</p>
         {/* P0-SEC-3: 원문 error.message는 DB 테이블명·내부 경로 등 서버 내부를 노출할 수

@@ -88,3 +88,18 @@ Change: 브라우저 탭 제목 "VIC Schedule Studio"(VIC 잔재) → SITE_NAME 
 Files: `lib/config/site.ts`, `app/layout.tsx`, `db/seeds/0014_wak_tags.sql`,
 `lib/schedules/sample-public-data.ts`
 Validation: DB 확인(대분류 11: …대형서버·게임·기타), 게이트 4종 exit 0
+
+### CHG-20260826-010 — FEAT — 이 달 메모·월별 인사이트·포스터 아바타 제거
+
+Change (사용자 지시, ADR-0009 2차·ADR-0011):
+- 편집실 아바타 자리 → '이 달 메모'(calendars.public_memo, 디바운스 자동저장,
+  canEditSchedule 게이트+서버 재검사, 무효화 3줄).
+- 포스터 아바타 기능 전면 제거(왁굳형은 버츄얼 아님).
+- 관리 = 버튼 2개 나란히: [태그 편집][월별 인사이트](드롭다운 해체).
+- 월별 인사이트 신설 — 일정 파생 통계만(방송/휴뱅 일수·태그 순위·하트·기대·전월 비교).
+- VIC 잔재: 에러/404/로그인 페이지 "VIC Studio" → SITE_NAME.
+Files: `lib/schedules/{memo,insights}-actions.ts`, `components/studio/{month-memo,month-insights}.tsx`,
+`components/studio/studio-shell.{tsx,css}`, `components/poster/public-poster.tsx`,
+`app/{error,global-error,not-found}.tsx`, `app/(auth)/login/page.tsx`, `app/visual-fixture/poster/page.tsx`
+Validation: 게이트 4종 exit 0(214), 프로덕션 빌드 fixture 스크린샷으로 편집실·포스터 확인.
+Rollback: 커밋 revert (DB 변경 없음).

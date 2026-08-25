@@ -157,8 +157,9 @@ describe("공개 캐시 무효화 — 쓰기마다 반드시", () => {
     const path = await import("node:path");
     const dir = path.join(process.cwd(), "lib/schedules");
     // 하트·기대돼요는 의도적 제외 — 초 단위로 눌리는 값이라 무효화하면 캐시가 무의미해진다
-    // (집계는 다음 TTL에 따라붙는다). 제외를 늘릴 땐 이유를 여기 적는다.
-    const EXCEPT = new Set(["heart-actions.ts", "hope-actions.ts"]);
+    // (집계는 다음 TTL에 따라붙는다). insights는 읽기 전용(집계 RPC 호출이 .rpc( 패턴에
+    // 걸릴 뿐 쓰기 없음 — ADR-0011). 제외를 늘릴 땐 이유를 여기 적는다.
+    const EXCEPT = new Set(["heart-actions.ts", "hope-actions.ts", "insights-actions.ts"]);
     const missing: string[] = [];
     for (const file of fs.readdirSync(dir).filter((f) => f.endsWith("-actions.ts"))) {
       if (EXCEPT.has(file)) continue;

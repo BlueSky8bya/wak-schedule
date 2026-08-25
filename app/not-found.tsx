@@ -1,3 +1,5 @@
+import { SITE_NAME } from "@/lib/config/site";
+
 import Link from "next/link";
 
 export default function NotFound() {
@@ -10,7 +12,7 @@ export default function NotFound() {
         <span className="system-state-icon" aria-hidden>
           404
         </span>
-        <p className="eyebrow">VIC Studio</p>
+        <p className="eyebrow">{SITE_NAME}</p>
         <h1 id="not-found-title">페이지를 찾을 수 없어요</h1>
         <p>주소가 바뀌었거나 없는 페이지입니다.</p>
         <Link className="button primary system-state-action" href="/">

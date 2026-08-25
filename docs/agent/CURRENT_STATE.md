@@ -6,7 +6,9 @@ Harness Protocol: project-initializing_260712.md (schema 1.1)
 
 ## Current Objective
 
-배포 완료. 다음: T-3 메모 구현(ADR-0009). 병행 대기: 프로덕션 로그인 설정(사용자 클릭 2개).
+T-3 메모·월별 인사이트·관리 버튼 2개·포스터 아바타 제거 완료(PLAN-20260826-004).
+다음 후보: T-7 VOD 버튼(ADR-0010) / T-4 트래픽 점검 / T-5 Playwright / T-8 하트 티어.
+대기: 인사이트 모달 실클릭 확인(사용자, owner 로그인).
 
 ## Current Status
 

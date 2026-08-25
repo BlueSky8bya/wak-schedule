@@ -81,6 +81,10 @@ import { isTaxonomyV3, legacyTagView } from "@/lib/tags/taxonomy";
 import { createTagVisualResolver } from "@/lib/tags/tag-visual";
 import { toggleEventHeartAction } from "@/lib/schedules/heart-actions";
 import { removeTagAction, saveTagsAction } from "@/lib/schedules/tag-actions";
+import { updateCalendarMemoAction } from "@/lib/schedules/memo-actions";
+import { getMonthInsightsAction } from "@/lib/schedules/insights-actions";
+import { MonthMemo } from "@/components/studio/month-memo";
+import { MonthInsightsPanel } from "@/components/studio/month-insights";
 import { CalendarSkeleton } from "@/components/skeleton/calendar-skeleton";
 import { TagLegendEditor } from "@/components/tags/tag-legend-editor";
 import { DateTimePicker } from "@/components/studio/datetime-picker";
@@ -302,7 +306,7 @@ export function StudioShell({
   }
   // 모바일 아젠다 월 전환 방향(시청자 화면과 동일한 슬라이드 애니메이션용).
   const [monthDir, setMonthDir] = useState<"next" | "prev">("next");
-  const [modal, setModal] = useState<null | "tags">(null);
+  const [modal, setModal] = useState<null | "tags" | "insights">(null);
   // 빠른 휴방: 날짜 우클릭/롱프레스로 뜨는 미니 메뉴(화면 좌표 + 그 날 휴방 여부).
   const [restMenu, setRestMenu] = useState<
     { isoDate: string; x: number; y: number; hasRest: boolean } | null
@@ -642,8 +646,6 @@ export function StudioShell({
   // 이중 역할(매니저·작업자) 미리보기 — 미리보기는 단일 역할이라, 이중은 previewRole="manager"에
   // 이 플래그를 더해 "매니저 권한 + 작업자 비공개 접근 + 매니저·작업자 라벨"로 그린다.
   const [previewMenuOpen, setPreviewMenuOpen] = useState(false);
-  // 애플 리디자인 2화면(IA, 사용자 A안): 저빈도 관리 3종(태그·멤버·인사이트)을 '관리 ▾' 하나로.
-  const [manageMenuOpen, setManageMenuOpen] = useState(false);
   const effectiveRole: MembershipRole = previewRole ?? actor.role;
   // 미리보기 화면이 보는 역할이 관리자인가(관리자 본인 + "관리자 미리보기" 둘 다 포함).
   const isEffectivelyOwner = effectiveRole === "owner";
@@ -895,29 +897,6 @@ export function StudioShell({
       document.removeEventListener("keydown", onKey);
     };
   }, [roleHelpOpen]);
-
-  // 관리 드롭다운: 바깥을 누르거나 Esc로 닫는다(미리보기 드롭다운과 동일 문법).
-  useEffect(() => {
-    if (!manageMenuOpen) {
-      return;
-    }
-    const onPointerDown = (event: PointerEvent) => {
-      if (!(event.target as HTMLElement | null)?.closest(".manage-dd")) {
-        setManageMenuOpen(false);
-      }
-    };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setManageMenuOpen(false);
-      }
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [manageMenuOpen]);
 
   // 미리보기 드롭다운: 바깥을 누르거나 Esc로 닫는다.
   useEffect(() => {
@@ -4896,7 +4875,6 @@ export function StudioShell({
           // 하트 세션 델타의 소유자 — 같은 브라우저 탭에서 개발자→관리자처럼 계정을 바꿔 미리보기를
           // 열면 이전 계정의 낙관적 하트가 섞이지 않게 계정별로 나눈다(accountSwitch가 아니라 표시 없음).
           accountEmail={actor.email}
-          avatarSlot={avatarRoleOk}
           initialMonth={view.month}
           initialNarrow={isNarrow}
           initialYear={view.year}
@@ -4935,11 +4913,17 @@ export function StudioShell({
       {/* 아바타 rail — 하나의 fixed flex-column 박스에 [색상필터(위, 스크롤) | 아바타(아래, 고정비율)].
           flex-column이라 둘이 절대 안 겹친다. scene일 때만 필터를 여기 담는다. */}
       {avatarEditor ? (
-        <aside className="avatar-rail" aria-label="아바타 자리 영역(관리자 전용)">
+        <aside className="avatar-rail" aria-label="이 달 메모 영역(관리자 전용)">
           {avatarSceneOn ? <div className="avatar-rail-filter">{studioFilterPanel}</div> : null}
-          <div className="avatar-slot">
+          {/* ADR-0009 2차: 아바타 슬롯 자리를 '이 달 메모'가 이어받는다(편집실 전용).
+              내부 클래스명(avatar-*)은 검증된 rail 레이아웃 CSS를 그대로 쓰기 위한 유산 이름. */}
+          <div className="avatar-slot avatar-slot-memo">
             <div className="avatar-dock-inner">
-              <span className="avatar-slot-hint">🎙️ 아바타 자리</span>
+              <MonthMemo
+                canWrite={canEdit && !previewRole}
+                initialMemo={schedule.calendar.publicMemo}
+                saveAction={updateCalendarMemoAction}
+              />
             </div>
           </div>
         </aside>
@@ -5073,49 +5057,39 @@ export function StudioShell({
           (개발자 역할 표시는 헤더의 역할 배지로 충분 — 별도 세션 안내 줄은 두지 않는다.) */}
       <div className="studio-actionbar">
         <div className="studio-actionbar-tools">
-          {/* 애플 리디자인 2화면(IA, 사용자 A안): 저빈도 관리 3종(태그·멤버·인사이트)을
-              '관리 ▾' 드롭다운 하나로 접는다 — 자주 쓰는 것(비공개·꾸미기)만 바로 노출.
-              매니저/작업자(관리 권한 없음)는 인사이트 단일 버튼만(항목 1개에 드롭다운은 과함). */}
+          {/* 관리 항목이 2개뿐이라 드롭다운 없이 버튼을 바로 노출한다(사용자 결정 2026-08-26).
+              [태그 편집] [월별 인사이트] — 월별 인사이트는 일정 파생 통계만(ADR-0011). */}
           {canEdit || (isDeveloper && !previewRole) ? (
-            <div className="manage-dd">
-              <button
-                aria-expanded={manageMenuOpen}
-                aria-haspopup="menu"
-                className="button io-accent manage-dd-trigger"
-                onClick={() => setManageMenuOpen((v) => !v)}
-                type="button"
-               data-act="manage-dd-trigger">
-                관리
-                <span aria-hidden="true" className="preview-dd-caret">
-                  ▾
-                </span>
-              </button>
-              {manageMenuOpen ? (
-                <div className="preview-dd-menu" role="menu">
-                  {/* 단계 배포: 태그 '정의 편집' 진입은 v3 역할(현재 개발자)만. */}
-                  {canEdit && taxonomyV3 ? (
-                    <button
-                      className="preview-dd-item"
-                      data-act="manage-tags"
-                      onClick={() => {
-                        setManageMenuOpen(false);
-                        if (!blockedByPreview()) setModal("tags");
-                      }}
-                      role="menuitem"
-                      type="button"
-                    >
-                      태그 편집
-                    </button>
-                  ) : null}
-                </div>
+            <>
+              {canEdit && taxonomyV3 ? (
+                <button
+                  className="button io-accent"
+                  data-act="manage-tags"
+                  onClick={() => {
+                    if (!blockedByPreview()) setModal("tags");
+                  }}
+                  type="button"
+                >
+                  태그 편집
+                </button>
               ) : null}
-            </div>
+              <button
+                className="button io-accent"
+                data-act="manage-insights"
+                onClick={() => {
+                  if (!blockedByPreview()) setModal("insights");
+                }}
+                type="button"
+              >
+                월별 인사이트
+              </button>
+            </>
           ) : null}
-          {/* 아바타 자리 — 항상 켜짐(끄기 없음), 좌/우 위치만 고른다. 월별 인사이트 오른쪽. */}
+          {/* 메모 패널 — 항상 켜짐(끄기 없음), 좌/우 위치만 고른다. */}
           {avatarEditor ? (
-            <div className="studio-avatar-ctl" role="group" aria-label="아바타 자리 설정">
-              <span className="avatar-ctl-label">🎙️ 아바타 자리</span>
-              <div className="avatar-ctl-side" role="group" aria-label="아바타 위치">
+            <div className="studio-avatar-ctl" role="group" aria-label="메모 위치 설정">
+              <span className="avatar-ctl-label">📝 메모</span>
+              <div className="avatar-ctl-side" role="group" aria-label="메모 위치">
                 <button
                   type="button"
                   className={avatarSide === "left" ? "on" : ""}
@@ -6059,25 +6033,13 @@ export function StudioShell({
           role="presentation"
         >
           <div
-            className={`modal-card modal-card-${modal} ${modal === "tags" || modal === "members" || modal === "notice" || modal === "developer" || modal === "dayVisit" ? "modal-card-wide" : ""}`}
+            className={`modal-card modal-card-${modal} ${modal === "tags" || modal === "insights" ? "modal-card-wide" : ""}`}
             aria-modal="true"
             role="dialog"
             ref={mainModalTrapRef}
           >
             <div className="modal-head">
-              <h2>
-                {modal === "tags"
-                  ? "태그 이름 · 색상 편집"
-                  : modal === "notice"
-                    ? "숲 공지 쓰기"
-                    : modal === "dayVisit"
-                      ? `📈 ${selectedDate} 이용 기록`
-                      : modal === "developer"
-                        ? (isDeveloper && !previewRole)
-                          ? "🛠 월별 인사이트"
-                          : "📊 월별 인사이트"
-                        : "매니저 · 작업자 관리"}
-              </h2>
+              <h2>{modal === "tags" ? "태그 이름 · 색상 편집" : "📊 월별 인사이트"}</h2>
               <button
                 aria-label="닫기"
                 className="modal-close"
@@ -6099,6 +6061,13 @@ export function StudioShell({
                 removeTagAction={removeTagAction}
                 saveTagsAction={saveTagsAction}
                 tags={tags}
+              />
+            ) : null}
+            {modal === "insights" ? (
+              <MonthInsightsPanel
+                initialMonth={view.month}
+                initialYear={view.year}
+                loadAction={getMonthInsightsAction}
               />
             ) : null}
           </div>

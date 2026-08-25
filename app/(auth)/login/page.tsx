@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { SITE_NAME } from "@/lib/config/site";
 import { isSupabaseConfigured } from "@/lib/auth/config";
 import { InAppBrowserNotice } from "@/components/auth/in-app-browser-notice";
 import { detectInAppBrowser } from "@/lib/auth/in-app-browser";
@@ -24,7 +25,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <div className="auth-brand" aria-hidden="true">
           🗓️<span className="auth-brand-spark">✨</span>
         </div>
-        <p className="eyebrow">VIC Studio</p>
+        <p className="eyebrow">{SITE_NAME}</p>
         <h1>Google 로그인</h1>
         <p>
           관리자와 trusted member 권한은 Google OAuth로 인증된 이메일에만

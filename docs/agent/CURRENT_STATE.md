@@ -6,13 +6,16 @@ Harness Protocol: project-initializing_260712.md (schema 1.1)
 
 ## Current Objective
 
-T-1 완료. 다음: T-3 메모 구현(ADR-0009) 또는 T-2 태그 확정 — 사용자와 순서 결정.
+배포 완료. 다음: T-3 메모 구현(ADR-0009). 병행 대기: 프로덕션 로그인 설정(사용자 클릭 2개).
 
 ## Current Status
 
 - **동작함**: 코드 전체 — tsc·eslint·vitest(197)·next build 전부 exit 0 (2026-08-26).
   Supabase 없이 샘플 데이터 폴백으로 dev가 뜬다.
-- **한 번도 안 됨**: Playwright(e2e·visual, VIC 기준 스펙), Vercel 배포, 라이브 배지 실동작.
+- **한 번도 안 됨**: Playwright(e2e·visual, VIC 기준 스펙), 라이브 배지 실동작(방송 중 확인 필요).
+- **배포됨(2026-08-26)**: https://wak-schedule.vercel.app — 실 DB 응답·CDN 캐시 확인.
+  main push = 자동 배포(PRODUCTION_INFRA 활성). 남은 설정: Supabase Site URL/Redirect에
+  프로덕션 도메인 추가 + NEXT_PUBLIC_SITE_URL env(사용자) — 없으면 프로덕션 로그인 불가.
 - **적용됨(2026-08-26)**: DB 스키마 전 체인 — Supabase 서울, verify 통과 (ISSUE-001 해소).
 - **확정 반영(2026-08-26)**: 기념일=생일(7/24)뿐, D+ 기준 2008-11-01 임시 (ADR-0008 Accepted).
 - **정리됨(M1, 커밋 6dc3aff)**: 죽은 크론(vercel.json·workflow), middleware matcher

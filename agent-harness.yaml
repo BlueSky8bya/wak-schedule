@@ -14,7 +14,7 @@ project:
     - web
     - frontend
     - backend-actions
-  status: "pre-deploy" # 코드 동작, Supabase·Vercel 미연결
+  status: "production" # 2026-08-26 첫 배포 — https://wak-schedule.vercel.app
 
 risk_profiles:
   - GENERAL
@@ -22,7 +22,7 @@ risk_profiles:
   - SECURITY
   - PRIVACY
   - DESTRUCTIVE_DATA
-# PRODUCTION_INFRA: 비활성 — Vercel 첫 배포가 재평가 트리거 (docs/agent/RISK_PROFILE.md)
+  - PRODUCTION_INFRA # 2026-08-26 첫 배포로 활성 — https://wak-schedule.vercel.app
 
 reference_roots:
   - path: "C:/Projects/VIC Schedule studio"

@@ -17,15 +17,19 @@ Default: GENERAL
   (`0058`), 소유자 이전(`seeds/0003`). 경로: `db/migrations/`, `db/seeds/`,
   `scripts/apply-db.mjs`. 규칙: 실 DB 적용 전 dry-run·백업·롤백 경로 확인, 명시 승인.
 
+- **PRODUCTION_INFRA** (2026-08-26 활성 — 첫 배포) — 프로덕션
+  https://wak-schedule.vercel.app 운영 중. main push = 자동 배포이므로 **push가 곧
+  배포 행위**다: 게이트 4종(tsc·lint·vitest·build) 통과 없이 push 금지, env 변경은
+  Redeploy 필요, 롤백은 Vercel Deployments에서 이전 배포 Promote(코드는 revert push).
+  경로: `vercel.json`, `next.config.ts`, `.github/workflows/ci.yml`, Vercel/Supabase 설정.
+
 ## Inactive Profiles Reviewed
 
-- PRODUCTION_INFRA: **보류** — 아직 미배포. Vercel 첫 배포 시 활성화한다.
 - RESEARCH / HEALTH / FINANCE / PAYMENTS / LEGAL_COMPLIANCE / SAFETY_CRITICAL /
   ML_EVALUATION: 해당 없음 — 이 프로젝트에 그런 기능이 없다.
 
 ## Re-evaluation Triggers
 
-- Vercel 첫 배포 → PRODUCTION_INFRA 활성화
 - 결제·후원 연동 추가 → PAYMENTS 검토
 - 시청자 개인정보 수집 확대(현재는 device_token뿐) → PRIVACY 범위 재검토
 - 방문/행동 로그 재도입 논의(ADR-0004 Revisit) → PRIVACY + 성능 재검토

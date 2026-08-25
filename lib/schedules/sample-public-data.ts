@@ -33,20 +33,37 @@ export const defaultPalette: ColorPaletteEntry[] = [
   { key: "silver", name: "은색", bgColor: "#6b7682", textColor: "#ffffff", borderColor: "#4b535c", sortOrder: 14 }
 ];
 
-// 시드 태그는 전부 대분류(parentId: null). 세부는 owner가 편집기에서 추가. 태그 이름/색은 공개 데이터.
-// ⚠ TODO(태그 확정): 아래는 우왁굳 방송 콘텐츠 '추정' 시드다. 실제 운영 태그는 DB seed로 확정한다
-// (db/seeds/ 참고). 이 배열은 Supabase 미설정 폴백에서만 쓰인다.
-export const defaultTags: BroadcastTag[] = ([
-  { id: "tag-dayoff", tagKey: "dayoff", displayName: "휴방", colorKey: "gray", sortOrder: 1, isDefault: true, isActive: true },
-  { id: "tag-variety-game", tagKey: "variety_game", displayName: "종겜", colorKey: "yellow", sortOrder: 2, isDefault: true, isActive: true },
-  { id: "tag-collab", tagKey: "collab", displayName: "합방", colorKey: "lavender", sortOrder: 3, isDefault: true, isActive: true },
-  { id: "tag-minecraft", tagKey: "minecraft", displayName: "마크", colorKey: "lime", sortOrder: 4, isDefault: true, isActive: true },
-  { id: "tag-viewer", tagKey: "viewer", displayName: "시참", colorKey: "sky", sortOrder: 5, isDefault: true, isActive: true },
-  { id: "tag-tournament", tagKey: "tournament", displayName: "대회", colorKey: "indigo", sortOrder: 6, isDefault: true, isActive: true },
-  { id: "tag-talk", tagKey: "talk", displayName: "소통", colorKey: "mint", sortOrder: 7, isDefault: true, isActive: true },
-  { id: "tag-content", tagKey: "content", displayName: "컨텐츠", colorKey: "pink", sortOrder: 8, isDefault: true, isActive: true },
-  { id: "tag-etc", tagKey: "etc", displayName: "기타", colorKey: "beige", sortOrder: 9, isDefault: true, isActive: true }
-] as Omit<BroadcastTag, "parentId" | "kind">[]).map((t) => ({ ...t, parentId: null, kind: "content" as const }));
+// 폴백 태그 — 사용자 확정 분류(2026-08-26, docs/tags/wak-tags-draft-2026-08.md)의 축약판.
+// 정본은 DB(db/seeds/0014_wak_tags.sql). 이 배열은 Supabase 미설정 폴백에서만 쓰인다 —
+// 대분류 12 + 대표 세부·형식 몇 개만 담아 화면 구성이 실 데이터와 같은 모양이 되게 한다.
+const contentParents = [
+  { id: "tag-dayoff", tagKey: "dayoff", displayName: "휴뱅", colorKey: "gray", sortOrder: 1 },
+  { id: "tag-isedol", tagKey: "isedol", displayName: "이세돌", colorKey: "pink", sortOrder: 2 },
+  { id: "tag-gomem", tagKey: "gomem", displayName: "고멤", colorKey: "lavender", sortOrder: 3 },
+  { id: "tag-club", tagKey: "club", displayName: "동아리", colorKey: "lime", sortOrder: 4 },
+  { id: "tag-wakmoolwon", tagKey: "wakmoolwon", displayName: "왁물원", colorKey: "beige", sortOrder: 5 },
+  { id: "tag-vrchat", tagKey: "vrchat", displayName: "VR챗", colorKey: "sky", sortOrder: 6 },
+  { id: "tag-cinety", tagKey: "cinety", displayName: "시네티", colorKey: "indigo", sortOrder: 7 },
+  { id: "tag-jogong", tagKey: "jogong", displayName: "조공", colorKey: "red", sortOrder: 8 },
+  { id: "tag-server", tagKey: "server", displayName: "서버", colorKey: "blue", sortOrder: 9 },
+  { id: "tag-game", tagKey: "game", displayName: "게임", colorKey: "yellow", sortOrder: 10 },
+  { id: "tag-nogari", tagKey: "nogari", displayName: "노가리", colorKey: "orange", sortOrder: 11 },
+  { id: "tag-etc", tagKey: "etc", displayName: "기타", colorKey: "teal", sortOrder: 12 }
+].map((t) => ({ ...t, isDefault: true, isActive: true, parentId: null, kind: "content" as const }));
+
+const contentChildren = [
+  { id: "tag-minecraft", tagKey: "minecraft", displayName: "마인크래프트", colorKey: "yellow", sortOrder: 25, parentId: "tag-game" },
+  { id: "tag-lol", tagKey: "lol", displayName: "롤", colorKey: "yellow", sortOrder: 26, parentId: "tag-game" },
+  { id: "tag-wakchidong", tagKey: "wakchidong", displayName: "왁치동", colorKey: "lime", sortOrder: 22, parentId: "tag-club" }
+].map((t) => ({ ...t, isDefault: true, isActive: true, kind: "content" as const }));
+
+const modifierTags = [
+  { id: "tag-hapbang", tagKey: "hapbang", displayName: "합방", colorKey: "mint", sortOrder: 41 },
+  { id: "tag-sicham", tagKey: "sicham", displayName: "시참", colorKey: "sky", sortOrder: 44 },
+  { id: "tag-janjan", tagKey: "janjan", displayName: "잔잔뱅", colorKey: "teal", sortOrder: 47 }
+].map((t) => ({ ...t, isDefault: true, isActive: true, parentId: null, kind: "modifier" as const }));
+
+export const defaultTags: BroadcastTag[] = [...contentParents, ...contentChildren, ...modifierTags];
 
 // 공개 캘린더 메타(슬러그·표시 이름 등 — 전부 공개). studio 샘플도 이걸 그대로 쓴다.
 export const publicCalendarMeta: CalendarMeta = {
@@ -76,8 +93,8 @@ const publicEvents: PublicScheduleEvent[] = [
     status: "scheduled",
     visibilityScope: "public",
     category: "stream",
-    tagIds: ["tag-variety-game"],
-    primaryTagIds: ["tag-variety-game"],
+    tagIds: ["tag-game"],
+    primaryTagIds: ["tag-game"],
     sortOrder: 1
   },
   {
@@ -90,8 +107,8 @@ const publicEvents: PublicScheduleEvent[] = [
     status: "scheduled",
     visibilityScope: "public",
     category: "collab",
-    tagIds: ["tag-collab", "tag-minecraft"],
-    primaryTagIds: ["tag-collab", "tag-minecraft"],
+    tagIds: ["tag-minecraft", "tag-hapbang"],
+    primaryTagIds: ["tag-minecraft"],
     sortOrder: 1
   },
   {
@@ -117,8 +134,8 @@ const publicEvents: PublicScheduleEvent[] = [
     status: "scheduled",
     visibilityScope: "public",
     category: "stream",
-    tagIds: ["tag-viewer"],
-    primaryTagIds: ["tag-viewer"],
+    tagIds: ["tag-sicham"],
+    primaryTagIds: ["tag-sicham"],
     sortOrder: 1
   },
   {
@@ -131,8 +148,8 @@ const publicEvents: PublicScheduleEvent[] = [
     status: "scheduled",
     visibilityScope: "public",
     category: "stream",
-    tagIds: ["tag-talk"],
-    primaryTagIds: ["tag-talk"],
+    tagIds: ["tag-nogari"],
+    primaryTagIds: ["tag-nogari"],
     sortOrder: 1
   },
   {
@@ -145,8 +162,8 @@ const publicEvents: PublicScheduleEvent[] = [
     status: "scheduled",
     visibilityScope: "public",
     category: "stream",
-    tagIds: ["tag-tournament"],
-    primaryTagIds: ["tag-tournament"],
+    tagIds: ["tag-isedol"],
+    primaryTagIds: ["tag-isedol"],
     sortOrder: 1
   }
 ];

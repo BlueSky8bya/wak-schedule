@@ -53,12 +53,13 @@ Status: Open · Evidence: `public-loader`의 `loadLiveEventHeartCounts`
 ## Open Decisions
 
 - A-04: 개인 도구(caveman 스킬·copilot-instructions) 저장소 잔류 여부
-- **소유자 계정 후보**: wakmoolwon@gmail.com — 왁굳형 계정이라는 설이 있으나 **미확인**.
-  ⚠ 확인 전에는 OWNER_EMAIL에 넣지 않는다(넣는 순간 그 계정이 전체 편집권을 가짐 —
-  본인 확인이 곧 권한 부여다). 확인되면 OWNER_EMAIL 콤마 추가 + 0013 시드 재실행이 전부.
-- T-2(태그): 사용자 1차안 29개 + 콘텐츠(주체)/형식(서술) 축 접수 —
-  `docs/tags/wak-tags-draft-2026-08.md`. 판단 필요 Q1~Q6 답변 대기. 축은 기존 스키마
-  kind(content/modifier)·parent_id와 1:1이라 마이그레이션 불필요.
+- **소유자 계정**: wakmoolwon@gmail.com(왁굳형 추정, 미확인)을 사용자 결정으로
+  OWNER_EMAIL에 **선등록**(2026-08-26, 주 소유자는 whiteheaven 유지 — 목록 첫 번째).
+  해당 계정 로그인 즉시 owner 역할(env 매칭). ⚠ 단 저장(RLS 경유 쓰기)은 공동 소유자
+  행이 필요 — **그 계정 첫 로그인 후 `node scripts/apply-db.mjs db/seeds/0013_sync_co_owners.sql`
+  재실행 1회 필수** (지금은 auth.users에 없어 notice 스킵됨). Vercel 배포 시 env에도 반영.
+- ~~T-2(태그)~~ **완료(2026-08-26)**: 확정 30개(콘텐츠 대분류 12·세부 9·형식 9)
+  DB 적용 — `db/seeds/0014_wak_tags.sql`, 폴백(sample-public-data)도 일치.
 - T-7(VOD 버튼): **자동으로 확정** (ADR-0010) — 비공식 API 허용, 서버 캐시·조용한 실패.
 - T-8(하트 티어): 규모 확정 — 팬카페 56.5만 / 숲 애청자 33만 / **구독 4,800(실활동 기준)**.
   임계값 재계산 근거로 사용.

@@ -56,3 +56,12 @@ duplicate_object 가드 + create table if not exists, 정책 drop policy if exis
 Validation: 전 체인 31/31 멱등 재실행 오류 0, verify-db 통과, vitest 208.
 Files: `db/seeds/*.sql`, `db/migrations/0001_initial_schema.sql`,
 `db/policies/{0001_rls,0003_event_tags}.sql`, `scripts/verify-db.mjs`
+
+### CHG-20260826-007 — FEAT — 태그 확정 시드 + 소유자 선등록 (T-2)
+
+Change: 사용자 확정 분류(콘텐츠 12+세부 9+형식 9=30)를 0014 시드로 DB 적용,
+플레이스홀더 9개 제거(dayoff 재사용). 폴백 defaultTags 동기화(샘플 일정 태그 재매핑,
+modifier는 primary 불가 원칙 적용). OWNER_EMAIL에 wakmoolwon 선등록(주 소유자는
+whiteheaven 유지). wakmoolwon 첫 로그인 후 0013 재실행 필요(RLS 공동 소유자).
+Files: `db/seeds/0014_wak_tags.sql`, `lib/schedules/sample-public-data.ts`
+Related: docs/tags/wak-tags-draft-2026-08.md (확정), PLAN-20260826-003

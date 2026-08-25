@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/auth/admin";
+import { ensureOwnerCoOwnerRegistration } from "@/lib/auth/owner-sync";
 import { createSupabaseServerClient } from "@/lib/auth/server";
 import { providerErrorToCode } from "@/lib/auth/auth-errors";
 
@@ -25,14 +25,13 @@ export async function GET(request: Request) {
       return redirectToLogin(request, "exchange", next);
     }
 
-    // 새 로그인(재로그인·계정변경 포함)은 비공개 잠금 세션을 초기화 — 방송 안전상 재로그인 시
-    // 비밀번호를 다시 입력하게 한다. (정상 새로고침/토큰 갱신은 콜백을 안 거치므로 영향 없음.)
-    const userId = data?.user?.id ?? data?.session?.user?.id;
-    if (userId) {
-      const admin = createSupabaseAdminClient();
-      if (admin) {
-        await admin.from("unlock_sessions").delete().eq("user_id", userId);
-      }
+    // [WH-CHANGE v0.1.0 | FIX | 2026-08-26 | CHG-20260826-008]
+    // Reason: 이전 코드는 VIC 비공개 레이어의 unlock_sessions를 지웠는데 그 테이블은 이
+    //   프로젝트 DB에 없다 — 매 로그인마다 죽은 테이블에 쿼리를 날리고 있었다. 그 자리를
+    //   OWNER_EMAIL 계정의 RLS 공동 소유자 자동 등록으로 교체한다(로그인 한 번 = 저장까지 됨).
+    const user = data?.user ?? data?.session?.user;
+    if (user?.id) {
+      await ensureOwnerCoOwnerRegistration(user.email, user.id);
     }
   }
 

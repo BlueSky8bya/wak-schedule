@@ -65,3 +65,17 @@ modifier는 primary 불가 원칙 적용). OWNER_EMAIL에 wakmoolwon 선등록(�
 whiteheaven 유지). wakmoolwon 첫 로그인 후 0013 재실행 필요(RLS 공동 소유자).
 Files: `db/seeds/0014_wak_tags.sql`, `lib/schedules/sample-public-data.ts`
 Related: docs/tags/wak-tags-draft-2026-08.md (확정), PLAN-20260826-003
+
+### CHG-20260826-008 — FEAT — OWNER_EMAIL 계정 로그인 시 공동 소유자 자동 등록
+
+Problem: RLS는 auth.users UUID 기준이라 이메일만으로 미리 권한을 줄 수 없고, 첫
+로그인 후 seeds/0013을 수동 재실행해야 저장이 됐다 — "왁굳형이 로그인 한 번에 다
+되게" 하려는 조공 시나리오와 어긋남. 덤: 콜백이 VIC 잔재 unlock_sessions(없는
+테이블)를 매 로그인 쿼리하고 있었다.
+Change: 로그인 콜백에서 OWNER_EMAIL 매칭 시 calendar_co_owners upsert(멱등,
+실패해도 로그인 안 막음). 신뢰 기준은 기존과 동일 — env 목록 하나. 제거 동기화는
+0013 유지. unlock_sessions 죽은 쿼리 삭제.
+Files: `lib/auth/owner-sync.ts`(신규), `app/(auth)/auth/callback/route.ts`,
+`tests/unit/owner-auto-coowner.test.ts`(5개)
+Validation: vitest 214, 게이트 4종 exit 0
+Rollback: 커밋 revert (등록된 co_owners 행은 무해 — 0013이 정리 가능)

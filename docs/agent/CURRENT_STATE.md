@@ -58,9 +58,10 @@ Status: Open · Evidence: `public-loader`의 `loadLiveEventHeartCounts`
 - A-04: 개인 도구(caveman 스킬·copilot-instructions) 저장소 잔류 여부
 - **소유자 계정**: wakmoolwon@gmail.com(왁굳형 추정, 미확인)을 사용자 결정으로
   OWNER_EMAIL에 **선등록**(2026-08-26, 주 소유자는 whiteheaven 유지 — 목록 첫 번째).
-  해당 계정 로그인 즉시 owner 역할(env 매칭). ⚠ 단 저장(RLS 경유 쓰기)은 공동 소유자
-  행이 필요 — **그 계정 첫 로그인 후 `node scripts/apply-db.mjs db/seeds/0013_sync_co_owners.sql`
-  재실행 1회 필수** (지금은 auth.users에 없어 notice 스킵됨). Vercel 배포 시 env에도 반영.
+  해당 계정 **로그인 한 번이면 열람·편집·저장 전부 즉시 동작** — 로그인 콜백이 RLS
+  공동 소유자 행을 자동 등록한다(CHG-20260826-008, `lib/auth/owner-sync.ts`).
+  수동 0013 재실행 불필요(0013은 목록에서 뺀 계정 '제거' 동기화용으로만 남음).
+  Vercel env에도 OWNER_EMAIL 동일 값 반영됨.
 - ~~T-2(태그)~~ **완료(2026-08-26)**: 확정 30개(콘텐츠 대분류 12·세부 9·형식 9)
   DB 적용 — `db/seeds/0014_wak_tags.sql`, 폴백(sample-public-data)도 일치.
 - T-7(VOD 버튼): **자동으로 확정** (ADR-0010) — 비공식 API 허용, 서버 캐시·조용한 실패.

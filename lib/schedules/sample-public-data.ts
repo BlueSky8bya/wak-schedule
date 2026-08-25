@@ -45,9 +45,8 @@ const contentParents = [
   { id: "tag-vrchat", tagKey: "vrchat", displayName: "VR챗", colorKey: "sky", sortOrder: 6 },
   { id: "tag-cinety", tagKey: "cinety", displayName: "시네티", colorKey: "indigo", sortOrder: 7 },
   { id: "tag-jogong", tagKey: "jogong", displayName: "조공", colorKey: "red", sortOrder: 8 },
-  { id: "tag-server", tagKey: "server", displayName: "서버", colorKey: "blue", sortOrder: 9 },
+  { id: "tag-server", tagKey: "server", displayName: "대형서버", colorKey: "blue", sortOrder: 9 },
   { id: "tag-game", tagKey: "game", displayName: "게임", colorKey: "yellow", sortOrder: 10 },
-  { id: "tag-nogari", tagKey: "nogari", displayName: "노가리", colorKey: "orange", sortOrder: 11 },
   { id: "tag-etc", tagKey: "etc", displayName: "기타", colorKey: "teal", sortOrder: 12 }
 ].map((t) => ({ ...t, isDefault: true, isActive: true, parentId: null, kind: "content" as const }));
 
@@ -148,8 +147,8 @@ const publicEvents: PublicScheduleEvent[] = [
     status: "scheduled",
     visibilityScope: "public",
     category: "stream",
-    tagIds: ["tag-nogari"],
-    primaryTagIds: ["tag-nogari"],
+    tagIds: ["tag-etc"],
+    primaryTagIds: ["tag-etc"],
     sortOrder: 1
   },
   {

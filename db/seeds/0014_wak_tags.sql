@@ -17,9 +17,11 @@ begin
   delete from public.broadcast_tags
   where calendar_id = v_cal
     and is_default = true
-    and tag_key in ('worldcup','collab','big_server','full_track','calm','variety_game','song','hype','easy');
+    and tag_key in ('worldcup','collab','big_server','full_track','calm','variety_game','song','hype','easy',
+                    -- 2026-08-26 사용자 결정: 노가리 태그 제거
+                    'nogari');
 
-  -- 2) 콘텐츠 대분류 12 (parent 없음, 색 보유)
+  -- 2) 콘텐츠 대분류 11 (parent 없음, 색 보유) — 2026-08-26 노가리 제거·서버→대형서버
   insert into public.broadcast_tags
     (calendar_id, tag_key, display_name, color_key, sort_order, is_default, is_active, kind, parent_id)
   values
@@ -31,9 +33,8 @@ begin
     (v_cal, 'vrchat',     'VR챗',   'sky',      6,  true, true, 'content', null),
     (v_cal, 'cinety',     '시네티', 'indigo',   7,  true, true, 'content', null),
     (v_cal, 'jogong',     '조공',   'red',      8,  true, true, 'content', null),
-    (v_cal, 'server',     '서버',   'blue',     9,  true, true, 'content', null),
+    (v_cal, 'server',     '대형서버', 'blue',   9,  true, true, 'content', null),
     (v_cal, 'game',       '게임',   'yellow',   10, true, true, 'content', null),
-    (v_cal, 'nogari',     '노가리', 'orange',   11, true, true, 'content', null),
     (v_cal, 'etc',        '기타',   'teal',     12, true, true, 'content', null)
   on conflict (calendar_id, tag_key) do update
     set display_name = excluded.display_name,

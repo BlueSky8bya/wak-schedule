@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_NAME } from "@/lib/config/site";
 import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -48,8 +49,8 @@ const gugi = Gugi({ weight: "400", variable: "--font-gugi", display: "swap", pre
 const hiMelody = Hi_Melody({ weight: "400", variable: "--font-himelody", display: "swap", preload: false });
 
 export const metadata: Metadata = {
-  title: "VIC Schedule Studio",
-  description: "Streamer-first schedule studio and public poster.",
+  title: SITE_NAME,
+  description: "우왁굳님의 방송 일정 — 공개 포스터와 편집실.",
   // 화면에 표시된 이메일(계정 배지의 로그인 이메일 등)을 모바일 브라우저가 자동으로 mailto
   // 링크로 바꿔 탭하면 메일 작성창이 열리던 문제 방지(이메일·전화·주소 자동감지 끄기).
   formatDetection: { email: false, telephone: false, address: false }

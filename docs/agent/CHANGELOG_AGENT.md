@@ -79,3 +79,12 @@ Files: `lib/auth/owner-sync.ts`(신규), `app/(auth)/auth/callback/route.ts`,
 `tests/unit/owner-auto-coowner.test.ts`(5개)
 Validation: vitest 214, 게이트 4종 exit 0
 Rollback: 커밋 revert (등록된 co_owners 행은 무해 — 0013이 정리 가능)
+
+### CHG-20260826-009 — FIX — 사이트 이름·태그 2차 수정 (사용자 결정)
+
+Change: 브라우저 탭 제목 "VIC Schedule Studio"(VIC 잔재) → SITE_NAME "Wak Schedule"
+(site.ts 단일 출처에 상수 추가, layout.tsx는 참조만). 태그: 노가리 삭제,
+서버→대형서버 — 시드·DB·폴백 3곳 동기화. site.ts 주석의 오기(VIC=우왁굳→빅토리) 정정.
+Files: `lib/config/site.ts`, `app/layout.tsx`, `db/seeds/0014_wak_tags.sql`,
+`lib/schedules/sample-public-data.ts`
+Validation: DB 확인(대분류 11: …대형서버·게임·기타), 게이트 4종 exit 0

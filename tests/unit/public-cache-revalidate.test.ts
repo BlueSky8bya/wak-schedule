@@ -29,13 +29,8 @@ vi.mock("@/lib/auth/actor", () => ({
     email: "owner@example.com"
   })
 }));
-vi.mock("@/lib/activity/record", () => ({ recordActivity: async () => {} }));
-vi.mock("@/lib/private-layer/unlock", () => ({
-  getUnlockState: async () => ({ hasUnlockSession: true })
-}));
 vi.mock("@/lib/schedules/event-validation", () => ({
   validateDateKey: () => ({ ok: true }),
-  validateSupportUrl: () => ({ ok: true }),
   validateTagAssignment: async () => ({ ok: true })
 }));
 
@@ -43,7 +38,7 @@ vi.mock("@/lib/schedules/event-validation", () => ({
 function rowFor(table: string) {
   if (table === "calendars") return { id: "cal-1" };
   if (table === "events") {
-    return { id: "evt-1", is_support: true, calendar_id: "cal-1", visibility_scope: "public" };
+    return { id: "evt-1", calendar_id: "cal-1", visibility_scope: "public" };
   }
   return null;
 }

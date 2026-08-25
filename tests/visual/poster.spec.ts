@@ -25,7 +25,7 @@ test.describe("public poster — visual baseline", () => {
     // 라이브 카드는 **실제 방송 상태**에 따라 있었다 없었다 한다 — 방송이 켜져 있던 날 기준선을
     // 찍으면 다음 날 방송이 꺼진 순간 레이아웃이 통째로 밀려 상시 red가 된다(2026-08-05 실측:
     // 23583px). 썸네일만 가려서는 부족하다(카드 자체의 유무가 레이아웃이다). 상태를 고정한다.
-    await page.route("**/api/soop-live", (r) =>
+    await page.route("**/api/live", (r) =>
       r.fulfill({
         status: 200,
         contentType: "application/json",

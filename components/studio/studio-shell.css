@@ -5423,13 +5423,83 @@ html[data-reduce-motion] .editor-anchor-link line {
   border-radius: 5px;
   background: repeating-linear-gradient(45deg, #cdd2db 0 3px, #eef1f6 3px 6px);
 }
-/* 색상 안내를 필터로 쓸 때(클릭 토글) — 전체폭 행(표처럼). 켜진 행은 왼쪽 악센트 바. */
-
-
-
+/* 색상 안내를 필터로 쓸 때(클릭 토글) — 전체폭 행(표처럼). 켜진 행은 왼쪽 악센트 바.
+   [WH-CHANGE v0.1.0 | FIX | 2026-08-26 | CHG-20260826-011]
+   Reason: 이 규칙들은 VIC에서 insights-charts.css에 살았는데, 분기 때 인사이트를 걷어내며
+     그 파일과 함께 사라졌다 — 칩이 브라우저 기본 버튼으로 떨어지고 색 견본 <i>(inline)는
+     width가 무시돼 테두리 2px 실선만 남았다(사용자 실측 스크린샷). VIC 원본에서 복원. */
+.tag-legend-filter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  padding: 7px 9px 7px 11px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #3a3550;
+  text-align: left;
+  cursor: pointer;
+  word-break: keep-all;
+  transition:
+    background 0.14s var(--ease, ease),
+    border-color 0.14s var(--ease, ease),
+    transform 0.08s var(--ease, ease);
+}
+.tag-legend-filter i {
+  width: 15px;
+  height: 15px;
+  border: 1px solid;
+  border-radius: 5px;
+  flex: 0 0 auto;
+}
+/* 방식(modifier)은 카드에서 원으로 표시 — 필터 칩 견본도 원. */
+.tlg-mod .tag-legend-filter i {
+  border-radius: var(--r-pill);
+}
+.tag-legend-filter.on {
+  border-color: var(--line, #ece8f4);
+  background: var(--accent-soft, #fff3d2);
+  color: var(--accent-strong, #a9760a);
+}
 /* 켜진 행 왼쪽 악센트 바 */
-
-
+.tag-legend-filter.on::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent, #f5b81b);
+}
+.tag-legend-filter.dim {
+  opacity: 0.4;
+}
+.tag-legend-filter:active {
+  transform: scale(0.95);
+}
+@media (min-width: 641px) {
+  .tag-legend-filter:hover:not(.on) {
+    background: #f3f0fb;
+    border-color: #e0d9f1;
+  }
+}
+.tag-legend-clear {
+  width: 100%;
+  margin-top: 3px;
+  border: 1px solid var(--line, #e3e7ef);
+  border-radius: var(--r-pill);
+  background: var(--surface-2, #f5f7fb);
+  padding: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #64748b;
+  cursor: pointer;
+}
 
 
 /* 필터에 안 맞는 일정은 흐리게(편집실 그리드·모바일 아젠다 공용) */

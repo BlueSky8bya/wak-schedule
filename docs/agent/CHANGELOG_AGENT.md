@@ -103,3 +103,12 @@ Files: `lib/schedules/{memo,insights}-actions.ts`, `components/studio/{month-mem
 `app/{error,global-error,not-found}.tsx`, `app/(auth)/login/page.tsx`, `app/visual-fixture/poster/page.tsx`
 Validation: 게이트 4종 exit 0(214), 프로덕션 빌드 fixture 스크린샷으로 편집실·포스터 확인.
 Rollback: 커밋 revert (DB 변경 없음).
+
+### CHG-20260826-011 — FIX — 태그 필터 칩 렌더 깨짐(사용자 실측)
+
+Root Cause: 칩 스타일(.tag-legend-filter 일가)이 VIC의 insights-charts.css에 살았는데,
+분기 때 인사이트를 걷어내며 그 파일째 사라졌다. studio-shell.css에는 주석만 남아 있었다.
+칩이 브라우저 기본 버튼으로 떨어지고 색 견본 <i>(inline)는 width 무시 → 2px 실선.
+Change: VIC 원본에서 규칙 복원(+modifier 원형 견본·hover·tag-legend-clear).
+Files: `components/studio/studio-shell.css`
+Validation: 게이트 4종 + fixture 스크린샷(견본·켜짐 악센트 바) 확인

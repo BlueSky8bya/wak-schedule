@@ -42,15 +42,16 @@ export function setReduceMotion(on: boolean): void {
 
 // #28 눈 편한 테마(eye comfort) — 방송 전후 오래 보는 작업자용. 켜면 <html data-eye-comfort>가
 // 붙어 CSS가 전체 채도·눈부심을 살짝 낮춘다(글자 대비는 유지). reduce-motion과 같은 결의 설정.
-const EYE_COMFORT_KEY = "wak.eyeComfort"; // localStorage: 미설정이면 기본 ON, "off"만 끔
+const EYE_COMFORT_KEY = "wak.eyeComfort"; // localStorage: 기본 OFF, "on"일 때만 켬(옵트인)
 
 export function eyeComfortEnabled(): boolean {
-  if (typeof window === "undefined") return true;
+  if (typeof window === "undefined") return false;
   try {
-    // 기본 ON — 사용자가 명시적으로 끄지(off) 않았으면 켠 상태.
-    return window.localStorage.getItem(EYE_COMFORT_KEY) !== "off";
+    // 기본 OFF(옵트인) — 전역 sepia 필터가 시청자 화면까지 색을 데워 팔레트가 왜곡됐다
+    // (2026-08-26 색 튜닝 중 실측). 오래 보는 작업자가 배지 메뉴에서 켜는 기능으로 되돌림.
+    return window.localStorage.getItem(EYE_COMFORT_KEY) === "on";
   } catch {
-    return true;
+    return false;
   }
 }
 

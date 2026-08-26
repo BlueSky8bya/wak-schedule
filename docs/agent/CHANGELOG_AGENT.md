@@ -147,3 +147,20 @@ Change: 전부 초록 계열로 맞춰 층이 없다는 피드백 → 페이지(
 (태그 편집·인사이트·단축키 줄) 정중앙 absolute 고정으로 이동(사용자 의도 재확인).
 Files: `app/globals.css`, `components/poster/public-poster.css`,
 `components/studio/{studio-shell.tsx,studio-shell.css,month-memo.tsx}`
+
+### CHG-20260826-015 — FEAT/FIX — 게이트 비밀번호·보안 탭·이 달 기록 복구·VIC 인사이트 디자인
+
+- FIX: 최초공개(떡밥) 게이트가 fork 이후 /api/unlock-private-layer 라우트 부재로
+  통과 불가였다(fetch 404). 라우트 복구 + 비밀번호 저장(0062: calendars.gate_pass_hash,
+  sha256(calendar_id||pass), 초기값 0724=왁굳형 생일).
+- FEAT: 인사이트 보안 탭 — 게이트 비밀번호 변경(현재 확인 후 교체, 초기값 힌트).
+  VIC의 실시간·방문·시스템은 계속 없음(ADR-0011) — 보안 탭만 이 프로젝트 실체에 맞게.
+- FIX: 시청자 '이 달 기록' 버튼 무반응 — 시트 본체가 fork 때 삭제되고 상태만 남아
+  있었다. 클라이언트 즉석 집계 시트로 복구(서버 호출 0 — ADR-0004 유지).
+- STYLE: 인사이트 디자인을 VIC insights-charts.css에서 이식(탭 알약·슬라이드 트랙·
+  화살표+점 네비·insight-grid/tile/bars) — 사용자 결정 "디자인은 VIC 그대로".
+  편집실 요일줄의 연보라 그라데이션 제거(웜 크림 톤온톤).
+Files: db/migrations/0062, app/api/unlock-private-layer/route.ts,
+lib/schedules/security-actions.ts, components/studio/{month-insights.tsx,insights.css},
+components/poster/public-poster.{tsx,css}, components/studio/studio-shell.css
+Related: PLAN-20260826-005(연장), ADR-0009·0011

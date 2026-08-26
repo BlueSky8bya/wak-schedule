@@ -5700,11 +5700,12 @@ html[data-reduce-motion] .editor-anchor-link line {
 
 .studio-weekdays {
   margin-bottom: 8px;
-  border: 1px solid #eef5e9;
+  border: 1px solid var(--line, #e5dcc1);
   border-radius: var(--r-card);
-  background: linear-gradient(180deg, #f6fdf1, #eef3ff);
+  /* 연보라로 끝나던 그라데이션 제거(사용자 실측 부조화) — 크림 톤온톤. */
+  background: linear-gradient(180deg, #fdfaf0, #f4eedb);
   overflow: hidden;
-  box-shadow: 0 2px 10px rgb(131 160 110 / 8%);
+  box-shadow: 0 1px 6px rgb(122 108 62 / 7%);
 }
 
 .studio-weekdays span {
@@ -5714,7 +5715,7 @@ html[data-reduce-motion] .editor-anchor-link line {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-align: center;
-  color: #8e93a8;
+  color: #7d7a5e;
 }
 
 .studio-weekdays span:last-child {

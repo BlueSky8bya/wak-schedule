@@ -1,0 +1,350 @@
+/* 월별 인사이트 — VIC(빅토리) insights-charts.css에서 필요한 규칙만 이식(2026-08-26,
+   사용자 결정: 디자인은 VIC 그대로, 탭 구성만 이 프로젝트 것). */
+
+.insights-month {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #6b7a52;
+}
+
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insights-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.insights-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  border: 1px solid var(--line, #e9f2e3);
+  border-radius: var(--r-md);
+  background: #fbfef9;
+  padding: 9px 8px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #73955b;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--dur-1, 120ms) var(--ease), color var(--dur-1, 120ms) var(--ease),
+    transform var(--dur-1, 120ms) var(--ease);
+}
+
+.insights-tab:hover {
+  background: #f3fbed;
+}
+
+.insights-tab:active {
+  transform: scale(0.96);
+}
+
+.insights-tab.active {
+  background: linear-gradient(180deg, #a3f06c, #8ed65b);
+  border-color: #8ed65b;
+  color: #fff;
+  box-shadow: 0 4px 12px -4px rgb(107 91 214 / 55%);
+}
+
+.insights-tab-wide {
+  grid-column: 1 / -1;
+}
+
+.insights-viewport {
+  position: relative;
+  overflow: hidden;
+  /* 고정 높이 → 패널마다 안에서 세로 스크롤되고(아래까지 보임), 패널 전환 시 높이도 안 출렁인다. */
+  height: clamp(300px, 56dvh, 440px);
+}
+
+.insights-track {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  transition: transform 0.32s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+}
+
+.insights-panel {
+  flex: 0 0 100%;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  /* 가로는 막아 호버 툴팁이 넘쳐도 짜투리 가로 스크롤바가 생기지 않게(툴팁은 가장자리 정렬로 안 잘림). */
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  /* 세로는 브라우저가 스크롤, 가로 제스처는 스와이프 감지로 양보(모바일 패널 넘김). */
+  touch-action: pan-y;
+  padding: 2px 4px 10px 2px;
+}
+
+.insights-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.insights-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line, #e9f2e3);
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: #73955b;
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+
+.insights-arrow:hover:not(:disabled) {
+  background: #f3fbed;
+}
+
+.insights-arrow:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+.insights-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.insights-dots {
+  display: flex;
+  gap: 7px;
+}
+
+.insights-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: #dcecd0;
+  transition: width var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
+}
+
+.insights-dots span.on {
+  width: 20px;
+  background: #8ed65b;
+}
+
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: var(--space-3); /* 12 */
+}
+
+.insight-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-1); /* 4 */
+  padding: var(--space-3); /* 12 — 12/14 → 12 정방 */
+  border: 1px solid #f0f9ea;
+  border-radius: var(--r-card); /* 카드 공통 radius 패밀리(스튜디오 14px) 유지 */
+  background: linear-gradient(180deg, #fcfffa, #f7fdf3);
+}
+
+.insight-tile strong {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  color: #54723f;
+  /* 값은 한 줄로 — "금요일"이 "금/요일"로 잘리지 않게. 폰트가 달라도 바닥 기준선 정렬. */
+  white-space: nowrap;
+  display: flex;
+  align-items: flex-end;
+  min-height: 28px;
+}
+
+.insight-tile[data-text] strong {
+  font-size: 20px;
+}
+
+.insight-tile span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #91a682;
+  /* 라벨이 두 줄이 되더라도 단어 중간에서 끊기지 않게(예: "한가한 / 요일"). */
+  word-break: keep-all;
+  text-wrap: balance;
+  line-height: 1.25;
+}
+
+.insight-tile[data-tone="heart"] {
+  background: linear-gradient(180deg, #f7fff1, #efffe3);
+  border-color: #e0fbcd;
+  /* 하트 박스(2열, 넓음)는 라벨 왼쪽 + 큰 수치 오른쪽 가로 배치로 — 좌우로 길게 채운다. */
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.insight-tile[data-tone="heart"] strong {
+  color: #68d11d;
+  align-items: center;
+  min-height: 0;
+}
+
+.insight-tile[data-tone="heart"] span {
+  order: -1; /* 라벨을 왼쪽으로 */
+}
+
+.insight-subhead {
+  margin: 20px 0 11px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #8b7a59;
+}
+
+.insight-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.insight-bars li {
+  display: grid;
+  grid-template-columns: 84px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.insight-bar-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #4b4636;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.insight-bar-track {
+  height: 10px;
+  border-radius: var(--r-pill);
+  background: #f1f9ec;
+  overflow: hidden;
+}
+
+.insight-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent; /* 인라인 borderColor(태그 색)로 윤곽선 */
+  box-sizing: border-box;
+  background: linear-gradient(90deg, #acf07c, #8ed65b);
+  transition: width 0.5s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+}
+
+.insight-bar-fill.heart {
+  background: linear-gradient(90deg, #b0fb7a, #6fe11d);
+}
+
+.insight-bar-count {
+  font-size: 12px;
+  font-weight: 800;
+  color: #708064;
+  min-width: 28px;
+  text-align: right;
+}
+
+.insight-empty {
+  margin: 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ead93;
+}
+
+.insights-track[data-active="0"] > .insights-panel:nth-child(1) > *,
+.insights-track[data-active="1"] > .insights-panel:nth-child(2) > *,
+.insights-track[data-active="2"] > .insights-panel:nth-child(3) > *,
+.insights-track[data-active="3"] > .insights-panel:nth-child(4) > *,
+.insights-track[data-active="4"] > .insights-panel:nth-child(5) > *,
+.insights-track[data-active="5"] > .insights-panel:nth-child(6) > *,
+.insights-track[data-active="6"] > .insights-panel:nth-child(7) > *,
+.insights-track[data-active="7"] > .insights-panel:nth-child(8) > * {
+  animation: ins-rise 0.34s var(--ease, ease) backwards;
+}
+
+/* wak 보강 — 월 이동 스텝(제목 양옆)·보안 탭 폼. VIC 문법 안에서 최소 추가. */
+.insights-month {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.insights-monthstep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line, #e5dcc1);
+  border-radius: var(--r-pill);
+  background: var(--surface, #fffcf1);
+  color: #6b7a52;
+  cursor: pointer;
+}
+.insights-monthstep:active {
+  transform: scale(0.92);
+}
+.gate-security {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gate-security-note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #6b7a52;
+}
+.gate-security-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 320px;
+}
+.gate-security-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #5d7040;
+}
+.gate-security-form input {
+  border: 1px solid var(--line, #e5dcc1);
+  border-radius: var(--r-md, 10px);
+  background: var(--surface, #fffcf1);
+  padding: 9px 11px;
+  font: inherit;
+  letter-spacing: 0.2em;
+}
+.gate-security-form input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(143 174 82 / 40%);
+}
+.gate-security-msg {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--status-success, #16a34a);
+}
+.gate-security-msg.is-error {
+  color: var(--status-danger, #c0392b);
+}

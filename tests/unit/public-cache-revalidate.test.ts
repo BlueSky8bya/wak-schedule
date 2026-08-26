@@ -161,7 +161,8 @@ describe("공개 캐시 무효화 — 쓰기마다 반드시", () => {
     // 걸릴 뿐 쓰기 없음 — ADR-0011). 제외를 늘릴 땐 이유를 여기 적는다.
     // memo-actions: 월별 메모(calendar_month_memos)는 편집실 전용 — 공개 DTO에 실리지 않아
     // 캐시 무효화 대상이 아니다(ADR-0009 3차).
-    const EXCEPT = new Set(["heart-actions.ts", "hope-actions.ts", "insights-actions.ts", "memo-actions.ts"]);
+    // security-actions: 떡밥 게이트 비밀번호(해시) 관리 — 관리 전용, 공개 DTO 무관.
+    const EXCEPT = new Set(["heart-actions.ts", "hope-actions.ts", "insights-actions.ts", "memo-actions.ts", "security-actions.ts"]);
     const missing: string[] = [];
     for (const file of fs.readdirSync(dir).filter((f) => f.endsWith("-actions.ts"))) {
       if (EXCEPT.has(file)) continue;

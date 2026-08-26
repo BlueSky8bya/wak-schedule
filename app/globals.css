@@ -1,36 +1,7 @@
-/* ── 월드컵 일정 표기(day-mark) — 편집실·시청자 포스터 공통. 깔끔한 칩 스타일. ── */
-.day-mark.wc,
-.day-mark.wc-korea,
-.day-mark.wc-final {
-  display: inline-flex;
-  align-items: center;
-  font-style: normal;
-  font-weight: 800;
-  letter-spacing: var(--tracking-tight);
-  padding: 1px 7px;
-  border-radius: var(--r-pill);
-  line-height: var(--lh-body);
-}
+
 /* 단계(개막/32강/16강/8강/4강/3·4위전): 잔디 초록 칩. */
-.day-mark.wc {
-  color: #1f7a47;
-  background: #e6f5ec;
-  box-shadow: inset 0 0 0 1px rgb(31 122 71 / 22%);
-}
 /* 한국 경기: 깔끔한 흰 칩 + 한국 레드 테두리·글씨(가독성↑, 과하지 않게). */
-.day-mark.wc-korea {
-  color: #cd2e3a;
-  background: #fff;
-  box-shadow:
-    inset 0 0 0 1.5px #cd2e3a,
-    0 1px 4px rgb(205 46 58 / 18%);
-}
 /* 결승: 금빛 칩. */
-.day-mark.wc-final {
-  color: #946200;
-  background: #fdf3d6;
-  box-shadow: inset 0 0 0 1px rgb(184 134 11 / 35%);
-}
 
 /* 배포 버전(커밋 해시) — 왼쪽 아래 아주 연하고 작게. 클릭/캡처 방해 안 함. */
 .build-tag {
@@ -1144,102 +1115,14 @@ html[data-reduce-motion] .passcode-box .button {
 
 /* (.memo-editor* 메모 편집기 제거 — 참조 0) */
 
-/* ── 업 도움 끈(레인) ─────────────────────────────────────────────────
-   날짜 범위를 가로지르는 하이라이트 띠. 시작/끝만 둥글게, 중간은 이어짐. 겹치면 레인이 아래로 쌓인다.
-   편집실·시청자 포스터·꾸미기가 같은 끈을 그리므로 정의는 여기 한 곳뿐(단일 출처).
-   z-index 4 — 일정 카드(이어진 막대 포함, 최대 3)보다 항상 위. 어느 날짜가 강조된 기간인지는
-   카드에 가려지면 안 된다. 다른 달 베일(::after, 4)·스티커 레이어(5)는 그대로 위에 남는다. */
-.support-bar {
-  position: absolute;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  height: 17px;
-  /* 대각선 무늬 제거(2026-08-03, 사용자 결정) — 글자 가독성을 해쳤다. 은은한 장미 그라데이션
-     단색 띠 + 진한 장미 글자. 흰 하이라이트 한 줄로 '눌리는 리본' 질감. */
-  background: linear-gradient(180deg, #ffc9d3, #ffadbe);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 55%);
-  color: #9f1239;
-  cursor: pointer;
-  overflow: hidden;
-  text-decoration: none; /* 링크(<a>)로 렌더될 때도 밑줄 없이 리본 그대로 */
-  transition:
-    filter 0.16s var(--ease, ease),
-    box-shadow 0.16s var(--ease, ease),
-    transform 0.16s var(--ease, ease);
-}
+
 /* 시작 조각은 넘침 허용 — 제목·CTA가 (같은 색으로 이어진) 띠 위로 흘러가 칸 폭에 안 잘린다.
    z-index를 한 단계 올려 뒤 조각들이 글자를 덮지 않게 한다. */
-.support-bar.sb-head {
-  overflow: visible;
-  z-index: 5;
-}
-.support-bar.sb-head span {
-  position: relative;
-  z-index: 1;
-}
-.support-bar span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  padding: 0 6px;
-  font-size: 10.5px;
-  font-weight: 900;
-  white-space: nowrap;
-}
-/* ── 하루짜리 업 도움 ────────────────────────────────────────────────────
-   여러 날짜짜리는 시작 조각이 넘침을 허용해 제목·CTA를 오른쪽 띠 위로 흘려보낸다. 하루짜리는
-   흘려보낼 띠가 없어서, 같은 규칙을 쓰면 글자가 **남의 날짜 칸 위**로 삐져나온다.
-   그래서 칸 안에서 끝나는 별도 모양으로 그린다: 넘침을 자르고, 제목은 말줄임, 클릭 유도는
-   화살표 한 글자로 압축(뜻은 aria-label에 그대로 남는다). 편집실·시청자 화면 공통. */
-.support-bar.sb-solo {
-  overflow: hidden;
-}
 
-.support-bar.sb-solo span {
-  width: 100%;
-  gap: 4px;
-  padding: 0 5px;
-  font-size: 10px;
-}
-
-.support-bar .sb-title {
-  min-width: 0;
-  overflow: hidden;
-  font-weight: 900;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 /* 화살표는 오른쪽 끝에 고정 — 제목이 길어도 '누를 수 있다'는 신호가 먼저 잘리면 안 된다. */
-.support-bar.sb-solo .sb-go {
-  flex: none;
-  margin-left: auto;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 900;
-  color: rgb(159 18 57 / 78%);
-  transition: transform 0.16s var(--ease, ease);
-}
-
-.support-bar.sb-solo.is-clickable.is-hover .sb-go {
-  transform: translateX(2px);
-}
-
-html[data-reduce-motion] .support-bar.sb-solo.is-clickable.is-hover .sb-go {
-  transform: none;
-}
 
 /* '도와주러 가기 →' — 띠의 남는 가로 폭을 클릭 유도 문구로 활용(시청자 화면 전용 렌더). */
-.support-bar .sb-cta {
-  font-style: normal;
-  font-weight: 800;
-  font-size: 10px;
-  color: rgb(159 18 57 / 78%);
-  border-bottom: 1px dotted rgb(159 18 57 / 45%);
-  transition: transform 0.16s var(--ease, ease), color 0.16s var(--ease, ease);
-}
 
 /* ── 태그 색 무늬(패턴) — 제거됨(2026-07-18) ──────────────────────────────
    예전엔 비슷한 색을 무늬(대각선/점/격자)로 갈라 색맹 구분 단서로 썼다. 커스텀 색(Phase 1)에서
@@ -1257,8 +1140,7 @@ html[data-reduce-motion] .support-bar.sb-solo.is-clickable.is-hover .sb-go {
   .agenda-event,             /* 모바일 아젠다 일정 카드 */
   .agenda-legend-tag i,      /* 태그 필터 색 견본 점 */
   .tp-chip,                  /* 태그 선택 칩 */
-  .pill-dots i,              /* 추가 대분류 색 점 줄 */
-  .sticker-item {            /* 꾸미기 스티커(이모지·도형 색) */
+  .pill-dots i {             /* 추가 대분류 색 점 줄 */
     forced-color-adjust: none;
   }
 }
@@ -1275,12 +1157,7 @@ html[data-reduce-motion] .flame,
 html[data-reduce-motion] .public-day.today,
 html[data-reduce-motion] .agenda-day.today .agenda-when strong,
 html[data-reduce-motion] .auth-brand,
-html[data-reduce-motion] .auth-brand-spark,
-html[data-reduce-motion] .sticker-anim-float,
-html[data-reduce-motion] .sticker-anim-twinkle,
-html[data-reduce-motion] .sticker-anim-jiggle,
-html[data-reduce-motion] .sticker-anim-spin,
-html[data-reduce-motion] .sticker-anim-pulse {
+html[data-reduce-motion] .auth-brand-spark {
   animation: none !important;
 }
 

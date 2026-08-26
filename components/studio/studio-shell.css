@@ -1045,9 +1045,6 @@ html[data-reduce-motion] .private-warning-float {
 /* 패널 탭 — 8개를 동일 너비 4×2 격자로(좌우 대칭, ragged한 줄바꿈 없음, 동일 히트 타깃). */
 
 
-
-
-
 /* 관리자 인사이트의 "보안" 탭 — 4칸 너비로 다음 줄에 좌우로 길게(1×4). */
 
 /* 슬라이딩 뷰포트 — 패널들이 가로로 늘어서고 translateX로 넘어간다. 모든 패널이 항상
@@ -1068,17 +1065,10 @@ html[data-reduce-motion] .private-warning-float {
 }
 
 
-
 /* 패널 전환 stagger — 지금 보이는(data-active=N) 패널의 직계 자식들이 위→아래로 차례로 떠오른다.
    트랙이 모든 패널을 translate로 들고 있어(리마운트 X) data-active가 바뀔 때만 애니가 새로 적용돼
    재생된다(같은 패널 내 데이터 갱신은 data-active 불변이라 안 깜빡임). nth-child 지연은 항상 깔아둬도
    animation이 없으면 무해. reduce-motion이면 아래에서 끈다. */
-
-
-
-
-
-
 
 
 @keyframes ins-rise {
@@ -1096,37 +1086,13 @@ html[data-reduce-motion] .insights-track > .insights-panel > * {
 }
 
 
-
-
-
-
-
-
 /* 모바일: 누르는 '패널 탭'은 엄지 닿는 아래로, 진행 정보(< > 화살표·점)는 위로.
    (정보 표현은 위 / 누르는 버튼은 아래 원칙 — 데스크톱은 통상 배치 유지.) */
-@media (max-width: 999px) {
-  
-  
-  
-  
-}
 
 /* 통계 타일 — 큰 숫자(위) + 라벨(아래), 따뜻한 톤. 세로 레이아웃(좁은 칸 그대로). */
 
 
-
 /* 값이 텍스트(요일 등)면 숫자보다 살짝 작게. */
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* 관심 배지 받는 기준 — 불꽃/왕관 + 라벨 + 조건. 개발자 인사이트 '참여' 패널. */
@@ -1817,21 +1783,10 @@ html[data-reduce-motion] .upick-menu {
 /* 분포/순위 막대 */
 
 
-
-
-
-
-
 /* 키-값 행 */
 
 
-
-
-
-
-
 /* 보안 패널: 열린 비공개 잠금 일괄 만료 버튼 — 활성 세션 목록 바로 아래, 폭 가득. */
-
 
 
 /* 서버 성능 표(시스템 패널) — 구간(라벨) + n·평균·p95·최대(ms). p95 색으로 느린 구간 강조. */
@@ -1956,7 +1911,6 @@ html[data-reduce-motion] .perf-spin {
   color: #9ead93;
 }
 /* 로딩 스켈레톤 */
-
 
 
 @keyframes insight-shimmer {
@@ -3800,8 +3754,6 @@ html[data-reduce-motion] .dtp-pop-x:active {
 /* 신뢰 멤버 역할 칩 */
 
 
-
-
 /* 보안 패널: 비밀번호 변경 버튼(잠금 중에도 변경 경로). 잠금 암호 섹션 아래 폭 가득. */
 
 /* 보안 패널: 역할별 접근 자격자 카드(소유자/개발자/작업자) — 사람마다 개별 만료. */
@@ -3889,14 +3841,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
 /* 다음 방송 — 라벨(왼쪽) + 날짜·제목칩(오른쪽)을 가로로 펼쳐 넓은 박스의 빈 오른쪽을 채운다. */
 
 
-
-
-
-
-
-
 /* 소유자 계정 목록 — 한 줄에 한 이메일(이메일 중간에서 줄이 잘리지 않게). */
-
 
 
 /* 월 표기 헤더 */
@@ -3907,7 +3852,6 @@ html[data-reduce-motion] .dtp-pop-x:active {
 
 /* 갱신 직후 잠깐 뜨는 확인 칩 — 평소엔 접혀(opacity 0, 살짝 오른쪽) 자리만 안 차지하고,
    data-on일 때 톡 떠올랐다 사라진다. 새로고침이 "먹혔다"는 분명한 티. */
-
 
 
 /* 완료 순간 버튼이 초록으로 한 번 펄스(아이콘도 초록) — 빠른 응답에도 분명한 신호. */
@@ -3922,7 +3866,6 @@ html[data-reduce-motion] .dtp-pop-x:active {
 }
 
 
-
 /* 새로고침 중엔 아이콘이 한 바퀴씩 계속 돈다(진행 신호). */
 
 @keyframes insights-spin {
@@ -3931,10 +3874,6 @@ html[data-reduce-motion] .dtp-pop-x:active {
   }
 }
 /* 방문 패널 일별/주별 토글 */
-
-
-
-
 
 
 /* 세그먼트 선택 손맛 — 고른 알약이 통 튀어 안착(스프링 pop). 버튼이 가변폭이라 '슬라이드 thumb'
@@ -3960,27 +3899,14 @@ html[data-reduce-motion] .role-segment button.active {
 /* 다음 방송: 날짜 + 일정 제목 칩들(콤마 나열 대신 둥근 박스). */
 
 
-
 /* 인기 컨텐츠(제목) 막대: 제목은 윗줄에 전체폭으로(길어도 됨), 막대는 아랫줄에 전체폭으로 —
    모든 막대가 같은 x(왼쪽)에서 시작해 정렬되고, 값에 비례해 길게 그려진다. */
-
-
 
 
 /* 신뢰 멤버: 이메일이 길면 이메일을 말줄임 — 역할 태그(매니저/작업자)는 안 잘리게. */
 
 
 /* 트렌드 패널: 항목별 6개월 스파크 막대 + 지난달 대비 배지 */
-
-
-
-
-
-
-
-
-
-
 
 
 /* 연도 바뀌는 칸: "26년"을 윗줄에 작게(예: 26년 / 1월). */
@@ -3991,24 +3917,11 @@ html[data-reduce-motion] .role-segment button.active {
 /* 막대 호버: 살짝 강조 + 수치 칩(data-v)을 위에 띄워 "지금 보고 있다"는 느낌을 준다. */
 
 
-
-
-
 /* 방송 시간 — 월별 막대(트렌드 row 재사용) + 요약 칩 + 이 달 일별 미니 막대. */
-
-
-
 
 
 /* 일별 방송시간 값 툴팁 — 호버(데스크톱)·탭(모바일) 시 활성 막대 위에 한 개만 뜬다. left는
    JS에서 활성 칸 중심으로 계산하되 clamp로 차트 폭 안에 가둬 양 끝(1일·말일)도 안 잘린다. */
-
-
-
-
-
-
-
 
 
 /* 호버 분해 툴팁은 차트(.vt-chart) 한 곳에 떠서 hovered 막대 위치를 따라가되, 차트 폭 안에서
@@ -4104,7 +4017,6 @@ html[data-reduce-motion] .role-segment button.active {
 }
 
 
-
 /* 데스크톱(>640px)에선 인사이트 글씨를 키운다. 모바일은 컴팩트가 생명이라 기본(작은) 크기를
    그대로 두고, 여기서만 키워 모바일 회귀가 없게 한다. */
 @media (min-width: 1000px) {
@@ -4162,10 +4074,6 @@ html[data-reduce-motion] .role-segment button.active {
     transform: none;
   }
 }
-
-
-
-
 
 
 /* 타일·카드 호버 시 살짝 떠오름(상호작용 피드백). */
@@ -5085,28 +4993,7 @@ html[data-reduce-motion] .editor-anchor-link line {
   border-color: #bcd6f4;
   color: #1a60a8;
 }
-/* 월드컵 시즌 표시 토글 — 켜짐은 잔디색, 꺼짐은 조용한 회색. 데이터는 지우지 않고 화면만 정리. */
-.io-worldcup {
-  background: #f4f4f2;
-  border-color: #d9d9d3;
-  color: #66665f;
-  font-weight: 800;
-}
-.io-worldcup:hover:not(:disabled) {
-  background: #ecece8;
-  border-color: #cdcdc5;
-  color: #55554f;
-}
-.io-worldcup.on {
-  background: #f3f5f0;
-  border-color: #d9dfd1;
-  color: #27713a;
-}
-.io-worldcup.on:hover:not(:disabled) {
-  background: #ebeee5;
-  border-color: #b6dbbd;
-  color: #206331;
-}
+
 
 /* 비공개 — 주의(amber): 민감 동작이라 caution 색 코딩. 켜짐(.active)은 기존 진한
    amber 유지, 꺼짐도 옅은 amber 칩으로 '민감 토글'임을 일관되게 알린다. */
@@ -5509,50 +5396,16 @@ html[data-reduce-motion] .editor-anchor-link line {
    제일 눈에 띈다(시청자 화면에서 먼저 겪고 고친 것과 같은 처방). 끈 본체 스타일은 app/globals.css
    공용이라, 흐림·전환은 편집실 달력 안(.studio-day)으로 한정한다. */
 .studio-event-pill.filter-dim,
-.agenda-event.filter-dim,
-.studio-day .support-bar.filter-dim {
+.agenda-event.filter-dim {
   opacity: 0.26;
   filter: grayscale(0.5);
 }
 /* 칩을 누른 순간 뚝 끊기지 않고 스르륵 물러나게(시청자 화면과 같은 감촉). */
-.studio-day .support-bar {
-  transition:
-    opacity var(--dur-2) var(--ease),
-    filter var(--dur-2) var(--ease),
-    box-shadow 0.16s var(--ease);
-}
 /* 편집실 띠 = 편집 대상 — 시청자용 반짝/CTA 없이, 카드 호버와 같은 조용한 부각만.
    :hover 대신 그룹 상태(.is-hover — 같은 띠의 모든 조각) — 한 조각만 밝아지면
    마디가 다시 보인다(하나의 블록처럼, 사용자 결정). */
-/* 편집 중인 업 도움 — 이어진 전체를 **하나의 일정**으로 본다: 위/아래는 늘 긋고, 좌/우는
-   시작·끝 조각에만. 조각마다 사방을 두르면 대나무 마디처럼 칸 경계마다 선이 생긴다(실측). */
-.studio-day .support-bar.is-editing {
-  z-index: var(--z-cal-ribbon, 6);
-  border-top: 2px dashed #e11d48;
-  border-bottom: 2px dashed #e11d48;
-  border-left: 0;
-  border-right: 0;
-}
-.studio-day .support-bar.is-editing.sb-start {
-  border-left: 2px dashed #e11d48;
-}
-.studio-day .support-bar.is-editing.sb-end {
-  border-right: 2px dashed #e11d48;
-}
-.studio-day .support-bar.is-hover {
-  /* ⚠ 바깥 drop shadow 금지 — 조각별 그림자는 이음새마다 겹쳐 대나무 마디가 되살아난다
-     (시청자 쪽과 같은 처방). 균일한 brightness/inset만. */
-  filter: brightness(1.04);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 55%),
-    inset 0 -2px 0 rgb(77 159 18 / 14%);
-}
+
 /* 하루짜리(솔로)는 조각이 하나라 떠오르는 그림자를 그대로 쓴다. */
-.studio-day .support-bar.sb-solo.is-hover {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 55%),
-    0 2px 6px rgb(77 159 18 / 22%);
-}
 /* 미정(모바일 아젠다) — 카드 전체가 아니라 '세로 색상 바'에 점선을 둘러 미정임을 표시(모바일에선
    바가 그 일정의 시각 신호라 거기에 두는 게 자연스럽다). 제목 앞 '미정' 칩(공용 .evt-tentative)도 함께. */
 .agenda-event.tentative .agenda-bar {
@@ -5853,9 +5706,6 @@ body.cell-range-dragging {
   background: var(--selection-fill);
 }
 
-/* 업 도움 끈(.support-bar)의 본체 스타일은 app/globals.css에 있다 — 편집실·시청자 포스터·꾸미기가
-   같은 끈을 그리므로 한 곳에서만 정의한다. */
-
 .studio-day-head {
   position: relative;
   z-index: var(--z-cal-cell-head, 1);
@@ -5909,23 +5759,6 @@ body.cell-range-dragging {
   pointer-events: none;
 }
 
-/* 업 도움 띠의 '시작 조각'(.sb-head)만 한 층 위다(--z-cal-ribbon-head) — 라벨이 뒤 조각 위로
-   흘러야 해서. 그런데 흐림 베일과의 층 관계 때문에, 다른 달 칸에서 그 조각만 베일 위로 떠 **혼자 쨍하게** 보였다
-   (실측: 7월 달력의 8/3 업 도움 첫 칸). z를 낮추면 라벨이 뒤 조각에 덮이므로(같은 맥락 안이라
-   자식 z로도 못 올린다), 베일 대신 **띠 조각 자체를 흐린다**. 조각 단위라 달 경계에서만
-   흐림이 갈리고, 그건 원래 있어야 할 경계다. */
-.studio-day.outside .support-bar {
-  opacity: 0.4;
-}
-/* 업 도움 띠는 '오늘/선택' 링(::after z:5)보다 위 — 링이 띠를 가로지르면 끈이 끊겨 보인다
-   (실측: 오늘 칸을 지나는 띠에 금색 실선이 그어짐). 끈은 여러 날을 잇는 하나의 대상이라
-   칸 테두리에 끊기면 안 된다. */
-.studio-day .support-bar {
-  z-index: var(--z-cal-ribbon, 6);
-}
-.studio-day .support-bar.sb-head {
-  z-index: var(--z-cal-ribbon-head, 7);
-}
 
 /* 다른 달 날짜는 토/일 색도 흐린 회보라로 (그대로 진하지 않게) */
 .studio-day.outside .studio-day-head strong {
@@ -6884,14 +6717,7 @@ html[data-reduce-motion] .tg-num {
 .studio-event-pill .evt-tentative {
   font-size: calc(10px * var(--cal-zoom, 1));
 }
-/* 업도움 띠도 편집실 스코프에서만 배율 — 본체는 app/globals.css 공용(height 17/글자 10.5 고정).
-   레인 간격·top은 inline에서 calZoom을 곱하므로(스튜디오 셸) 높이·글자만 여기서 따라간다. */
-.studio-day .support-bar {
-  height: calc(17px * var(--cal-zoom, 1));
-}
-.studio-day .support-bar span {
-  font-size: calc(10.5px * var(--cal-zoom, 1));
-}
+
 
 /* 확대 중 하단 중앙 플로팅 배율 표시 — 스크롤로 액션바가 밀려나도 현재 %가 보인다.
    조화: 액션바 필과 같은 보라 캡슐 어휘를 유리(반투명+블러) 재질로 띄워 '달력 위에
@@ -10575,19 +10401,6 @@ html[data-reduce-motion] .modal-close:active {
     background: var(--accent-soft);
     color: var(--on-accent);
   }
-}
-.m-io-worldcup {
-  background: #f4f4f2;
-  border-color: #d9d9d3;
-  color: #62625c;
-}
-.m-io-worldcup.on {
-  background: #f1f4ed;
-  border-color: #c3e4c9;
-  color: #246b36;
-}
-.m-io-worldcup:active {
-  background: #e6eae1;
 }
 
 /* 인라인 편집 바텀시트 */

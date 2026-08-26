@@ -22,7 +22,7 @@ html {
   background:
     radial-gradient(120% 55% at 12% -6%, #f9fbf2 0%, transparent 46%),
     radial-gradient(120% 55% at 88% -6%, #eaf4ff 0%, transparent 46%),
-    linear-gradient(180deg, #f7f1de 0%, #e9eadd 100%);
+    linear-gradient(180deg, #f7f8ec 0%, #e9f0da 100%); /* 포스터와 동일(잔디 세이지) */
   color: #314027;
 }
 

@@ -249,7 +249,7 @@
   padding: 8px;
   border: 1px solid #e9e4cc;
   border-radius: var(--r-md);
-  background: linear-gradient(180deg, #fdfcef, var(--surface-2));
+  background: linear-gradient(180deg, #fdfdf4, #f3f6e7); /* 표면 판 — 더 맑은 크림그린 */
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 60%);
   display: grid;
   gap: 6px;
@@ -892,7 +892,9 @@ html[data-reduce-motion] .mb-live-dot {
        위쪽 햇살 웜 글로우는 남겨 노란 CTA·태그 파스텔과 조화. */
   background:
     radial-gradient(120% 80% at 50% -12%, #fdf6d8 0%, transparent 58%),
-    linear-gradient(180deg, var(--paper), #eef0d8); /* 편집실과 동일(타협점) */
+    /* 회끼 섞인 올리브(#eef0d8) → 밝은 잔디 세이지: 한색 달력과 층이 맞물린다
+       ('하늘빛 달력 + 잔디 바탕' — 2026-08-26 사용자 타협 요청). 편집실과 동일. */
+    linear-gradient(180deg, #f7f8ec, #e9f0da);
   color: #111827;
 }
 
@@ -1223,7 +1225,7 @@ body.cell-range-dragging {
     grid-template-columns 0.55s var(--spring-smooth, var(--ease-spring)),
     column-gap 0.55s var(--spring-smooth, var(--ease-spring));
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fdfcef, var(--surface-2));
+  background: linear-gradient(180deg, #fdfdf4, #f3f6e7); /* 표면 판 — 더 맑은 크림그린 */
   padding: 18px;
   box-shadow: var(--shadow-2);
 }
@@ -4166,7 +4168,7 @@ html[data-reduce-motion] .slc-player img {
   width: min(560px, 100%);
   max-height: min(84vh, 760px);
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fdfcef, var(--surface-2));
+  background: linear-gradient(180deg, #fdfdf4, #f3f6e7); /* 표면 판 — 더 맑은 크림그린 */
   box-shadow: var(--shadow-3);
   overflow: hidden;
   /* 등장은 스프링(살짝 넘쳤다 안착) — 유리판이 아니라 물체가 올라오는 느낌(A1). */

@@ -13380,7 +13380,7 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-notes-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px; /* +는 제목 바로 옆(사용자 지정) */
 }
 .memo-notes-title {
   font-size: 14px;
@@ -13422,9 +13422,10 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-note-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
+  gap: 7px;
+  margin: -3px -2px 0;
+  /* 스크롤 컨테이너 안에서 호버 lift(-1px)·포커스 링이 모서리 잘리던 버그 — 안쪽 여유로 해결. */
+  padding: 3px 2px 4px;
   list-style: none;
   overflow-y: auto;
   min-height: 0;
@@ -13432,9 +13433,10 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   width: 100%;
-  padding: 8px 9px;
+  min-height: 48px; /* 얇아서 가벼워 보인다는 피드백 — 도톰하게 */
+  padding: 10px 10px;
   border: 1px solid rgb(196 168 78 / 30%);
   border-radius: var(--r-md);
   background: var(--surface);
@@ -13472,7 +13474,7 @@ html[data-reduce-motion] .event-drag-ghost {
   flex: 1 1 auto;
 }
 .memo-row-main b {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 800;
   color: var(--ink);
   overflow: hidden;
@@ -13481,7 +13483,7 @@ html[data-reduce-motion] .event-drag-ghost {
 }
 .memo-row-main em {
   font-style: normal;
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--muted);
 }
 .memo-del {
@@ -13509,13 +13511,14 @@ html[data-reduce-motion] .event-drag-ghost {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 9px;
-  border: 1px solid rgb(179 38 30 / 35%);
+  min-height: 48px;
+  padding: 10px;
+  border: 1px solid var(--line);
   border-radius: var(--r-md);
-  background: #fff5f4;
+  background: var(--surface); /* 흰색 계열 — 주변과 조화(사용자 지정). 위험색은 버튼에만. */
   font-size: 12.5px;
   font-weight: 800;
-  color: #7a2e28;
+  color: var(--ink);
 }
 .memo-row-confirm-btns {
   display: flex;
@@ -13556,30 +13559,33 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-win.memo-c-mint { background: #e2f6e6; }
 .memo-win.memo-c-sky { background: #e2effc; }
 .memo-win.memo-c-pink { background: #fbe6ee; }
-.memo-win-head {
+.memo-win-grip {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 10px 6px 12px;
+  justify-content: space-between;
+  min-height: 30px;
+  padding: 6px 8px 2px 12px;
   cursor: grab;
   touch-action: none;
   user-select: none;
 }
-.memo-win-head:active {
+.memo-win-grip:active {
   cursor: grabbing;
 }
-.memo-win-title {
-  flex: 1 1 auto;
-  min-width: 0;
-  border: 0;
-  background: transparent;
-  font-size: 14.5px;
-  font-weight: 900;
-  color: rgb(0 0 0 / 78%);
-  outline: none;
+/* 잡는 손잡이 — 시각적으로 '여기를 잡아라'가 읽히는 중앙 알약. */
+.memo-grip-pill {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: rgb(0 0 0 / 16%);
 }
-.memo-win-title::placeholder {
-  color: rgb(0 0 0 / 30%);
+.memo-win-grip:hover .memo-grip-pill {
+  background: rgb(0 0 0 / 26%);
 }
 .memo-win-save {
   flex: none;
@@ -13661,36 +13667,42 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-win-settings {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   margin: 0 12px 6px;
-  padding: 8px 10px;
+  padding: 9px 10px;
   border-radius: 10px;
-  background: rgb(255 255 255 / 55%);
+  background: rgb(255 255 255 / 60%);
 }
-.mws-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.mws-row em {
-  flex: none;
-  width: 44px;
+.mws-label {
   font-style: normal;
   font-size: 11px;
   font-weight: 800;
   color: rgb(0 0 0 / 45%);
 }
-.mws-row button {
-  padding: 2px 9px;
-  border: 1px solid rgb(0 0 0 / 12%);
-  border-radius: var(--r-pill);
-  background: transparent;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: rgb(0 0 0 / 55%);
-  cursor: pointer;
+.mws-fonts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
 }
-.mws-row button.on {
+.mws-fonts button,
+.mws-sizes button {
+  padding: 4px 8px;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: var(--r-sm);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgb(0 0 0 / 62%);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.mws-sizes {
+  display: flex;
+  gap: 4px;
+}
+.mws-fonts button.on,
+.mws-sizes button.on {
   background: rgb(0 0 0 / 72%);
   color: #fff;
   border-color: transparent;
@@ -13716,12 +13728,17 @@ html[data-reduce-motion] .event-drag-ghost {
   font-weight: 800;
 }
 .memo-win.mf-sans .memo-win-body { font-family: inherit; }
-.memo-win.mf-serif .memo-win-body {
-  font-family: "Noto Serif KR", "Nanum Myeongjo", Batang, serif;
-}
-.memo-win.mf-mono .memo-win-body {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
+.memo-win.mf-serif .memo-win-body, /* 구버전 호환(=명조) */
+.memo-win.mf-myeongjo .memo-win-body { font-family: var(--memo-font-myeongjo); }
+.memo-win.mf-mono .memo-win-body { font-family: var(--memo-font-mono); }
+.memo-win.mf-nanumpen .memo-win-body { font-family: var(--memo-font-nanumpen); }
+.memo-win.mf-gaegu .memo-win-body { font-family: var(--memo-font-gaegu); }
+.memo-win.mf-himelody .memo-win-body { font-family: var(--memo-font-himelody); }
+.memo-win.mf-gamja .memo-win-body { font-family: var(--memo-font-gamja); }
+.memo-win.mf-jua .memo-win-body { font-family: var(--memo-font-jua); }
+.memo-win.mf-dohyeon .memo-win-body { font-family: var(--memo-font-dohyeon); }
+.memo-win.mf-gugi .memo-win-body { font-family: var(--memo-font-gugi); }
+.memo-win.mf-blackhan .memo-win-body { font-family: var(--memo-font-blackhan); }
 
 /* ── 월별 인사이트(ADR-0011) ─────────────────────────────────────────────── */
 .mi-panel {

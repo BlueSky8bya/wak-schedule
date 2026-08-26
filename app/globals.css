@@ -119,6 +119,19 @@
   --cal-head: #e6ecfa; /* 요일 행 배경 */
   --cal-head-ink: #6b7290; /* 요일 글자(평일) — 쿨 슬레이트 */
 
+  /* 메모 글씨체 별칭(ADR-0014 2차) — next/font가 이미 로드한 한글 폰트 변수 재사용.
+     sans는 정의하지 않는다(미정의 → 소비처 fallback inherit = 앱 기본체). */
+  --memo-font-myeongjo: var(--font-myeongjo), "Nanum Myeongjo", serif;
+  --memo-font-mono: ui-monospace, sfmono-regular, Menlo, Consolas, monospace;
+  --memo-font-nanumpen: var(--font-nanumpen), cursive;
+  --memo-font-gaegu: var(--font-gaegu), cursive;
+  --memo-font-himelody: var(--font-himelody), cursive;
+  --memo-font-gamja: var(--font-gamja), cursive;
+  --memo-font-jua: var(--font-jua), sans-serif;
+  --memo-font-dohyeon: var(--font-dohyeon), sans-serif;
+  --memo-font-gugi: var(--font-gugi), sans-serif;
+  --memo-font-blackhan: var(--font-blackhan), sans-serif;
+
   /* 글래스(떠 있는 표면) */
   --glass: rgb(255 255 255 / 72%);
   --glass-strong: rgb(255 255 255 / 86%);

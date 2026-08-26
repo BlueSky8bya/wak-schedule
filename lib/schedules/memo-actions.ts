@@ -119,7 +119,20 @@ export type MemoNoteResult = { ok: true; note: MemoNote } | { ok: false; error: 
 const MEMO_NOTE_MAX = 30; // 계정당 쪽지 수 상한
 const MEMO_TITLE_MAX = 100;
 const MEMO_COLORS = new Set(["yellow", "mint", "sky", "pink"]);
-const MEMO_FONTS = new Set(["sans", "serif", "mono"]);
+const MEMO_FONTS = new Set([
+  "sans",
+  "serif", // 구버전 호환(=명조)
+  "mono",
+  "myeongjo",
+  "nanumpen",
+  "gaegu",
+  "himelody",
+  "gamja",
+  "jua",
+  "dohyeon",
+  "gugi",
+  "blackhan"
+]);
 const MEMO_SIZES = new Set([13, 15, 18, 22]);
 
 type MemoRow = {

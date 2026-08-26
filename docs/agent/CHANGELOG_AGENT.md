@@ -303,3 +303,16 @@ Files: db/migrations/0065_memo_notes.sql, lib/schedules/memo-actions.ts,
 components/studio/{memo-notes.tsx,studio-shell.tsx,studio-shell.css},
 docs/agent/decisions/ADR-0014-memo-notes.md
 
+### CHG-20260826-027 — UX — 메모 2차(사용자 피드백 8건)
+
+- + 버튼을 '메모' 제목 바로 옆으로 · 행 도톰하게(min 48px) · 목록 호버 모서리
+  잘림 수정(스크롤 컨테이너 안쪽 여유) · 삭제 확인 행 흰색 계열.
+- 쪽지 창: 전용 그립(중앙 알약)만 잡아 이동 · 설정은 ⋯ 버튼 → 글씨체 11종
+  (스티커 시절 로드된 한글 웹폰트 재사용: 명조·나눔펜·개구쟁이·하이멜로디·감자꽃·
+  주아·도현·구기·블랙한 + 기본·모노, 버튼이 자기 서체로 렌더) + 크기 4종.
+- 제목 입력칸 제거 — 본문 첫 줄 = 목록 제목(불릿 기호는 벗겨서).
+- 본문 도우미: '- '→'• ' 자동, 불릿/번호 줄 Enter 이어쓰기(빈 불릿 Enter=종료),
+  Tab/Shift+Tab 들여·내어쓰기.
+Files: components/studio/memo-notes.tsx, components/studio/studio-shell.css,
+app/globals.css(--memo-font-*), lib/schedules/memo-actions.ts(글씨체 화이트리스트)
+

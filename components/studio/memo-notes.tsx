@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Trash2, X } from "lucide-react";
+import { MoreHorizontal, Plus, Trash2, X } from "lucide-react";
 import type { MemoNote } from "@/lib/schedules/memo-actions";
 import { hapticTick } from "@/lib/ui/haptics";
 
 // 붙임쪽지 메모(ADR-0014) — 레일의 '런처'(목록 + 새 메모)와, 행을 누르면 뜨는
-// '떠 있는 쪽지 창'(드래그 이동, 쪽지 단위 서식: 배경색·굵기·글씨체·크기).
-// 저장은 월별 메모와 같은 문법: 디바운스 자동저장 + blur 즉시, 직렬 큐(마지막 입력이 진실).
+// '떠 있는 쪽지 창'(그립 드래그 이동, 쪽지 단위 서식: 배경색·굵기·글씨체·크기).
+// 제목은 따로 없다 — 본문 첫 줄이 곧 목록의 제목(사용자 결정 2026-08-26 2차).
 type Actions = {
   list: () => Promise<{ ok: boolean; notes?: MemoNote[]; error?: string }>;
   create: () => Promise<{ ok: boolean; note?: MemoNote; error?: string }>;
@@ -23,10 +23,19 @@ type Props = { canWrite: boolean; actions: Actions };
 
 const AUTOSAVE_MS = 1200;
 const COLORS = ["yellow", "mint", "sky", "pink"] as const;
+// 글씨체 — 앱이 이미 로드해 둔 한글 웹폰트(next/font CSS 변수, 스티커 시절 자산 재사용).
 const FONTS = [
-  { key: "sans", label: "고딕" },
-  { key: "serif", label: "명조" },
-  { key: "mono", label: "모노" }
+  { key: "sans", label: "기본" },
+  { key: "myeongjo", label: "명조" },
+  { key: "mono", label: "모노" },
+  { key: "nanumpen", label: "나눔펜" },
+  { key: "gaegu", label: "개구쟁이" },
+  { key: "himelody", label: "하이멜로디" },
+  { key: "gamja", label: "감자꽃" },
+  { key: "jua", label: "주아" },
+  { key: "dohyeon", label: "도현" },
+  { key: "gugi", label: "구기" },
+  { key: "blackhan", label: "블랙한" }
 ] as const;
 const SIZES = [13, 15, 18, 22] as const;
 
@@ -50,12 +59,17 @@ function savePos(id: string, pos: { x: number; y: number }) {
   }
 }
 function clampPos(x: number, y: number, w: number) {
-  // 최소 80px은 화면 안에 남긴다(제목/닫기 버튼이 항상 잡히게).
+  // 최소 80px은 화면 안에 남긴다(그립·닫기 버튼이 항상 잡히게).
   const margin = 12;
   return {
     x: Math.min(Math.max(x, margin - w + 80), window.innerWidth - 80),
     y: Math.min(Math.max(y, margin), window.innerHeight - 48)
   };
+}
+// 목록 제목 = 본문 첫 줄(불릿 기호는 벗겨서). 비면 저장된 제목(이식분), 그것도 없으면 자리말.
+function titleOf(n: MemoNote): string {
+  const first = n.body.split("\n")[0]?.replace(/^(\s*)([•\-*]|\d+\.)\s+/, "").trim();
+  return first || n.title.trim() || "제목 없음";
 }
 
 export function MemoNotes({ canWrite, actions }: Props) {
@@ -123,6 +137,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
 
   return (
     <div className="memo-notes">
+      {/* + 는 제목 바로 옆(사용자 지정 배치). */}
       <div className="memo-notes-head">
         <span className="memo-notes-title">📝 메모</span>
         <button
@@ -146,7 +161,6 @@ export function MemoNotes({ canWrite, actions }: Props) {
       <ul className="memo-note-list">
         {notes.map((n) => {
           const chars = n.body.length;
-          const title = n.title.trim() || n.body.split("\n")[0]?.trim() || "제목 없음";
           return (
             <li key={n.id}>
               {confirmDeleteId === n.id ? (
@@ -172,7 +186,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
                  data-act="memo-open">
                   <i aria-hidden="true" className="memo-dot" />
                   <span className="memo-row-main">
-                    <b>{title}</b>
+                    <b>{titleOf(n)}</b>
                     <em>메모 · {chars}자</em>
                   </span>
                   {canWrite ? (
@@ -216,7 +230,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
   );
 }
 
-// ── 떠 있는 쪽지 창 — 헤더 드래그로 이동, 쪽지 단위 서식, 자동저장 ─────────────
+// ── 떠 있는 쪽지 창 — 상단 그립을 잡아 이동, 쪽지 단위 서식, 자동저장 ──────────
 function MemoWindow({
   note,
   canWrite,
@@ -230,7 +244,6 @@ function MemoWindow({
   onLocalChange: (id: string, patch: Partial<MemoNote>) => void;
   onClose: () => void;
 }) {
-  const [title, setTitle] = useState(note.title);
   const [body, setBody] = useState(note.body);
   const [style, setStyle] = useState({
     color: note.color,
@@ -248,7 +261,7 @@ function MemoWindow({
   });
   const winRef = useRef<HTMLDivElement | null>(null);
 
-  // 직렬 저장 큐(월별 메모와 같은 문법) — 저장 중 새 변경은 pending에 겹쳐 쓴다.
+  // 직렬 저장 큐 — 저장 중 새 변경은 pending에 겹쳐 쓴다(마지막 입력이 진실).
   const savingRef = useRef(false);
   const pendingRef = useRef<Partial<MemoNote> | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -317,10 +330,70 @@ function MemoWindow({
     void flush(patch);
   }
 
-  // 헤더 드래그 이동 — pointer capture로 창 밖까지 매끈하게, 끝나면 위치 저장.
+  // 본문 편집 도우미(사용자 요청 "탭 누르면 문단 꾸며지기"):
+  //  - "- " / "* " 를 줄 시작에 치면 "• " 불릿으로 자동 변환
+  //  - 불릿/번호 줄에서 Enter → 다음 줄에 이어서(빈 불릿에서 Enter는 목록 종료)
+  //  - Tab / Shift+Tab → 현재 줄 들여쓰기·내어쓰기(2칸)
+  function applyEdit(ta: HTMLTextAreaElement) {
+    setBody(ta.value);
+    queueSave({ body: ta.value });
+  }
+  function onBodyKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (!canWrite || e.nativeEvent.isComposing) return;
+    const ta = e.currentTarget;
+    const { selectionStart, selectionEnd, value } = ta;
+    const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+    const line = value.slice(lineStart, selectionStart);
+
+    if (e.key === "Tab") {
+      e.preventDefault();
+      if (e.shiftKey) {
+        const lead = value.slice(lineStart).match(/^ {1,2}/)?.[0]?.length ?? 0;
+        if (lead > 0) {
+          ta.setRangeText("", lineStart, lineStart + lead);
+          ta.setSelectionRange(
+            Math.max(lineStart, selectionStart - lead),
+            Math.max(lineStart, selectionEnd - lead)
+          );
+          applyEdit(ta);
+        }
+      } else {
+        ta.setRangeText("  ", lineStart, lineStart);
+        ta.setSelectionRange(selectionStart + 2, selectionEnd + 2);
+        applyEdit(ta);
+      }
+      return;
+    }
+    if (e.key === "Enter") {
+      const m = line.match(/^(\s*)(?:([•\-*])|(\d+)\.)\s(.*)$/);
+      if (!m) return;
+      e.preventDefault();
+      const [, indent, bullet, num, rest] = m;
+      if (!rest.trim()) {
+        // 빈 불릿에서 Enter → 불릿을 지우고 목록 종료.
+        ta.setRangeText("", lineStart, selectionStart, "start");
+      } else {
+        const prefix = bullet ? `${bullet} ` : `${Number(num) + 1}. `;
+        ta.setRangeText(`\n${indent}${prefix}`, selectionStart, selectionEnd, "end");
+      }
+      applyEdit(ta);
+      return;
+    }
+    if (e.key === " ") {
+      // 줄 시작의 "-"/"*" + 스페이스 → "• "
+      if (/^(\s*)[-*]$/.test(line)) {
+        e.preventDefault();
+        const indent = line.match(/^\s*/)?.[0] ?? "";
+        ta.setRangeText(`${indent}• `, lineStart, selectionStart, "end");
+        applyEdit(ta);
+      }
+    }
+  }
+
+  // 그립 드래그 이동 — pointer capture로 창 밖까지 매끈하게, 끝나면 위치 저장.
   const dragRef = useRef<{ dx: number; dy: number } | null>(null);
   function onDragStart(e: React.PointerEvent) {
-    if ((e.target as HTMLElement).closest("button, input, textarea")) return;
+    if ((e.target as HTMLElement).closest("button")) return;
     dragRef.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }
@@ -350,7 +423,7 @@ function MemoWindow({
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Esc로 닫기 — 편집실 다른 Esc 소비자(팝오버 등)보다 먼저(capture).
+  // Esc로 닫기 — 편집실 다른 Esc 소비자보다 먼저(capture).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
@@ -380,27 +453,17 @@ function MemoWindow({
       aria-label="메모"
       style={{ left: pos.x, top: pos.y, fontSize: style.fontSize }}
     >
+      {/* 전용 그립(잡는 공간) — 여기만 잡아 끈다(본문·버튼 오조작 없음). */}
       <div
-        className="memo-win-head"
+        className="memo-win-grip"
         onPointerDown={onDragStart}
         onPointerMove={onDragMove}
         onPointerUp={onDragEnd}
         onPointerCancel={onDragEnd}
+        title="잡고 이동"
       >
-        <input
-          aria-label="메모 제목"
-          className="memo-win-title"
-          disabled={!canWrite}
-          maxLength={100}
-          onBlur={flushNow}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            queueSave({ title: e.target.value });
-          }}
-          placeholder="제목"
-          value={title}
-        />
         {saveLabel ? <span className={`memo-win-save st-${saveState}`}>{saveLabel}</span> : null}
+        <span aria-hidden="true" className="memo-grip-pill" />
         <button aria-label="닫기" className="memo-win-close" onClick={onClose} type="button" data-act="memo-close">
           <X aria-hidden="true" size={15} />
         </button>
@@ -430,33 +493,35 @@ function MemoWindow({
           ))}
           <button
             aria-expanded={settingsOpen}
+            aria-label="글씨 설정"
             className={`memo-tool memo-tool-set${settingsOpen ? " on" : ""}`}
             onClick={() => setSettingsOpen((v) => !v)}
             title="글씨 설정"
             type="button"
            data-act="memo-settings">
-            Aa
+            <MoreHorizontal aria-hidden="true" size={15} />
           </button>
         </div>
       ) : null}
       {settingsOpen && canWrite ? (
         <div className="memo-win-settings">
-          <div className="mws-row">
-            <em>글씨체</em>
+          <em className="mws-label">글씨체</em>
+          <div className="mws-fonts">
             {FONTS.map((f) => (
               <button
                 aria-pressed={style.fontFamily === f.key}
                 className={style.fontFamily === f.key ? "on" : ""}
                 key={f.key}
                 onClick={() => setStylePart({ fontFamily: f.key })}
+                style={{ fontFamily: `var(--memo-font-${f.key}, inherit)` }}
                 type="button"
                data-act="memo-font">
                 {f.label}
               </button>
             ))}
           </div>
-          <div className="mws-row">
-            <em>크기</em>
+          <em className="mws-label">크기</em>
+          <div className="mws-sizes">
             {SIZES.map((n) => (
               <button
                 aria-pressed={style.fontSize === n}
@@ -480,7 +545,8 @@ function MemoWindow({
           setBody(e.target.value);
           queueSave({ body: e.target.value });
         }}
-        placeholder={canWrite ? "자유롭게 적어두는 곳" : "메모(읽기 전용)"}
+        onKeyDown={onBodyKeyDown}
+        placeholder={canWrite ? "첫 줄이 제목이 돼요. '- '로 목록, Tab으로 들여쓰기" : "메모(읽기 전용)"}
         spellCheck={false}
         value={body}
       />

@@ -258,3 +258,12 @@ docs/agent/decisions/ADR-0013-color-debt-p0.md
 Files: app/globals.css, lib/ui/motion.ts, app/layout.tsx,
 components/poster/public-poster.css, components/studio/studio-shell.css
 
+### CHG-20260826-023 — STYLE — 기본 토글: 동작 줄이기 OFF · 눈 편한 테마 ON (사용자 지정)
+
+- reduce motion: 미설정 시 OS prefers-reduced-motion을 따르던 것을 **무조건 OFF**로
+  (명시적 "on"만 켬). eye comfort: 옵트인으로 바꿨던 것을 **기본 ON**으로 복귀("off"만 끔).
+- 눈 편한 테마가 기준 화면이 되므로 필터 강도 완화: sepia 0.1 → 0.045(+sat .9/br .97) —
+  0.1은 밝은 톤 청색을 상한까지 눌러 달력 한색 층이 물리적으로 못 살아남음(행렬 역산 확인).
+  달력 --cal-* 토큰은 필터 통과 후 목표색이 나오도록 선보정.
+Files: lib/ui/motion.ts, app/layout.tsx, app/globals.css, components/poster/public-poster.css
+

@@ -8,18 +8,15 @@
 // 페인트 전 적용은 app/layout.tsx의 인라인 스크립트가 담당(FOUC 방지). 여기 함수는 설정 화면
 // (역할 배지 "?" 팝오버의 토글)에서 즉시 반영/저장하는 용도.
 //
-// P1-MOTION-1: OS prefers-reduced-motion 통합 — 인앱 설정이 **미설정**이면 OS 값을 기본으로
-// 따른다. 명시적 인앱 선택("on"/"off")은 OS보다 항상 우선(인앱 토글이 최종 결정권 유지).
+// 기본값(사용자 결정 2026-08-26): 미설정이면 **무조건 OFF** — 모션이 이 포스터의 기본 경험.
+// OS prefers-reduced-motion 자동 반영은 하지 않는다(끄고 싶은 사람이 토글로 켠다).
 
-const REDUCE_MOTION_KEY = "wak.reduceMotion"; // localStorage: "on"/"off"/미설정(OS 따름)
+const REDUCE_MOTION_KEY = "wak.reduceMotion"; // localStorage: "on"일 때만 켬
 
 export function reduceMotionEnabled(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    const v = window.localStorage.getItem(REDUCE_MOTION_KEY);
-    if (v === "on") return true;
-    if (v === "off") return false;
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return window.localStorage.getItem(REDUCE_MOTION_KEY) === "on";
   } catch {
     return false;
   }
@@ -42,16 +39,17 @@ export function setReduceMotion(on: boolean): void {
 
 // #28 눈 편한 테마(eye comfort) — 방송 전후 오래 보는 작업자용. 켜면 <html data-eye-comfort>가
 // 붙어 CSS가 전체 채도·눈부심을 살짝 낮춘다(글자 대비는 유지). reduce-motion과 같은 결의 설정.
-const EYE_COMFORT_KEY = "wak.eyeComfort"; // localStorage: 기본 OFF, "on"일 때만 켬(옵트인)
+const EYE_COMFORT_KEY = "wak.eyeComfort"; // localStorage: 기본 ON, "off"만 끔(사용자 결정 2026-08-26)
 
 export function eyeComfortEnabled(): boolean {
-  if (typeof window === "undefined") return false;
+  if (typeof window === "undefined") return true;
   try {
-    // 기본 OFF(옵트인) — 전역 sepia 필터가 시청자 화면까지 색을 데워 팔레트가 왜곡됐다
-    // (2026-08-26 색 튜닝 중 실측). 오래 보는 작업자가 배지 메뉴에서 켜는 기능으로 되돌림.
-    return window.localStorage.getItem(EYE_COMFORT_KEY) === "on";
+    // 기본 ON(사용자 결정) — 명시적으로 끈("off") 사람만 원색으로 본다.
+    // 주의: 전역 필터(saturate/brightness/sepia)가 팔레트를 살짝 데운다 — 색 튜닝 시
+    // 이 필터가 '켜진 상태'가 기준 화면이다.
+    return window.localStorage.getItem(EYE_COMFORT_KEY) !== "off";
   } catch {
-    return false;
+    return true;
   }
 }
 

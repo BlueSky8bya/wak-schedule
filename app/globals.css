@@ -112,11 +112,11 @@
   /* ── 달력 표면(2026-08-26 사용자: "달력 쪽에 살짝 푸르스름한 느낌") ────────
      페이지·카드는 웜 아이보리 유지, 달력 그리드만 은은한 한색(하늘빛) 층 —
      아이보리 단조로움을 깨고 태그 파스텔 분리도 좋아진다. 포스터·편집실 공용. */
-  --cal-surface: #f8f9fd; /* 날짜 칸 */
-  --cal-surface-dim: #efeef5; /* 바깥 달 칸 */
-  --cal-line: #eaecf6; /* 칸 사이 hairline */
-  --cal-frame: #dfe1f0; /* 그리드·요일 행 테두리 */
-  --cal-head: #edf0fa; /* 요일 행 배경 */
+  --cal-surface: #f4f7fd; /* 날짜 칸 */
+  --cal-surface-dim: #eaebf4; /* 바깥 달 칸 */
+  --cal-line: #e3e7f5; /* 칸 사이 hairline */
+  --cal-frame: #d6daee; /* 그리드·요일 행 테두리 */
+  --cal-head: #e6ecfa; /* 요일 행 배경 */
   --cal-head-ink: #6b7290; /* 요일 글자(평일) — 쿨 슬레이트 */
 
   /* 글래스(떠 있는 표면) */
@@ -1198,7 +1198,10 @@ html[data-reduce-motion] .auth-brand-spark {
    컨테이닝 블록을 깨지 않는다(html=뷰포트라 위치 변동 없음). 캡쳐(포스터 PNG)는 Playwright가
    별도 컨텍스트라 영향 없음. prefers-contrast: more면 따뜻함을 줄여 대비 우선. */
 html[data-eye-comfort] {
-  filter: saturate(0.8) brightness(0.96) sepia(0.1);
+  /* 강도 완화(2026-08-26): sepia 0.1은 밝은 톤의 청색을 상한까지 눌러 달력 한색 층이
+     물리적으로 살아남지 못했다(행렬 역산으로 확인). 0.045면 눈 편함(따뜻·감채도)은 유지되고
+     푸른 층도 남는다 — 기본 ON이 된 이 필터가 이제 '기준 화면'이다. */
+  filter: saturate(0.9) brightness(0.97) sepia(0.045);
 }
 /* 고대비 선호 사용자에겐 sepia(청색광 감소)를 줄여 또렷함을 우선한다. */
 @media (prefers-contrast: more) {

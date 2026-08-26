@@ -96,7 +96,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var d=document.documentElement;var v=localStorage.getItem('wak.reduceMotion');if(v==='on'||(v!=='off'&&matchMedia('(prefers-reduced-motion: reduce)').matches))d.setAttribute('data-reduce-motion','1');if(localStorage.getItem('wak.eyeComfort')==='on')d.setAttribute('data-eye-comfort','1')}catch(e){}"
+              "try{var d=document.documentElement;if(localStorage.getItem('wak.reduceMotion')==='on')d.setAttribute('data-reduce-motion','1');if(localStorage.getItem('wak.eyeComfort')!=='off')d.setAttribute('data-eye-comfort','1')}catch(e){}"
           }}
         />
         {children}

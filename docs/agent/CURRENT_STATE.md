@@ -72,12 +72,16 @@ Status: Open · Evidence: `public-loader`의 `loadLiveEventHeartCounts`
 
 ## Next Exact Steps
 
-1. T-1: 사용자가 Supabase 프로젝트 생성 → `.env.local` → `db/README.md` 순서로 적용 → verify
-2. T-3 메모(사양 확정 — ADR-0009, 남은 판단 3개는 구현 계획에서)
-3. 이후: T-2 태그 / T-4 트래픽 / T-5 Playwright / T-6 브랜딩 / T-7 VOD 버튼 / T-8 하트 티어
+1. 사용자 프로덕션 검증 대기: 보안 탭(초기 비번 0724 변경)·메모 계정별 분리·
+   '이 달 기록' 4파트(방송 시간은 다음 방송부터 쌓임)·색 밸런스.
+2. 색: 전면 리팔레트('왁물원 피크닉', 리서치 문서)는 **보류** — 사용자가 택하면
+   P1(바탕·표면)만 별도 계획으로(ADR-0013). P0 4종은 완료.
+3. 백로그: T-7 VOD 버튼(ADR-0010) / T-8 하트 티어(구독 4,800 기준) / T-5 Playwright 정비 /
+   T-4 하트 집계 실측 / ADR-0008 D+ 일자 확정 / 왁굳형 실계정 확정 시 OWNER_EMAIL 추가.
 
 ## Last Verified
 
 - `npx tsc --noEmit` → PASS · `npx eslint . --max-warnings=0` → PASS
-- `npx vitest run` → PASS 197/197 · `npx next build` → PASS (exit 0)
-- date: 2026-08-26 (M1 직후)
+- `npx vitest run` → PASS 215/215 · `npx next build` → PASS (exit 0)
+- 픽스처 스크린샷(웹 1600·모바일 390) — 색 부채 P0 후 렌더 동일 확인
+- date: 2026-08-26 (색 부채 P0 완료 직후)

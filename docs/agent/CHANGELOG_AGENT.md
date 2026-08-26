@@ -232,3 +232,18 @@ Files: db/migrations/0064, lib/live/record.ts, app/api/live/route.ts,
 app/api/public/[calendarSlug]/broadcast/route.ts, lib/schedules/public-loader.ts,
 components/studio/{broadcast-hours.tsx,insights.css,month-insights.tsx},
 components/poster/public-insights.tsx, tests/unit/public-boundary.test.ts
+
+### CHG-20260826-021 — REFACTOR — 색 부채 P0 4종 (ADR-0013)
+
+- 죽은 스타일 제거(~2,900줄): 스티커·포스터 테마·월드컵·업도움·포스터 아바타/캡쳐/
+  단축키도움말·member-role. 죽은 파일 theme-switch.tsx, theme-actions.ts 삭제.
+  근거: tsx/ts 전수 감사에서 클래스 방출 0 확인. 렌더 불변(픽스처 스크린샷).
+- 보라 수렴: 상호작용 보라 6종 → --violet(#6b5bd6)/--violet-strong/--violet-rgb.
+  떡밥 저채도 보라는 --teaser로 분리(합치지 않음).
+- 의미 토큰 선언: --interactive/--today/--heart/--live/--teaser(+짝). live·teaser 실소비 시작.
+- 표면 스냅: 근사중복 크림 화이트 74곳 → --surface/--surface-2/--paper (채널 합 Δ≤8만).
+- 부수 수정: 단축키 안내 칩 2개 제거, 메모 위치 토글 '왼쪽·메모·오른쪽' 재배치.
+Files: app/globals.css, components/poster/public-poster.{css,tsx},
+components/studio/{studio-shell.css,studio-shell.tsx,insights.css},
+docs/agent/decisions/ADR-0013-color-debt-p0.md
+

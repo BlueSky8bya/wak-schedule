@@ -14,5 +14,6 @@
 | [ADR-0010](decisions/ADR-0010-auto-vod.md) | Accepted | 연동 | VOD 연동 자동(비공식 API 허용, 서버 캐시·조용한 실패) | SOOP 공식 API / 형식 변경 |
 | [ADR-0011](decisions/ADR-0011-insights-scope.md) | Accepted | 제품 | 월별 인사이트 = 일정 파생 데이터만(수집 재도입 없음) | 방문 지표 요구 시 |
 | [ADR-0012](decisions/ADR-0012-broadcast-hours.md) | Accepted | 제품 | 방송시간 추적 재도입 — 라이브 캐시 피기백(고정 부하) | 표본 공백 문제 시 |
+| [ADR-0013](decisions/ADR-0013-color-debt-p0.md) | Accepted | 디자인 | 색 부채 P0(의미 토큰·보라 수렴·표면 스냅·죽은 스타일 제거) — 전면 리팔레트는 보류 | '왁물원 피크닉' 채택 시 |
 
 열림: A-04(개인 도구 저장소 잔류 여부). A-05는 ADR-0009로 해소.

@@ -111,7 +111,7 @@
      페이지·카드는 웜 아이보리 유지, 달력 그리드만 은은한 한색(하늘빛) 층 —
      아이보리 단조로움을 깨고 태그 파스텔 분리도 좋아진다. 포스터·편집실 공용. */
   --cal-surface: #f7fafd; /* 날짜 칸 */
-  --cal-surface-dim: #e9edf3; /* 바깥 달 칸 */
+  --cal-surface-dim: #edf1f6; /* 바깥 달 칸 */
   --cal-line: #e2e9f1; /* 칸 사이 hairline */
   --cal-frame: #d8e2ee; /* 그리드·요일 행 테두리 */
   --cal-head: #e9f1fa; /* 요일 행 배경 */

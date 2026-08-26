@@ -13384,9 +13384,51 @@ html[data-reduce-motion] .event-drag-ghost {
   justify-content: space-between; /* +는 오른쪽 끝(사용자 심판 — trailing action) */
 }
 .memo-notes-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-size: 14px;
   font-weight: 900;
   color: #7a621a;
+}
+/* 헤더 집계 저장 배지 — 창 배지의 축소판(점 + 알약). */
+.memo-head-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 7%);
+  font-size: 10px;
+  font-weight: 800;
+  color: rgb(0 0 0 / 45%);
+}
+.memo-head-save::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: rgb(0 0 0 / 25%);
+}
+.memo-head-save.st-dirty::before,
+.memo-head-save.st-saving::before {
+  background: var(--amber);
+}
+.memo-head-save.st-saving::before {
+  animation: memo-save-pulse 1s ease-in-out infinite;
+}
+.memo-head-save.st-saved {
+  color: #2c6b3f;
+}
+.memo-head-save.st-saved::before {
+  background: var(--green);
+}
+.memo-head-save.st-error {
+  color: #b3261e;
+}
+.memo-head-save.st-error::before {
+  background: #d93025;
 }
 .memo-add {
   display: inline-flex;

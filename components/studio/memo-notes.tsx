@@ -416,11 +416,41 @@ export function MemoNotes({ canWrite, actions }: Props) {
 
   const openNote = openId ? (notes.find((n) => n.id === openId) ?? null) : null;
 
+  // 헤더 집계 배지(사용자 요청) — 전 메모의 저장 상태를 한 알약으로. 우선순위:
+  // 실패 > 저장 중 > 입력 중 > 저장됨. idle뿐이면 숨김.
+  const states = Object.values(saveStates);
+  const aggState: SaveState = states.includes("error")
+    ? "error"
+    : states.includes("saving")
+      ? "saving"
+      : states.includes("dirty")
+        ? "dirty"
+        : states.includes("saved")
+          ? "saved"
+          : "idle";
+  const aggLabel =
+    aggState === "error"
+      ? "저장 실패"
+      : aggState === "saving"
+        ? "저장 중"
+        : aggState === "dirty"
+          ? "입력 중"
+          : aggState === "saved"
+            ? "저장됨"
+            : "";
+
   return (
     <div className="memo-notes" ref={rootRef}>
       {/* + 는 헤더 오른쪽 끝(사용자 심판 2026-08-26 — Apple 툴바 trailing 문법). */}
       <div className="memo-notes-head">
-        <span className="memo-notes-title">📝 메모</span>
+        <span className="memo-notes-title">
+          📝 메모
+          {aggLabel ? (
+            <span aria-live="polite" className={`memo-head-save st-${aggState}`}>
+              {aggLabel}
+            </span>
+          ) : null}
+        </span>
         <button
           aria-label="새 메모"
           className="memo-add"

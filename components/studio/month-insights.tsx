@@ -2,7 +2,7 @@
 
 import "@/components/studio/insights.css";
 
-import { CalendarDays, ChevronLeft, ChevronRight, Heart, LineChart, Lock, Trophy } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Heart, LineChart, Lock } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import type { MonthInsights, MonthInsightsResult } from "@/lib/schedules/insights-actions";
 import {
@@ -10,7 +10,6 @@ import {
   getGateInfoAction
 } from "@/lib/schedules/security-actions";
 import { hapticError, hapticSuccess, hapticTick } from "@/lib/ui/haptics";
-import { HighlightCards, type HighlightCard } from "@/components/studio/highlight-cards";
 import { StackTrendChart } from "@/components/studio/stack-trend-chart";
 import { TrendDeltaBadge } from "@/components/studio/trend-delta-badge";
 import { monthProgress } from "@/lib/insights/month-progress";
@@ -23,7 +22,6 @@ const PANELS = [
   { key: "content", label: "일정", icon: CalendarDays },
   { key: "engagement", label: "참여", icon: Heart },
   { key: "trend", label: "트렌드", icon: LineChart },
-  { key: "highlight", label: "하이라이트", icon: Trophy },
   { key: "security", label: "보안", icon: Lock }
 ] as const;
 
@@ -234,8 +232,7 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
     return (
       <>
         <p className="insight-note">
-          최근 6개월 추이 · 배지는 지난달 대비 변화
-          {partial ? " (이번 달은 진행 중이라 지난달 같은 페이스와 비교)" : ""}
+          최근 6개월 · 배지는 지난달 대비{partial ? " (진행 중인 달은 페이스 비교)" : ""}
         </p>
         {series.map((sr) => {
           const cur = sr.values[sr.values.length - 1] ?? 0;
@@ -281,40 +278,6 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
         />
       </>
     );
-  }
-
-  function renderHighlight(d: MonthInsights) {
-    const cards: HighlightCard[] = [
-      {
-        key: "top",
-        emoji: "💗",
-        tone: "top",
-        label: ["인기", "컨텐츠"],
-        main: d.highlight.topHeart ? d.highlight.topHeart.title : "—"
-      },
-      {
-        key: "wd",
-        emoji: "🔥",
-        tone: "wd",
-        label: ["컨텐츠", "최다요일"],
-        main: weekdayLabel(d.busiestWeekday)
-      },
-      {
-        key: "tag",
-        emoji: "🎯",
-        tone: "day",
-        label: ["최다", "컨텐츠"],
-        main: d.highlight.topTag ? `${d.highlight.topTag.name} ${d.highlight.topTag.count}회` : "—"
-      },
-      {
-        key: "streak",
-        emoji: "📺",
-        tone: "hour",
-        label: ["최장 연속", "방송"],
-        main: d.highlight.longestStreak > 0 ? `${d.highlight.longestStreak}일` : "—"
-      }
-    ];
-    return <HighlightCards cards={cards} />;
   }
 
   return (
@@ -380,10 +343,8 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
                   renderContent(data)
                 ) : p.key === "engagement" ? (
                   renderEngagement(data)
-                ) : p.key === "trend" ? (
-                  renderTrend(data)
                 ) : (
-                  renderHighlight(data)
+                  renderTrend(data)
                 )
               ) : null}
             </section>
@@ -460,9 +421,8 @@ function SecurityPanel() {
         🔒 최초공개 게이트 비밀번호
       </p>
       <p className="gate-security-note">
-        아직 공개 전인 최초공개(떡밥) 일정을 편집실에서 열 때 묻는 비밀번호예요. 방송 화면
-        공유 중 오클릭으로 내용이 새는 걸 막아줘요.
-        {isInitial ? " 지금은 초기 비밀번호(0724, 왁굳형 생일) 그대로예요 — 바꿔두는 걸 추천!" : ""}
+        떡밥 일정을 열 때 묻는 비밀번호.
+        {isInitial ? " 지금은 초기값(0724) — 변경 추천." : ""}
       </p>
       <form className="gate-security-form" onSubmit={submit}>
         <label>

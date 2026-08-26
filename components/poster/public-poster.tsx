@@ -2841,7 +2841,7 @@ export function PublicPoster({
           // 1일을 임시 기준으로 쓴다는 걸 시청자에게도 밝힌다(ADR-0008).
           <span
             className="ric-row"
-            title="방송 시작일 2008년 11월 1일 기준 (정확한 날짜는 2008년 11월까지만 알려져 있어요)"
+            title="2008년 11월 1일 기준"
           >
             <em>🎂 데뷔</em>
             <b className="ric-dplus">D+{dplus}</b>

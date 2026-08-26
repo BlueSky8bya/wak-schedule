@@ -185,3 +185,13 @@ Files: components/studio/{month-insights.tsx,insights.css,stack-trend-chart.tsx,
 trend-delta-badge.tsx,highlight-cards.tsx}, components/poster/{public-insights.tsx,
 public-poster.tsx,public-poster.css}, lib/insights/month-progress.ts,
 lib/schedules/insights-actions.ts, app/globals.css, studio-shell.css
+
+### CHG-20260826-017 — STYLE/UX — 4탭·보안 폼 비율·색 타협·계정 클러스터 이사·문구 축약
+
+- 인사이트 하이라이트 탭 제거(일정·참여·트렌드·보안 4탭, 4열 그리드).
+- 보안 탭 폼: 중앙 정렬 max-width 400, 입력 전폭 — 비율 어색함 해소. 설명 한 줄로.
+- 색 타협: 편집실의 밝은 연두 표면을 아이보리 쪽으로(hue 66% 이동·채도 절반),
+  시청자 표면엔 그린 힌트 살짝, 페이지 배경 그라데이션은 양쪽 동일값으로 통일.
+- 관리자(?) 배지·로그아웃을 헤더→액션바 우측(단축키 오른쪽)으로, 높이 30px 통일.
+- 문구 축약: D+ 툴팁 "2008년 11월 1일 기준", 떡밥 힌트·트렌드 노트·보안 설명 압축.
+Files: month-insights.tsx, insights.css, studio-shell.{tsx,css}, public-poster.{tsx,css}, globals.css

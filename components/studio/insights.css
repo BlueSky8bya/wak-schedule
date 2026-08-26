@@ -17,7 +17,7 @@
 
 .insights-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
@@ -27,9 +27,9 @@
   justify-content: center;
   gap: 6px;
   min-width: 0;
-  border: 1px solid var(--line, #e9f2e3);
+  border: 1px solid var(--line, #edeee7);
   border-radius: var(--r-md);
-  background: #fbfef9;
+  background: #fcfdfa;
   padding: 9px 8px;
   font-size: 12.5px;
   font-weight: 800;
@@ -41,7 +41,7 @@
 }
 
 .insights-tab:hover {
-  background: #f3fbed;
+  background: #f6f8f0;
 }
 
 .insights-tab:active {
@@ -98,7 +98,7 @@
   place-items: center;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--line, #e9f2e3);
+  border: 1px solid var(--line, #edeee7);
   border-radius: var(--r-pill);
   background: #fff;
   color: #73955b;
@@ -107,7 +107,7 @@
 }
 
 .insights-arrow:hover:not(:disabled) {
-  background: #f3fbed;
+  background: #f6f8f0;
 }
 
 .insights-arrow:active:not(:disabled) {
@@ -128,7 +128,7 @@
   width: 7px;
   height: 7px;
   border-radius: var(--r-pill);
-  background: #dcecd0;
+  background: #e2e5d7;
   transition: width var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
 }
 
@@ -150,9 +150,9 @@
   justify-content: space-between;
   gap: var(--space-1); /* 4 */
   padding: var(--space-3); /* 12 — 12/14 → 12 정방 */
-  border: 1px solid #f0f9ea;
+  border: 1px solid #f4f5ee;
   border-radius: var(--r-card); /* 카드 공통 radius 패밀리(스튜디오 14px) 유지 */
-  background: linear-gradient(180deg, #fcfffa, #f7fdf3);
+  background: linear-gradient(180deg, #fdfefb, #f9fbf5);
 }
 
 .insight-tile strong {
@@ -182,8 +182,8 @@
 }
 
 .insight-tile[data-tone="heart"] {
-  background: linear-gradient(180deg, #f7fff1, #efffe3);
-  border-color: #e0fbcd;
+  background: linear-gradient(180deg, #fafcf4, #f5f8ea);
+  border-color: #eaefd8;
   /* 하트 박스(2열, 넓음)는 라벨 왼쪽 + 큰 수치 오른쪽 가로 배치로 — 좌우로 길게 채운다. */
   flex-direction: row;
   align-items: center;
@@ -236,7 +236,7 @@
 .insight-bar-track {
   height: 10px;
   border-radius: var(--r-pill);
-  background: #f1f9ec;
+  background: #f4f6ef;
   overflow: hidden;
 }
 
@@ -305,7 +305,10 @@
 .gate-security {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
 }
 .gate-security-note {
   margin: 0;
@@ -317,7 +320,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 320px;
+  width: 100%;
 }
 .gate-security-form label {
   display: flex;
@@ -721,8 +724,8 @@
 /* ── VIC 이식 2차: 하이라이트 카드·다음 방송·인기 목록·시청자 기록 시트(pi-*) ── */
 
 .insight-tile[data-tone="public"] {
-  background: linear-gradient(180deg, #f0fbf3, #e7f7ec);
-  border-color: #cdeed6;
+  background: linear-gradient(180deg, #f6f8f3, #eff3eb);
+  border-color: #dee6d5;
 }
 
 .insight-tile[data-tone="public"] strong {
@@ -923,8 +926,8 @@
 }
 
 .highlight-card[data-tone="wd"] {
-  background: linear-gradient(155deg, #f0fbf3, #e0f4e7);
-  border-color: #cdeed6;
+  background: linear-gradient(155deg, #f6f8f3, #eaefe5);
+  border-color: #dee6d5;
 }
 
 .highlight-card[data-tone="wd"] .hl-main {

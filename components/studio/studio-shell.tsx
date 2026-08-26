@@ -4720,7 +4720,7 @@ export function StudioShell({
                         value={form.teaserRevealAt}
                       />
                       <em className="teaser-when-hint">
-                        이 시각 전엔 시청자에게 제목·태그가 ??? 로 가려지고 공개까지 카운트다운만 보여요.
+                        공개 전엔 ???와 카운트다운만 보여요.
                       </em>
                     </div>
                   ) : null}
@@ -4968,8 +4968,7 @@ export function StudioShell({
           {/* 배포 버전 배지는 왼쪽 데스크 라벨 아래로 이사 — 여기는 저장 상태 칩만.
               칩의 아래 끝선은 역할 배지 버튼의 아래 끝선과 맞춘다(.studio-meta-capsule). */}
           <div className="studio-meta-capsule">{renderSaveStatus()}</div>
-          {/* 미리보기 안내는 역할 배지("?") 설명 팝오버 안 작은 문구로 일원화(별도 플래그 제거). */}
-          {renderRoleBadge()}
+          {/* 역할 배지·로그아웃은 액션바 우측(단축키 옆)으로 이사 — 사용자 지정 배치. */}
           {/* 개발자는 역할 미리보기 드롭다운, 그 외 역할은 시청자 화면 미리보기. */}
           {isDeveloper ? (
             renderPreviewControl()
@@ -4979,21 +4978,6 @@ export function StudioShell({
               {/* '보여주기'는 관리자(owner)만 — 매니저·작업자는 '미리보기'. */}
               {isEffectivelyOwner ? "시청자 화면 보여주기" : "시청자 화면 미리보기"}
             </button>
-          )}
-          {actor.isAuthenticated ? (
-            <form action="/api/auth/logout" method="post">
-              <button
-                className="button io-accent io-logout"
-                onClick={() => startNav("로그아웃 중…")}
-                type="submit"
-               data-act="io-logout">
-                로그아웃
-              </button>
-            </form>
-          ) : (
-            <Link className="button" data-act="login" href="/login">
-              로그인
-            </Link>
           )}
         </div>
       </header>
@@ -5071,7 +5055,26 @@ export function StudioShell({
                 <ChevronDown aria-hidden="true" size={13} />
               </button>
             ) : null}
-            {/* ('지금 잠그기'는 하단 플로팅 배너로 이동 — 사용자 결정. 여기 액션바는 표시 토글만.) */}
+            {/* 역할 배지 + 로그아웃 — 헤더에서 이사(사용자 지정: 단축키 오른쪽, 높이 통일). */}
+            <div className="actionbar-account">
+              {renderRoleBadge()}
+              {actor.isAuthenticated ? (
+                <form action="/api/auth/logout" method="post">
+                  <button
+                    className="button io-accent io-logout"
+                    data-act="io-logout"
+                    onClick={() => startNav("로그아웃 중…")}
+                    type="submit"
+                  >
+                    로그아웃
+                  </button>
+                </form>
+              ) : (
+                <Link className="button" data-act="login" href="/login">
+                  로그인
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -5877,7 +5880,7 @@ export function StudioShell({
                       value={form.teaserRevealAt}
                     />
                     <em className="teaser-when-hint">
-                      이 시각 전엔 시청자에게 제목·태그가 ??? 로 가려지고 공개까지 카운트다운만 보여요.
+                      공개 전엔 ???와 카운트다운만 보여요.
                     </em>
                   </div>
                 ) : null}

@@ -7,13 +7,16 @@
 import "@/components/studio/insights.css";
 
 import { X } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   BroadcastTag,
   ColorPaletteEntry,
   PublicScheduleEvent
 } from "@/lib/domain/schedule-types";
 import type { TrendStack } from "@/lib/schedules/insights-actions";
+import type { PublicBroadcastStats } from "@/lib/schedules/public-loader";
+import { BroadcastHours } from "@/components/studio/broadcast-hours";
+import { CALENDAR_SLUG } from "@/lib/config/site";
 import { StackTrendChart } from "@/components/studio/stack-trend-chart";
 import { hapticTick } from "@/lib/ui/haptics";
 
@@ -53,6 +56,36 @@ export function PublicInsights({ year, month, events, tags, palette, heartCounts
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  // 방송 기록(집계) — 시트를 열 때 공개 API에서 가져온다. 실패와 '방송 없던 달'은 다르다.
+  const [broadcast, setBroadcast] = useState<PublicBroadcastStats | null>(null);
+  const [bLoading, setBLoading] = useState(true);
+  const [bFailed, setBFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    setBLoading(true);
+    setBFailed(false);
+    fetch(`/api/public/${CALENDAR_SLUG}/broadcast?year=${year}&month=${month}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (!alive) return;
+        if (!json || !Array.isArray(json.months)) {
+          setBFailed(true);
+          return;
+        }
+        setBroadcast(json as PublicBroadcastStats);
+      })
+      .catch(() => {
+        if (alive) setBFailed(true);
+      })
+      .finally(() => {
+        if (alive) setBLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [year, month, reloadKey]);
 
   const d = useMemo(() => {
     const months = monthsBack(year, month, 6);
@@ -234,10 +267,38 @@ export function PublicInsights({ year, month, events, tags, palette, heartCounts
             </p>
           </div>
 
-          {/* 인기 일정 — 하트 개수 비공개, 1위 대비 비율 막대만. */}
-          {d.popular.length > 0 ? (
-            <div className="pi-card">
-              <span className="pi-label">팬치들이 많이 누른 일정</span>
+          {/* 방송 시간 — 편집실과 같은 BroadcastHours(6개월 막대 + 이 달 일별 + 요약). */}
+          <div className="pi-card pi-broadcast">
+            <span className="pi-label">방송 시간</span>
+            {bLoading ? (
+              <div className="pi-skeleton" aria-hidden="true" />
+            ) : bFailed || !broadcast ? (
+              <p className="pi-empty pi-failed">
+                방송 기록을 못 불러왔어요.
+                <button
+                  className="pi-retry"
+                  onClick={() => setReloadKey((k) => k + 1)}
+                  type="button"
+                >
+                  다시 시도
+                </button>
+              </p>
+            ) : (
+              <BroadcastHours
+                broadcastDaily={broadcast.daily}
+                broadcastDays={broadcast.days}
+                broadcastHours={broadcast.hours}
+                months={broadcast.months}
+              />
+            )}
+          </div>
+
+          {/* 인기 일정 — 하트 개수 비공개, 1위 대비 비율 막대만. 비어도 자리 유지. */}
+          <div className="pi-card">
+            <span className="pi-label">팬치들이 많이 누른 일정</span>
+            {d.popular.length === 0 ? (
+              <p className="pi-empty">아직 하트를 받은 일정이 없어요.</p>
+            ) : (
               <ol className="pi-top">
                 {d.popular.map((p, i) => (
                   <li key={p.id}>
@@ -249,8 +310,8 @@ export function PublicInsights({ year, month, events, tags, palette, heartCounts
                   </li>
                 ))}
               </ol>
-            </div>
-          ) : null}
+            )}
+          </div>
 
           {/* 6개월 추이 — 편집실과 같은 누적 막대 차트. 하트는 숫자 없이 비율만. */}
           <div className="pi-card">

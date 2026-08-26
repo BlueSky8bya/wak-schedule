@@ -13,5 +13,6 @@
 | [ADR-0009](decisions/ADR-0009-monthly-memo.md) | Accepted(2차 수정) | 제품 | 그 달 메모 — 편집실 전용, 포스터 아바타 제거, public_memo 재사용 | 시청자 쓰기 요구(별개 L3) |
 | [ADR-0010](decisions/ADR-0010-auto-vod.md) | Accepted | 연동 | VOD 연동 자동(비공식 API 허용, 서버 캐시·조용한 실패) | SOOP 공식 API / 형식 변경 |
 | [ADR-0011](decisions/ADR-0011-insights-scope.md) | Accepted | 제품 | 월별 인사이트 = 일정 파생 데이터만(수집 재도입 없음) | 방문 지표 요구 시 |
+| [ADR-0012](decisions/ADR-0012-broadcast-hours.md) | Accepted | 제품 | 방송시간 추적 재도입 — 라이브 캐시 피기백(고정 부하) | 표본 공백 문제 시 |
 
 열림: A-04(개인 도구 저장소 잔류 여부). A-05는 ADR-0009로 해소.

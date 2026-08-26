@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchLiveState, type LiveState } from "@/lib/live";
+import { recordBroadcastSample } from "@/lib/live/record";
 
 // 스트리머의 SOOP 라이브 상태 — 우리 서버가 대신 폴링한다(시청자 브라우저가 SOOP를 직접
 // 때리지 않게: CORS·남용 방지). 비공식 엔드포인트라 깨질 수 있어 실패하면 조용히 오프라인 처리.
@@ -17,6 +18,8 @@ export async function GET() {
   const now = Date.now();
   if (!cache || now - cache.at > CACHE_TTL_MS) {
     cache = { at: now, data: await fetchLiveState() };
+    // 방송 세션 도장(ADR-0012) — 캐시 갱신 순간에만(고정 부하), 응답을 막지 않는다.
+    recordBroadcastSample(cache.data);
   }
   return NextResponse.json(cache.data, {
     headers: { "Cache-Control": "public, max-age=30, s-maxage=30" }

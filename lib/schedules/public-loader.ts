@@ -469,87 +469,74 @@ function samplePublicSchedule(calendarSlug: string): PublicSchedule {
   };
 }
 
-// ── 공개 방송 기록(시청자 인사이트) ────────────────────────────────────────
-// broadcast_session 테이블은 RLS deny-all이라 시청자가 직접 못 읽는다(운영 데이터). 대신 집계만
-// 내주는 SECURITY DEFINER RPC(get_public_broadcast_stats, 0049)를 anon 클라이언트로 호출한다.
-// 나가는 값은 '월별 시간/방송일수/세션수'뿐 — 개별 세션(시작·종료 시각, 방송 제목)은 절대 안 나간다.
-export type PublicBroadcastMonth = {
-  ym: string; // "2026-07" (KST 시작일 귀속)
-  hours: number; // 그 달 총 방송시간(시간, 소수 1자리)
-  days: number; // 방송한 날 수
-  sessions: number; // 방송 횟수
+// (VIC의 공개 방송 기록 함수들 제거 — 존재하지 않는 RPC 0049/0050을 부르던 죽은 코드.
+//  아래 ADR-0012 구현이 broadcast_sessions에서 직접 집계한다.)
+
+// ── 방송 시간 집계(ADR-0012) — broadcast_sessions(공개 읽기)에서 계산 ─────────────
+// KST 달력 기준. 세션을 일 단위로 겹침 분할해 정확히 귀속한다(자정 넘는 방송 분리).
+export type PublicBroadcastStats = {
+  months: string[]; // 6개월(YYYY-MM, 오래된→최신)
+  hours: number[]; // 월별 총 방송시간(시간, 소수 1자리)
+  daily: number[]; // 보는 달 1..말일 일별 방송시간(시간)
+  days: number; // 보는 달 방송일 수(시간>0)
 };
 
-// 서버측 unstable_cache를 걷어내고 RPC를 직접 부른다 — CDN 캐시(라우트 60초)와 이중으로 쌓이면
-// 값이 최대 2분에 걸쳐 계단식으로 바뀌어, 보는 사람이 오류인지 갱신 중인지 구분할 수 없었다.
-// 집계 RPC는 가볍고 CDN이 초당 1회 미만으로만 흘려보내므로 서버 캐시 없이도 부하 문제 없음.
-const loadPublicBroadcastStats = async (fromDay: string): Promise<PublicBroadcastMonth[]> => {
-    const supabase = createPublicReadClient();
-    if (!supabase) {
-      return [];
-    }
-    const { data, error } = await supabase.rpc("get_public_broadcast_stats", {
-      p_from_day: fromDay
-    });
-    if (error || !data) {
-      return [];
-    }
-    // 명시적 DTO 구성(스프레드 금지 — 공개 경계를 넘는 값은 하나하나 고른다).
-    return (data as { ym: string; hours: number; days: number; sessions: number }[]).map((row) => ({
-      ym: String(row.ym),
-      hours: Number(row.hours ?? 0),
-      days: Number(row.days ?? 0),
-      sessions: Number(row.sessions ?? 0)
-    }));
-};
+const KST_MS = 9 * 3600_000;
 
-// 최근 N개월(이번 달 포함) 방송 기록. 시청자·비로그인 모두 볼 수 있다.
-export async function getPublicBroadcastStats(months = 6): Promise<PublicBroadcastMonth[]> {
-  if (!isSupabaseConfigured()) {
-    return [];
+export async function getPublicBroadcastStats(
+  year: number,
+  month: number
+): Promise<PublicBroadcastStats | null> {
+  const supabase = createPublicReadClient();
+  if (!supabase) return null;
+
+  const monthKeys: string[] = [];
+  for (let i = 5; i >= 0; i -= 1) {
+    const d = new Date(Date.UTC(year, month - 1 - i, 1));
+    monthKeys.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`);
   }
-  const { year, month } = getCurrentKstYearMonth();
-  const from = new Date(Date.UTC(year, month - 1 - (months - 1), 1));
-  const fromDay = from.toISOString().slice(0, 10);
-  return loadPublicBroadcastStats(fromDay);
-}
+  const windowStartIso = new Date(
+    Date.UTC(year, month - 6, 1) - KST_MS
+  ).toISOString();
 
-// 일별 방송시간(그 달) — 관리자 인사이트와 같은 일별 막대를 시청자에게도 그리기 위해.
-// 역시 집계 RPC(0050)만 호출한다: (KST 시작일, 시간)뿐, 세션 원본은 안 나간다.
-const loadPublicBroadcastDaily = async (
-  fromDay: string,
-  toDay: string
-): Promise<{ day: string; hours: number }[]> => {
-    const supabase = createPublicReadClient();
-    if (!supabase) {
-      return [];
-    }
-    const { data, error } = await supabase.rpc("get_public_broadcast_daily", {
-      p_from_day: fromDay,
-      p_to_day: toDay
-    });
-    if (error || !data) {
-      return [];
-    }
-    return (data as { day: string; hours: number }[]).map((row) => ({
-      day: String(row.day),
-      hours: Number(row.hours ?? 0)
-    }));
-};
+  const { data, error } = await supabase
+    .from("broadcast_sessions")
+    .select("started_at, last_seen_at, ended_at")
+    .gte("last_seen_at", windowStartIso)
+    .order("started_at", { ascending: true })
+    .limit(1000);
+  if (error) return null;
 
-// 이번 달 1일~말일의 일별 방송시간(길이 = 그 달 일수, 방송 없는 날은 0).
-export async function getPublicBroadcastDaily(year: number, month: number): Promise<number[]> {
-  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  if (!isSupabaseConfigured()) {
-    return new Array(daysInMonth).fill(0);
+  const hoursByYm = new Map<string, number>(monthKeys.map((ym) => [ym, 0]));
+  const daysInView = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const daily = new Array(daysInView).fill(0) as number[];
+  const viewYm = `${year}-${String(month).padStart(2, "0")}`;
+
+  for (const row of (data ?? []) as {
+    started_at: string;
+    last_seen_at: string;
+    ended_at: string | null;
+  }[]) {
+    let cur = new Date(row.started_at).getTime();
+    const end = new Date(row.ended_at ?? row.last_seen_at).getTime();
+    if (!Number.isFinite(cur) || !Number.isFinite(end) || end <= cur) continue;
+    // KST 일 단위로 자르며 귀속.
+    while (cur < end) {
+      const kst = new Date(cur + KST_MS);
+      const ym = `${kst.getUTCFullYear()}-${String(kst.getUTCMonth() + 1).padStart(2, "0")}`;
+      const dayEndKst = Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate() + 1);
+      const sliceEnd = Math.min(end, dayEndKst - KST_MS);
+      const h = (sliceEnd - cur) / 3600_000;
+      if (hoursByYm.has(ym)) hoursByYm.set(ym, (hoursByYm.get(ym) ?? 0) + h);
+      if (ym === viewYm) daily[kst.getUTCDate() - 1] += h;
+      cur = sliceEnd;
+    }
   }
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const rows = await loadPublicBroadcastDaily(
-    `${year}-${pad(month)}-01`,
-    `${year}-${pad(month)}-${pad(daysInMonth)}`
-  );
-  const byDay = new Map(rows.map((r) => [r.day.slice(0, 10), r.hours]));
-  return Array.from({ length: daysInMonth }, (_, i) =>
-    byDay.get(`${year}-${pad(month)}-${pad(i + 1)}`) ?? 0
-  );
+
+  return {
+    months: monthKeys,
+    hours: monthKeys.map((ym) => Math.round((hoursByYm.get(ym) ?? 0) * 10) / 10),
+    daily: daily.map((h) => Math.round(h * 10) / 10),
+    days: daily.filter((h) => h > 0.05).length
+  };
 }

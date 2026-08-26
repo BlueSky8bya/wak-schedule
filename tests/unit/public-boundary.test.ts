@@ -13,6 +13,7 @@ const repoRoot = join(fileURLToPath(new URL(".", import.meta.url)), "..", "..");
 const publicSurfaceFiles = [
   "lib/schedules/public-loader.ts",
   "app/api/public/[calendarSlug]/events/route.ts",
+  "app/api/public/[calendarSlug]/broadcast/route.ts",
   // (P2-PROTO-1: proposals 라우트 삭제 — 가짜 데이터 엔드포인트였다)
 ];
 

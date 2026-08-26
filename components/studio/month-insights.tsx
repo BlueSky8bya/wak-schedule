@@ -15,6 +15,9 @@ import { hapticError, hapticSuccess, hapticTick } from "@/lib/ui/haptics";
 import { StackTrendChart } from "@/components/studio/stack-trend-chart";
 import { TrendDeltaBadge } from "@/components/studio/trend-delta-badge";
 import { monthProgress } from "@/lib/insights/month-progress";
+import { BroadcastHours } from "@/components/studio/broadcast-hours";
+import type { PublicBroadcastStats } from "@/lib/schedules/public-loader";
+import { CALENDAR_SLUG } from "@/lib/config/site";
 
 // 월별 인사이트 — VIC(빅토리)의 4패널 문법·디자인을 그대로 잇는다(사용자 결정 2026-08-26:
 // 디자인은 VIC 것, 탭 구성만 이 프로젝트에 맞게). 데이터는 일정 파생만(ADR-0011).
@@ -49,6 +52,8 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
   const [data, setData] = useState<MonthInsights | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  // 방송 시간(트렌드 탭) — 공개 집계 라우트에서(시청자 시트와 같은 값).
+  const [broadcast, setBroadcast] = useState<PublicBroadcastStats | null>(null);
 
   const load = useCallback(
     async (year: number, month: number) => {
@@ -73,6 +78,20 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
   useEffect(() => {
     void load(view.year, view.month);
   }, [view, load]);
+
+  useEffect(() => {
+    let alive = true;
+    setBroadcast(null);
+    fetch(`/api/public/${CALENDAR_SLUG}/broadcast?year=${view.year}&month=${view.month}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (alive && json && Array.isArray(json.months)) setBroadcast(json as PublicBroadcastStats);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [view]);
 
   function moveMonth(delta: number) {
     hapticTick();
@@ -236,6 +255,14 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
         <p className="insight-note">
           최근 6개월 · 배지는 지난달 대비{partial ? " (진행 중인 달은 페이스 비교)" : ""}
         </p>
+        {broadcast ? (
+          <BroadcastHours
+            broadcastDaily={broadcast.daily}
+            broadcastDays={broadcast.days}
+            broadcastHours={broadcast.hours}
+            months={broadcast.months}
+          />
+        ) : null}
         {series.map((sr) => {
           const cur = sr.values[sr.values.length - 1] ?? 0;
           const prev = sr.values[sr.values.length - 2] ?? 0;

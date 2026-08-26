@@ -219,3 +219,16 @@ Related: ADR-0009(4차 — 계정별)
 - 역할 배지 팝오버: 배지가 액션바 오른쪽 끝으로 이사한 뒤 화면 밖으로 잘림 —
   오른쪽 기준 정렬 + 긴 이메일 overflow-wrap.
 Files: lib/schedules/security-actions.ts, components/studio/{month-insights.tsx,studio-shell.css}
+
+### CHG-20260826-020 — FEAT — 방송 시간 추적 재도입 + '이 달 기록' 4파트 완성 (ADR-0012)
+
+- broadcast_sessions(0064) + /api/live 캐시 갱신 피기백 도장(분당 ≤3회 고정 부하,
+  BTIME 시작·last_seen 종료). 공개 집계 라우트 /api/public/<slug>/broadcast
+  (public-loader만 — BR-PUBLIC-001, 경계 테스트 등록 → 215개).
+- VIC BroadcastHours 차트 이식 — 시청자 '이 달 기록' 방송 시간 카드 + 편집실
+  트렌드 탭. '팬치들이 많이 누른 일정'은 하트 0이어도 빈 문구로 항상 표시.
+- public-loader의 죽은 VIC 방송 함수(존재하지 않는 RPC 0049/0050 호출) 제거.
+Files: db/migrations/0064, lib/live/record.ts, app/api/live/route.ts,
+app/api/public/[calendarSlug]/broadcast/route.ts, lib/schedules/public-loader.ts,
+components/studio/{broadcast-hours.tsx,insights.css,month-insights.tsx},
+components/poster/public-insights.tsx, tests/unit/public-boundary.test.ts

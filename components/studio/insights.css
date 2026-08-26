@@ -1406,3 +1406,108 @@ html[data-reduce-motion] .pi-retry:active {
   border: 1px solid #f5c98a;
   color: #b5491d;
 }
+
+/* ── VIC 방송 시간 차트(bcast-*) 이식 ── */
+
+.bcast-trend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  border-bottom: 1px dashed #e9f2e2;
+}
+
+.bcast-chips {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: #92a386;
+}
+
+.bcast-chips strong {
+  color: #8ed65b;
+  font-weight: 800;
+}
+
+.bcast-daily {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 40px;
+}
+
+.bcast-daily {
+  position: relative; /* 일별 값 툴팁(.bcast-tip)의 기준 */
+}
+
+.bcast-tip {
+  position: absolute;
+  bottom: calc(100% + 3px);
+  transform: translateX(-50%);
+  z-index: 5;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: #405035;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 10px rgb(17 24 39 / 24%);
+}
+
+.bcast-dbar[data-active] {
+  filter: brightness(1.15) saturate(1.15);
+  box-shadow: 0 0 0 2px rgb(107 91 214 / 32%);
+}
+
+.bcast-dcol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+}
+
+.bcast-dwrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bcast-dbar {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: #eef6e8;
+  transition: height 0.4s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1)), filter 0.12s var(--ease, ease);
+}
+
+.bcast-dbar[data-on] {
+  background: linear-gradient(180deg, #acf07c, #8ed65b);
+}
+
+.bcast-dcol:hover .bcast-dbar[data-on] {
+  filter: brightness(1.12) saturate(1.1);
+}
+
+/* 아직 오지 않은 날 — '방송 안 함(0)'과 구분. 같은 회색이면 이번 달 후반이 통째로 쉰 것처럼 보인다. */
+.bcast-dcol.fut .bcast-dbar,
+.bcast-dcol.fut .bcast-dx {
+  opacity: 0.4;
+}
+
+.bcast-dx {
+  margin-top: 2px;
+  height: 11px;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  color: #c9d6bf;
+  line-height: 1;
+}
+
+.bcast-empty {
+  margin: 0;
+}

@@ -135,7 +135,7 @@ const MEMO_FONTS = new Set([
   "blackhan"
 ]);
 const MEMO_SIZE_MIN = 12;
-const MEMO_SIZE_MAX = 24; // 스테퍼(±1)라 연속 정수 허용
+const MEMO_SIZE_MAX = 28; // 4단 스테퍼 최대(아주 크게 28)
 
 type MemoRow = {
   id: string;

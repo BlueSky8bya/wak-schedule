@@ -44,8 +44,8 @@ const FONT_PRESETS = [
 const SIZE_STEPS = [
   { px: 14, label: "작게" },
   { px: 16, label: "기본" },
-  { px: 18, label: "크게" },
-  { px: 22, label: "아주 크게" }
+  { px: 20, label: "크게" },
+  { px: 28, label: "아주 크게" } // 최대 상향(사용자 2026-08-26)
 ] as const;
 function nearestSizeIdx(px: number): number {
   let best = 0;
@@ -100,6 +100,7 @@ function previewOf(n: MemoNote): string {
 }
 
 export function MemoNotes({ canWrite, actions }: Props) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const [notes, setNotes] = useState<MemoNote[]>([]);
   const [status, setStatus] = useState<"loading" | "idle" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -278,13 +279,29 @@ export function MemoNotes({ canWrite, actions }: Props) {
     const byId = new Map(notesRef.current.map((n) => [n.id, n]));
     setNotes(ids.map((id) => byId.get(id)).filter((n): n is MemoNote => Boolean(n)));
   }
+  // 리스너는 window에 단다 — 재정렬로 행 DOM이 이동하면(제거+삽입) 요소 pointer capture가
+  // 끊겨 pointerup을 잃는다(유령 잔류·겹침 버그의 원인). window는 어디서 떼도 받는다.
+  const dragHandlersRef = useRef<{
+    move: (e: PointerEvent) => void;
+    up: () => void;
+    cancel: () => void;
+  } | null>(null);
+  function detachDragListeners() {
+    const h = dragHandlersRef.current;
+    if (!h) return;
+    window.removeEventListener("pointermove", h.move);
+    window.removeEventListener("pointerup", h.up);
+    window.removeEventListener("pointercancel", h.cancel);
+    window.removeEventListener("blur", h.cancel);
+    dragHandlersRef.current = null;
+  }
   function onHandleDown(e: React.PointerEvent, id: string) {
     if (!canWrite) return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (dragIdRef.current) return; // 이미 드래그 중 — 중복 시작 금지
     const row = (e.currentTarget as HTMLElement).closest("[data-memoid]") as HTMLElement | null;
     if (!row) return;
     e.preventDefault();
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     const rect = row.getBoundingClientRect();
     const ghost = row.cloneNode(true) as HTMLElement;
     ghost.classList.add("memo-row-ghost");
@@ -299,34 +316,43 @@ export function MemoNotes({ canWrite, actions }: Props) {
     lastDropRef.current = null;
     setDraggingId(id);
     hapticTick();
-  }
-  function onHandleMove(e: React.PointerEvent) {
-    const from = dragIdRef.current;
-    const ghost = ghostRef.current;
-    if (!from || !ghost) return;
-    ghost.style.left = `${e.clientX - ghostOffsetRef.current.x}px`;
-    ghost.style.top = `${e.clientY - ghostOffsetRef.current.y}px`;
-    const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
-    const row = el?.closest("[data-memoid]") as HTMLElement | null;
-    const overId = row?.getAttribute("data-memoid");
-    if (!row || !overId || overId === from) return;
-    const r = row.getBoundingClientRect();
-    const prev = lastDropRef.current;
-    const edge = edgeForPointer(e.clientY, r.top, r.height, prev?.overId === overId ? prev.edge : null);
-    if (prev && prev.overId === overId && prev.edge === edge) return;
-    lastDropRef.current = { overId, edge };
-    const cur = orderIds();
-    const next = reorderAtEdge(cur, from, overId, edge);
-    if (next !== cur) {
-      applyOrder(next);
-      hapticTick();
-    }
+    const move = (ev: PointerEvent) => {
+      const from = dragIdRef.current;
+      const g = ghostRef.current;
+      if (!from || !g) return;
+      g.style.left = `${ev.clientX - ghostOffsetRef.current.x}px`;
+      g.style.top = `${ev.clientY - ghostOffsetRef.current.y}px`;
+      const el = document.elementFromPoint(ev.clientX, ev.clientY) as HTMLElement | null;
+      const overRow = el?.closest("[data-memoid]") as HTMLElement | null;
+      const overId = overRow?.getAttribute("data-memoid");
+      if (!overRow || !overId || overId === from) return;
+      const r = overRow.getBoundingClientRect();
+      const prev = lastDropRef.current;
+      const edge = edgeForPointer(ev.clientY, r.top, r.height, prev?.overId === overId ? prev.edge : null);
+      if (prev && prev.overId === overId && prev.edge === edge) return;
+      lastDropRef.current = { overId, edge };
+      const cur = orderIds();
+      const next = reorderAtEdge(cur, from, overId, edge);
+      if (next !== cur) {
+        applyOrder(next);
+        hapticTick();
+      }
+    };
+    const up = () => finishReorder(false);
+    const cancel = () => finishReorder(true);
+    dragHandlersRef.current = { move, up, cancel };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up, { once: true });
+    window.addEventListener("pointercancel", cancel, { once: true });
+    window.addEventListener("blur", cancel, { once: true });
   }
   function finishReorder(cancelled: boolean) {
+    detachDragListeners();
     const from = dragIdRef.current;
-    if (!from) return;
+    // 유령은 어떤 경로로 끝나든 반드시 제거(잔류 금지).
     ghostRef.current?.remove();
     ghostRef.current = null;
+    if (!from) return;
     dragIdRef.current = null;
     setDraggingId(null);
     const snapshot = dragSnapshotRef.current;
@@ -350,12 +376,14 @@ export function MemoNotes({ canWrite, actions }: Props) {
       }
     })();
   }
-  function onHandleUp() {
-    finishReorder(false);
-  }
-  function onHandleCancel() {
-    finishReorder(true);
-  }
+  // 언마운트 시 드래그 흔적 정리.
+  useEffect(() => {
+    return () => {
+      detachDragListeners();
+      ghostRef.current?.remove();
+      ghostRef.current = null;
+    };
+  }, []);
   // 드래그 중 Esc 취소.
   useEffect(() => {
     if (!draggingId) return;
@@ -382,7 +410,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
   const openNote = openId ? (notes.find((n) => n.id === openId) ?? null) : null;
 
   return (
-    <div className="memo-notes">
+    <div className="memo-notes" ref={rootRef}>
       {/* + 는 헤더 오른쪽 끝(사용자 심판 2026-08-26 — Apple 툴바 trailing 문법). */}
       <div className="memo-notes-head">
         <span className="memo-notes-title">📝 메모</span>
@@ -443,10 +471,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
                     <button
                       aria-label="순서 이동"
                       className="memo-handle"
-                      onPointerCancel={onHandleCancel}
                       onPointerDown={(e) => onHandleDown(e, n.id)}
-                      onPointerMove={onHandleMove}
-                      onPointerUp={onHandleUp}
                       type="button"
                      data-act="memo-drag">
                       <GripVertical aria-hidden="true" size={14} />
@@ -488,6 +513,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
       {openNote ? (
         <MemoWindow
           key={openNote.id}
+          anchorRef={rootRef}
           canWrite={canWrite}
           focusTick={focusTick}
           note={openNote}
@@ -508,6 +534,7 @@ function MemoWindow({
   canWrite,
   saveState,
   focusTick,
+  anchorRef,
   onPatch,
   onFlushNow,
   onRetry,
@@ -517,6 +544,7 @@ function MemoWindow({
   canWrite: boolean;
   saveState: SaveState;
   focusTick: number;
+  anchorRef: React.RefObject<HTMLDivElement | null>;
   onPatch: (patch: Patch) => void;
   onFlushNow: () => void;
   onRetry: () => void;
@@ -528,7 +556,15 @@ function MemoWindow({
   const winRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState(() => {
     const saved = typeof window !== "undefined" ? loadPos(note.id) : null;
-    return saved ?? { x: Math.max(24, window.innerWidth - 440), y: 96 };
+    if (saved) return saved;
+    // 기본 위치 = 메모 패널 바로 옆(사용자 지적 — 화면 반대편에 뜨지 않게).
+    const a = anchorRef.current?.getBoundingClientRect();
+    const w = Math.min(400, window.innerWidth - 32);
+    if (a) {
+      const x = a.left > window.innerWidth / 2 ? a.left - w - 16 : a.right + 16;
+      return clampPos(x, Math.max(24, a.top), w, 440);
+    }
+    return { x: Math.max(24, window.innerWidth - 440), y: 96 };
   });
   // 드래그 종료 저장은 렌더 state가 아니라 최신 ref에서(감사 P1 — 낡은 좌표 저장 위험).
   const posRef = useRef(pos);
@@ -784,7 +820,7 @@ function MemoWindow({
             onClick={() => setStylePart({ bold: !note.bold })}
             type="button"
            data-act="memo-bold">
-            전체 강조 {note.bold ? "켬" : "끔"}
+            전체 강조
           </button>
         </div>
       ) : null}

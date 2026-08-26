@@ -82,7 +82,7 @@ import { isTaxonomyV3, legacyTagView } from "@/lib/tags/taxonomy";
 import { createTagVisualResolver } from "@/lib/tags/tag-visual";
 import { toggleEventHeartAction } from "@/lib/schedules/heart-actions";
 import { removeTagAction, saveTagsAction } from "@/lib/schedules/tag-actions";
-import { updateCalendarMemoAction } from "@/lib/schedules/memo-actions";
+import { getMonthMemoAction, saveMonthMemoAction } from "@/lib/schedules/memo-actions";
 import { getMonthInsightsAction } from "@/lib/schedules/insights-actions";
 import { MonthMemo } from "@/components/studio/month-memo";
 import { MonthInsightsPanel } from "@/components/studio/month-insights";
@@ -328,7 +328,6 @@ export function StudioShell({
   // 같은 일정의 모든 조각이 한 블록처럼 함께 반응하게 호버 중인 띠 id를 들고 있는다.
   // 공개 범위 + 옵션(미정·업도움·떡밥) 묶음은 기본으로 접혀 있다 — 대부분의 일정이 '모두 공개 +
   // 옵션 없음'이라 매번 펼칠 이유가 없다. 접힌 상태에서도 헤더 요약으로 현재 값이 보인다.
-  const [scopeFoldOpen, setScopeFoldOpen] = useState(false);
   // 단축키 안내바는 기본으로 접어 달력을 더 넓게 본다 — '단축키 설명' 탭을 누르면 펼쳐진다.
   const [kbdHintsOpen, setKbdHintsOpen] = useState(false);
   const backdropPressRef = useRef(false); // 모달 배경 클릭 판정(텍스트 드래그 보호)
@@ -1072,14 +1071,6 @@ export function StudioShell({
       </div>
     ) : null;
 
-  // 접힌 '옵션' 헤더에 현재 값을 한 줄로 요약한다 — 접혀 있어도 이 일정이 미정인지, 최초공개인지
-  // 펼치지 않고 바로 보이게(접기가 정보를 숨기면 안 된다).
-  const scopeFoldSummary = [
-    form.isTentative ? "미정" : null,
-    form.teaser ? "🔮 최초공개" : null
-  ]
-    .filter(Boolean)
-    .join(" · ");
   // 편집 카드 임시 보관(드래프트) — **메모리 전용**(P0-PRIV-1, ADR-0011 L3). 같은 세션 안에서
   // 카드를 오갈 때만 복원되고, 새로고침하면 사라진다(localStorage 영속 금지 — 게시 전 내용 잔존 방지).
   // baseline = '깨끗한' 기준 지문(원본 일정 또는 빈 새 카드). form이 이와 다르면 미저장 변경 → 보관.
@@ -4613,34 +4604,8 @@ export function StudioShell({
     );
   }
 
-  // 업 도움 편집 — 켜기/끄기 + 기간 + 링크 + 링크 확인. 웹 폼과 모바일 편집 시트 공용.
-  // 업 도움 기간·링크 입력부. editable=true면 신뢰 멤버도 고칠 수 있다(토글은 별도, 소유자 전용).
-
-  // 옵션 줄(미정 토글). VIC의 '업 도움' 토글은 이 프로젝트에 없다.
-  function renderSupportEditor() {
-    return renderTentativeToggle();
-  }
-
-  // #미정: 아직 확정 아님 토글. 켜면 카드에 점선+'미정'으로 표시되고 시청자도 본다(공개 안전 상태값).
-  function renderTentativeToggle() {
-    return (
-      <button
-        aria-label="미정(아직 확정 아님) 표시"
-        aria-pressed={form.isTentative}
-        className={`opt-chip tentative${form.isTentative ? " on" : ""}`}
-        disabled={!canEdit}
-        onClick={() => {
-          hapticTick();
-          setForm((current) => ({ ...current, isTentative: !current.isTentative }));
-        }}
-        type="button"
-       data-act="미정 표시">
-        <span className="opt-chip-ic" aria-hidden="true">🕗</span>
-        <span className="opt-chip-label">아직 확정 아님</span>
-        <span className="opt-chip-mark" aria-hidden="true">✓</span>
-      </button>
-    );
-  }
+  // ('아직 확정 아님(미정)' 토글 제거 — 사용자 결정 2026-08-26. isTentative 데이터 모델과
+  //  카드 표시(점선+'미정')는 남긴다: 과거 데이터 호환 + 되살리기 쉬움.)
 
   // 신뢰 멤버(매니저·작업자)용 "업 도움 수정" 시트 — 기간·링크만 고친다(토글·삭제 없음).
   // 모바일 매니저용 태그 수정 시트 — 일정의 태그 할당(최대 2개)만 고친다. toggleEventTag가
@@ -4727,29 +4692,8 @@ export function StudioShell({
             />
             {renderTitleHelper()}
 
-            {/* 설정 그룹 카드 — 공개 범위 + 업 도움을 한 카드에 묶어 목록처럼.
-                P1-FLOW-1(Quick Add): 데스크톱과 동일하게 기본 접힘 — 대부분의 일정이 '모두 공개 +
-                옵션 없음'이라, 첫 생성 흐름은 제목→태그→저장만 보이게 한다. 접힌 헤더에 현재
-                값 요약(scopeFoldSummary)을 항상 보여줘 접기가 정보를 숨기지 않는다. */}
-            <div className={`me-group me-fold${scopeFoldOpen ? " open" : ""}`}>
-              <button
-                aria-expanded={scopeFoldOpen}
-                className="me-fold-head"
-                onClick={() => {
-                  hapticTick();
-                  setScopeFoldOpen((v) => !v);
-                }}
-                type="button"
-               data-act="me-fold-head">
-                <span className="me-row-label">공개 범위 · 옵션</span>
-                <span className="me-fold-summary">{scopeFoldSummary}</span>
-                <ChevronDown aria-hidden="true" className="me-fold-chev" size={16} />
-              </button>
-              {scopeFoldOpen ? (
-              <div className="me-fold-body">
-              <div className="me-sep" />
-              {renderSupportEditor()}
-              {/* 최초공개(가림) — 웹과 같은 구조(teaser-field + 칩 + 공개시각 카드/힌트). */}
+            {/* 옵션은 최초공개 하나뿐(사용자 결정 2026-08-26) — 접기 없이 바로 노출. */}
+            <div className="me-group">
                 <div className="teaser-field">
                   <button
                     aria-pressed={form.teaser}
@@ -4781,8 +4725,6 @@ export function StudioShell({
                     </div>
                   ) : null}
                 </div>
-              </div>
-              ) : null}
             </div>
 
             {/* 태그 그룹 — 대분류→세부 드릴다운 + 검색(2계층). 카드 색은 대분류로 ≤2 표시. */}
@@ -4922,8 +4864,12 @@ export function StudioShell({
             <div className="avatar-dock-inner">
               <MonthMemo
                 canWrite={canEdit && !previewRole}
-                initialMemo={schedule.calendar.publicMemo}
-                saveAction={updateCalendarMemoAction}
+                loadAction={getMonthMemoAction}
+                monthLabel={`${view.month}월`}
+                onPickSide={pickAvatarSide}
+                saveAction={saveMonthMemoAction}
+                side={avatarSide}
+                ym={`${view.year}-${String(view.month).padStart(2, "0")}`}
               />
             </div>
           </div>
@@ -5086,30 +5032,7 @@ export function StudioShell({
               </button>
             </>
           ) : null}
-          {/* 메모 패널 — 항상 켜짐(끄기 없음), 좌/우 위치만 고른다. */}
-          {avatarEditor ? (
-            <div className="studio-avatar-ctl" role="group" aria-label="메모 위치 설정">
-              <span className="avatar-ctl-label">📝 메모</span>
-              <div className="avatar-ctl-side" role="group" aria-label="메모 위치">
-                <button
-                  type="button"
-                  className={avatarSide === "left" ? "on" : ""}
-                  aria-pressed={avatarSide === "left"}
-                  onClick={() => pickAvatarSide("left")}
-                >
-                  왼쪽
-                </button>
-                <button
-                  type="button"
-                  className={avatarSide === "right" ? "on" : ""}
-                  aria-pressed={avatarSide === "right"}
-                  onClick={() => pickAvatarSide("right")}
-                >
-                  오른쪽
-                </button>
-              </div>
-            </div>
-          ) : null}
+          {/* (메모 좌/우 토글은 메모 레이어 안 중앙으로 이사 — 사용자 결정 2026-08-26.) */}
           {/* 우측 묶음: 단축키 + 비공개 일정 보기(토글) + 달력 꾸미기.
               (저장 상태 칩은 헤더의 버전 캡슐 아래로 이사 — 사용자 지정 배치.) */}
           <div className="studio-actionbar-right">
@@ -5905,31 +5828,9 @@ export function StudioShell({
             </label>
             {renderTitleHelper()}
 
-            {/* 공개 범위 + 옵션(미정·업도움·떡밥)은 접어 둔다 — 대부분의 일정은 '모두 공개 + 옵션
-                없음'이라 매번 펼쳐 볼 필요가 없다. 제목·태그(자주 쓰는 것)를 먼저 보이게 하고,
-                이 묶음은 헤더에 현재 상태를 요약해 보여준 뒤 필요할 때만 펼친다. 기본 접힘. */}
-            <div className={`fold-field${scopeFoldOpen ? " open" : ""}`}>
-              <button
-                aria-expanded={scopeFoldOpen}
-                className="fold-head"
-                onClick={() => {
-                  hapticTick();
-                  setScopeFoldOpen((v) => !v);
-                }}
-                type="button"
-               data-act="fold-head">
-                <span className="fold-title">공개 범위 · 옵션</span>
-                <span className="fold-summary">{scopeFoldSummary}</span>
-                <ChevronDown aria-hidden="true" className="fold-chev" size={16} />
-              </button>
-              {scopeFoldOpen ? (
-                <div className="fold-body">
-
-            {/* 옵션 칩 순서(웹·모바일 통일): 미정 → 업도움 → 떡밥 */}
-            {renderSupportEditor()}
-
-            {/* 떡밥(가림) — 공개 일정에만. 켜고 공개 시각을 정하면 그 전까진 시청자에게 제목·태그가
-                ??? 로 가려지고 카운트다운만 보인다. 실제 내용은 서버가 공개 시각 전엔 안 내보냄. */}
+            {/* 옵션은 최초공개 하나뿐(사용자 결정 2026-08-26: '아직 확정 아님' 제거) —
+                접기 없이 버튼을 바로 노출한다. 떡밥: 켜고 공개 시각을 정하면 그 전까진
+                시청자에게 제목·태그가 ??? 로 가려지고 카운트다운만 보인다. */}
               <div className="teaser-field">
                 <button
                   aria-pressed={form.teaser}
@@ -5961,9 +5862,6 @@ export function StudioShell({
                   </div>
                 ) : null}
               </div>
-                </div>
-              ) : null}
-            </div>
 
             <section className="tag-picker" aria-label="태그 선택">
               <h3>

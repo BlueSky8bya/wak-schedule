@@ -128,3 +128,13 @@ Files: `lib/config/site.ts`, `app/globals.css`, `components/poster/public-poster
 `app/(auth)/login/page.tsx`
 Validation: 게이트 4종(214) + fixture 스크린샷(포스터·편집실)
 Rollback: 커밋 revert
+
+### CHG-20260826-013 — FEAT — 편집기 간소화·월별 메모·인사이트 4탭·그린 크롬 (PLAN-005)
+
+Change: 미정 토글 제거+옵션 접기 해체(최초공개 직노출) · 메모 월별화(0061 테이블,
+'N월 메모', 상태 배지 칩, 중앙 좌/우 토글) · 인사이트 4탭(일정·참여·트렌드·하이라이트,
+6개월 트렌드 바·하이라이트 카드) · D+ 호버 안내 · 태그 색 클러스터+형식 진채도 bg_hex ·
+편집실 크롬 보라→그린 432건 자동 이동.
+Files: studio-shell.{tsx,css}, month-memo.tsx, month-insights.tsx, memo-actions.ts,
+insights-actions.ts, db/{migrations/0061,seeds/0014}, sample-public-data.ts, public-poster.tsx
+Related: ADR-0009(3차), ADR-0011, PLAN-20260826-005

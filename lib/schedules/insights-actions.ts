@@ -21,6 +21,14 @@ export type MonthInsights = {
   heartsTop: { title: string; dateKey: string; count: number }[]; // 상위 3
   hopeTotal: number; // 이 달 떡밥 '기대돼요' 합
   prev: { broadcastDays: number; heartsTotal: number }; // 전월 비교
+  // 트렌드 탭: 이 달 포함 최근 6개월(과거→현재 순).
+  trend: { year: number; month: number; broadcastDays: number; heartsTotal: number }[];
+  // 하이라이트 탭.
+  highlight: {
+    topHeart: { title: string; dateKey: string; count: number } | null;
+    topTag: { name: string; count: number } | null;
+    longestStreak: number; // 이 달 최장 연속 방송일
+  };
 };
 
 export type MonthInsightsResult = { ok: true; data: MonthInsights } | { ok: false; error: string };
@@ -83,22 +91,18 @@ export async function getMonthInsightsAction(input: {
   }
 
   const cur = monthRange(year, month);
-  const prevRange = monthRange(month === 1 ? year - 1 : year, month === 1 ? 12 : month - 1);
+  // 트렌드(6개월)까지 한 쿼리로 — 6개월 전 1일부터 다음 달 1일까지.
+  const mIndex = year * 12 + (month - 1);
+  const startIdx = mIndex - 5;
+  const windowStart = `${Math.floor(startIdx / 12)}-${String((startIdx % 12) + 1).padStart(2, "0")}-01`;
 
-  const [curRes, prevRes, heartRes, hopeRes, tagsRes] = await Promise.all([
+  const [allRes, heartRes, hopeRes, tagsRes] = await Promise.all([
     supabase
       .from("events")
       .select("id, date_key, public_title, category, status")
       .eq("calendar_id", calendar.id)
-      .gte("date_key", cur.start)
+      .gte("date_key", windowStart)
       .lt("date_key", cur.end)
-      .is("deleted_at", null),
-    supabase
-      .from("events")
-      .select("id, date_key, public_title, category, status")
-      .eq("calendar_id", calendar.id)
-      .gte("date_key", prevRange.start)
-      .lt("date_key", prevRange.end)
       .is("deleted_at", null),
     supabase.rpc("get_event_heart_counts", { p_calendar_id: calendar.id }),
     supabase.rpc("get_teaser_hope_counts", { p_calendar_id: calendar.id }),
@@ -107,12 +111,17 @@ export async function getMonthInsightsAction(input: {
       .select("id, display_name, color_key, bg_hex, parent_id, kind")
       .eq("calendar_id", calendar.id)
   ]);
-  if (curRes.error) {
+  if (allRes.error) {
     return { ok: false, error: "일정 조회에 실패했습니다." };
   }
 
-  const curRows = (curRes.data ?? []) as EvRow[];
-  const prevRows = (prevRes.data ?? []) as EvRow[];
+  const allRows = (allRes.data ?? []) as EvRow[];
+  const inMonth = (r: EvRow, y: number, m: number) =>
+    r.date_key.startsWith(`${y}-${String(m).padStart(2, "0")}-`);
+  const curRows = allRows.filter((r) => inMonth(r, year, month));
+  const prevY = month === 1 ? year - 1 : year;
+  const prevM = month === 1 ? 12 : month - 1;
+  const prevRows = allRows.filter((r) => inMonth(r, prevY, prevM));
   const curSum = summarize(curRows);
   const prevSum = summarize(prevRows);
 
@@ -187,6 +196,37 @@ export async function getMonthInsightsAction(input: {
     })
     .sort((a, b) => b.count - a.count);
 
+  // 트렌드: 이 달 포함 6개월(과거→현재).
+  const trend: MonthInsights["trend"] = [];
+  for (let i = 5; i >= 0; i -= 1) {
+    const idx = mIndex - i;
+    const ty = Math.floor(idx / 12);
+    const tm = (idx % 12) + 1;
+    const rows = allRows.filter((r) => inMonth(r, ty, tm));
+    const sum = summarize(rows);
+    trend.push({
+      year: ty,
+      month: tm,
+      broadcastDays: sum.broadcastDays,
+      heartsTotal: sum.active.reduce((n, r) => n + (heartByEvent.get(r.id) ?? 0), 0)
+    });
+  }
+
+  // 하이라이트: 최장 연속 방송일(이 달, 시작일 기준).
+  const bDays = [
+    ...new Set(
+      curSum.active.filter((r) => r.category !== "dayoff").map((r) => Number(r.date_key.slice(8)))
+    )
+  ].sort((a, b) => a - b);
+  let longestStreak = 0;
+  let run = 0;
+  let prevDay = -2;
+  for (const d of bDays) {
+    run = d === prevDay + 1 ? run + 1 : 1;
+    longestStreak = Math.max(longestStreak, run);
+    prevDay = d;
+  }
+
   return {
     ok: true,
     data: {
@@ -200,7 +240,13 @@ export async function getMonthInsightsAction(input: {
       heartsTotal,
       heartsTop,
       hopeTotal,
-      prev: { broadcastDays: prevSum.broadcastDays, heartsTotal: prevHearts }
+      prev: { broadcastDays: prevSum.broadcastDays, heartsTotal: prevHearts },
+      trend,
+      highlight: {
+        topHeart: heartsTop[0] ?? null,
+        topTag: tagRank[0] ? { name: tagRank[0].name, count: tagRank[0].count } : null,
+        longestStreak
+      }
     }
   };
 }

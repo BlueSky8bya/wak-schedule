@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Heart, LineChart, Trophy } from "lucide-react";
 import type { MonthInsights, MonthInsightsResult } from "@/lib/schedules/insights-actions";
 import { hapticTick } from "@/lib/ui/haptics";
 
@@ -13,8 +13,19 @@ type Props = {
   loadAction: (input: { year: number; month: number }) => Promise<MonthInsightsResult>;
 };
 
+// VIC의 4패널 문법(일정·참여·트렌드·하이라이트)을 계승 — 데이터만 일정 파생으로(ADR-0011).
+// 실시간·방문·보안·시스템 탭은 그 데이터 수집 자체가 이 프로젝트에 없어 존재하지 않는다.
+const PANELS = [
+  { key: "content", label: "일정", icon: CalendarDays },
+  { key: "engagement", label: "참여", icon: Heart },
+  { key: "trend", label: "트렌드", icon: LineChart },
+  { key: "highlight", label: "하이라이트", icon: Trophy }
+] as const;
+type PanelKey = (typeof PANELS)[number]["key"];
+
 export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Props) {
   const [view, setView] = useState({ year: initialYear, month: initialMonth });
+  const [panel, setPanel] = useState<PanelKey>("content");
   const [data, setData] = useState<MonthInsights | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,6 +84,28 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
         </button>
       </div>
 
+      <div className="mi-tabs" role="tablist">
+        {PANELS.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              aria-selected={panel === tab.key}
+              className={`mi-tab${panel === tab.key ? " on" : ""}`}
+              key={tab.key}
+              onClick={() => {
+                hapticTick();
+                setPanel(tab.key);
+              }}
+              role="tab"
+              type="button"
+            >
+              <Icon aria-hidden="true" size={15} />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
       {loading ? (
         <p className="mi-note" role="status">
           불러오는 중…
@@ -83,6 +116,8 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
         </p>
       ) : data ? (
         <>
+          {panel === "content" ? (
+          <>
           <div className="mi-tiles">
             <div className="mi-tile">
               <span className="mi-tile-num">{data.broadcastDays}</span>
@@ -99,15 +134,6 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
               {data.draftCount > 0 ? (
                 <span className="mi-tile-delta">발행 전 {data.draftCount}</span>
               ) : null}
-            </div>
-            <div className="mi-tile">
-              <span className="mi-tile-num">{data.heartsTotal.toLocaleString()}</span>
-              <span className="mi-tile-label">하트</span>
-              <span className="mi-tile-delta">전월 {delta(data.heartsTotal, data.prev.heartsTotal)}</span>
-            </div>
-            <div className="mi-tile">
-              <span className="mi-tile-num">{data.hopeTotal.toLocaleString()}</span>
-              <span className="mi-tile-label">기대돼요</span>
             </div>
           </div>
 
@@ -137,6 +163,22 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
             )}
           </section>
 
+          </>
+          ) : null}
+
+          {panel === "engagement" ? (
+          <>
+          <div className="mi-tiles">
+            <div className="mi-tile">
+              <span className="mi-tile-num">{data.heartsTotal.toLocaleString()}</span>
+              <span className="mi-tile-label">하트</span>
+              <span className="mi-tile-delta">전월 {delta(data.heartsTotal, data.prev.heartsTotal)}</span>
+            </div>
+            <div className="mi-tile">
+              <span className="mi-tile-num">{data.hopeTotal.toLocaleString()}</span>
+              <span className="mi-tile-label">기대돼요</span>
+            </div>
+          </div>
           <section className="mi-section">
             <h3>하트 많은 일정</h3>
             {data.heartsTop.length === 0 ? (
@@ -153,9 +195,66 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
               </ol>
             )}
           </section>
+          </>
+          ) : null}
+
+          {panel === "trend" ? (
+          <section className="mi-section">
+            <h3>최근 6개월</h3>
+            <div className="mi-trend">
+              {data.trend.map((t) => {
+                const maxB = Math.max(1, ...data.trend.map((x) => x.broadcastDays));
+                return (
+                  <div className="mi-trend-col" key={`${t.year}-${t.month}`}>
+                    <span className="mi-trend-num">{t.broadcastDays}</span>
+                    <span
+                      className={`mi-trend-bar${t.year === data.year && t.month === data.month ? " cur" : ""}`}
+                      style={{ height: `${Math.max(6, Math.round((t.broadcastDays / maxB) * 72))}px` }}
+                    />
+                    <span className="mi-trend-label">{t.month}월</span>
+                    <span className="mi-trend-sub">♥{t.heartsTotal.toLocaleString()}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mi-note">막대 = 방송 일수 · 아래 = 그 달 일정의 하트 합.</p>
+          </section>
+          ) : null}
+
+          {panel === "highlight" ? (
+          <section className="mi-section">
+            <div className="mi-cards">
+              <div className="mi-card">
+                <span className="mi-card-ic" aria-hidden="true">🏆</span>
+                <span className="mi-card-label">하트 1위</span>
+                <span className="mi-card-value">
+                  {data.highlight.topHeart
+                    ? `${data.highlight.topHeart.title} (♥${data.highlight.topHeart.count.toLocaleString()})`
+                    : "아직 없음"}
+                </span>
+              </div>
+              <div className="mi-card">
+                <span className="mi-card-ic" aria-hidden="true">🎯</span>
+                <span className="mi-card-label">최다 콘텐츠</span>
+                <span className="mi-card-value">
+                  {data.highlight.topTag
+                    ? `${data.highlight.topTag.name} (${data.highlight.topTag.count}회)`
+                    : "아직 없음"}
+                </span>
+              </div>
+              <div className="mi-card">
+                <span className="mi-card-ic" aria-hidden="true">🔥</span>
+                <span className="mi-card-label">최장 연속 방송</span>
+                <span className="mi-card-value">
+                  {data.highlight.longestStreak > 0 ? `${data.highlight.longestStreak}일` : "아직 없음"}
+                </span>
+              </div>
+            </div>
+          </section>
+          ) : null}
 
           <p className="mi-foot">
-            일정·하트·기대돼요 데이터 기준. 방문자·방송시간 통계는 수집하지 않는다.
+            일정·하트·기대돼요 데이터 기준. 방문자·방송시간 통계는 수집하지 않는다(ADR-0011).
           </p>
         </>
       ) : null}

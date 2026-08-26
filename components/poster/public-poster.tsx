@@ -2836,7 +2836,12 @@ export function PublicPoster({
         </span>
         {/* 라벨(왼쪽, 조용히) ↔ 값(오른쪽, 굵게) 정렬 — 두 줄이 같은 문법을 공유. */}
         {dplus !== null ? (
-          <span className="ric-row">
+          // 호버 안내(사용자 요청 2026-08-26): 실제 시작은 "2008년 11월"까지만 알려져 있어
+          // 1일을 임시 기준으로 쓴다는 걸 시청자에게도 밝힌다(ADR-0008).
+          <span
+            className="ric-row"
+            title="방송 시작일 2008년 11월 1일 기준 (정확한 날짜는 2008년 11월까지만 알려져 있어요)"
+          >
             <em>🎂 데뷔</em>
             <b className="ric-dplus">D+{dplus}</b>
           </span>

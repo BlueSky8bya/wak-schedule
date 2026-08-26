@@ -40,12 +40,12 @@ const contentParents = [
   { id: "tag-dayoff", tagKey: "dayoff", displayName: "휴뱅", colorKey: "gray", sortOrder: 1 },
   { id: "tag-isedol", tagKey: "isedol", displayName: "이세돌", colorKey: "pink", sortOrder: 2 },
   { id: "tag-gomem", tagKey: "gomem", displayName: "고멤", colorKey: "lavender", sortOrder: 3 },
-  { id: "tag-club", tagKey: "club", displayName: "동아리", colorKey: "lime", sortOrder: 4 },
+  { id: "tag-club", tagKey: "club", displayName: "동아리", colorKey: "indigo", sortOrder: 4 },
   { id: "tag-wakmoolwon", tagKey: "wakmoolwon", displayName: "왁물원", colorKey: "beige", sortOrder: 5 },
   { id: "tag-vrchat", tagKey: "vrchat", displayName: "VR챗", colorKey: "sky", sortOrder: 6 },
-  { id: "tag-cinety", tagKey: "cinety", displayName: "시네티", colorKey: "indigo", sortOrder: 7 },
-  { id: "tag-jogong", tagKey: "jogong", displayName: "조공", colorKey: "red", sortOrder: 8 },
-  { id: "tag-server", tagKey: "server", displayName: "대형서버", colorKey: "blue", sortOrder: 9 },
+  { id: "tag-cinety", tagKey: "cinety", displayName: "시네티", colorKey: "blue", sortOrder: 7 },
+  { id: "tag-jogong", tagKey: "jogong", displayName: "조공", colorKey: "orange", sortOrder: 8 },
+  { id: "tag-server", tagKey: "server", displayName: "대형서버", colorKey: "lime", sortOrder: 9 },
   { id: "tag-game", tagKey: "game", displayName: "게임", colorKey: "yellow", sortOrder: 10 },
   { id: "tag-etc", tagKey: "etc", displayName: "기타", colorKey: "teal", sortOrder: 12 }
 ].map((t) => ({ ...t, isDefault: true, isActive: true, parentId: null, kind: "content" as const }));
@@ -53,13 +53,14 @@ const contentParents = [
 const contentChildren = [
   { id: "tag-minecraft", tagKey: "minecraft", displayName: "마인크래프트", colorKey: "yellow", sortOrder: 25, parentId: "tag-game" },
   { id: "tag-lol", tagKey: "lol", displayName: "롤", colorKey: "yellow", sortOrder: 26, parentId: "tag-game" },
-  { id: "tag-wakchidong", tagKey: "wakchidong", displayName: "왁치동", colorKey: "lime", sortOrder: 22, parentId: "tag-club" }
+  { id: "tag-wakchidong", tagKey: "wakchidong", displayName: "왁치동", colorKey: "indigo", sortOrder: 22, parentId: "tag-club" }
 ].map((t) => ({ ...t, isDefault: true, isActive: true, kind: "content" as const }));
 
 const modifierTags = [
-  { id: "tag-hapbang", tagKey: "hapbang", displayName: "합방", colorKey: "mint", sortOrder: 41 },
-  { id: "tag-sicham", tagKey: "sicham", displayName: "시참", colorKey: "sky", sortOrder: 44 },
-  { id: "tag-janjan", tagKey: "janjan", displayName: "잔잔뱅", colorKey: "teal", sortOrder: 47 }
+  // 형식은 진채도 커스텀 색(bgHex) — 파스텔 콘텐츠와 구분(0014 시드와 동일 문법).
+  { id: "tag-hapbang", tagKey: "hapbang", displayName: "합방", colorKey: "mint", bgHex: "#15803d", sortOrder: 41 },
+  { id: "tag-sicham", tagKey: "sicham", displayName: "시참", colorKey: "sky", bgHex: "#0284c7", sortOrder: 44 },
+  { id: "tag-janjan", tagKey: "janjan", displayName: "잔잔뱅", colorKey: "teal", bgHex: "#0f766e", sortOrder: 47 }
 ].map((t) => ({ ...t, isDefault: true, isActive: true, parentId: null, kind: "modifier" as const }));
 
 export const defaultTags: BroadcastTag[] = [...contentParents, ...contentChildren, ...modifierTags];

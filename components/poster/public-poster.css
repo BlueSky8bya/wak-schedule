@@ -68,7 +68,7 @@
   /* 통일: 데스크톱 태그 필터와 같은 구름빛 화이트(2026-08-26 4차). */
   border: 1px solid var(--line);
   border-radius: var(--r-card);
-  background: #fbfcfe;
+  background: #fffdfa;
   padding: 10px 9px;
   box-shadow: var(--shadow-2);
 }
@@ -120,7 +120,7 @@
 .agenda-legend-sub {
   margin-top: 3px;
   padding-top: 6px;
-  border-top: 1px dashed #dbe3ee;
+  border-top: 1px dashed #e6ddd2;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.04em;
@@ -204,7 +204,7 @@
   content: "";
   position: absolute;
   inset: -6px 4px auto;
-  border-top: 1px solid var(--line-soft, #e8edf4);
+  border-top: 1px solid var(--line-soft, #f0e9e0);
 }
 .agenda-legend-tag.heart .agenda-legend-heart {
   display: inline-grid;
@@ -249,7 +249,7 @@
   padding: 8px;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
-  background: linear-gradient(180deg, #fefefd, #f2f6fa); /* 표면 판 — 구름빛 화이트 */
+  background: linear-gradient(180deg, #fffdf8, #f3efee); /* 표면 판 — 웜 밀크 */
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 60%);
   display: grid;
   gap: 6px;
@@ -312,8 +312,8 @@
      아젠다 셸 폭을 편집실 모바일(14)과 같게 맞추면서 이 값도 22→14로 내렸다. */
   margin: 0 -14px 8px;
   padding: 9px 14px 10px;
-  background: linear-gradient(180deg, #eaf1fa 72%, #f3f7fc);
-  border-bottom: 1px solid #dbe3ee;
+  background: linear-gradient(180deg, #f1ece4 72%, #faf4eb);
+  border-bottom: 1px solid #e6ddd2;
   /* 2행 그리드: [여백 | 제목·월(가운데) | 계정변경·이메일(오른쪽)].
      1행=제목/계정변경, 2행=월/이메일 → 버튼이 제목 이모티콘을 가리지 않고,
      이메일은 버튼 왼쪽이 아니라 "2026년 N월" 라인(아래)에 맞춰 오른쪽에 놓인다. */
@@ -335,7 +335,7 @@
   justify-content: center;
   gap: 4px;
   min-height: 30px;
-  border: 1px solid #dbe3ee;
+  border: 1px solid #e6ddd2;
   border-radius: var(--r-pill);
   background: rgb(255 255 255 / 78%);
   padding: 0 12px;
@@ -462,7 +462,7 @@
   place-items: center;
   width: 48px;
   height: 48px;
-  border: 1px solid rgb(198 210 228 / 70%);
+  border: 1px solid rgb(221 209 195 / 70%);
   border-radius: var(--r-pill);
   /* 채도를 낮추고 살짝 투명하게 — 뒤 일정 카드가 비쳐 안 가린다. */
   background: rgb(245 184 27 / 62%);
@@ -470,7 +470,7 @@
   backdrop-filter: blur(3px);
   color: var(--accent-strong, #a9760a);
   cursor: pointer;
-  box-shadow: 0 6px 16px rgb(50 65 90 / 14%);
+  box-shadow: 0 6px 16px rgb(85 68 52 / 14%);
   transition: transform var(--dur-1, 120ms) var(--ease);
 }
 .agenda-monthbar .mb-step:active {
@@ -493,12 +493,12 @@
   align-items: center;
   gap: 8px;
   padding: 5px;
-  border: 1px solid rgb(198 210 228 / 70%);
+  border: 1px solid rgb(221 209 195 / 70%);
   border-radius: var(--r-pill);
   background: rgb(255 250 240 / 82%);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  box-shadow: 0 6px 16px rgb(50 65 90 / 14%);
+  box-shadow: 0 6px 16px rgb(85 68 52 / 14%);
 }
 .agenda-monthbar .mb-act {
   pointer-events: auto;
@@ -601,7 +601,7 @@ html[data-reduce-motion] .mb-live-dot {
   gap: 8px;
   width: 100%;
   min-height: 44px; /* 터치 타깃 하한(WCAG 2.5.8은 24px, 실사용 기준은 44px) */
-  border: 1px dashed #dbe3ee;
+  border: 1px dashed #e6ddd2;
   border-radius: var(--r-card);
   background: rgb(255 255 255 / 55%);
   padding: 8px 12px;
@@ -739,7 +739,7 @@ html[data-reduce-motion] .mb-live-dot {
   gap: 9px;
 }
 .agenda-event + .agenda-event {
-  border-top: 1px solid var(--line-soft, #e8edf4);
+  border-top: 1px solid var(--line-soft, #f0e9e0);
   padding-top: 7px;
 }
 .agenda-bar {
@@ -891,9 +891,10 @@ html[data-reduce-motion] .mb-live-dot {
      Reason: 크림 배경 → 왁굳형 상징(페리도트 그린) 계열 연한 잎빛. 흰색·크림 비선호(사용자).
        위쪽 햇살 웜 글로우는 남겨 노란 CTA·태그 파스텔과 조화. */
   background:
-    /* 구름빛 클린(2026-08-26 4차): 웜 글로우 대신 옅은 하늘 글로우 — 편안·깔끔. */
-    radial-gradient(120% 80% at 50% -12%, #e9f2fc 0%, transparent 58%),
-    linear-gradient(180deg, var(--paper), #e6edf6);
+    /* 웜 밀크 + 노을 갬성(5차): 위엔 복숭아 글로우, 아래로 옅은 라벤더 그레이. */
+    radial-gradient(120% 80% at 50% -12%, #ffeedb 0%, transparent 58%),
+    radial-gradient(90% 50% at 88% 8%, #f0e9f8 0%, transparent 52%),
+    linear-gradient(180deg, var(--paper), #ece8ef);
   color: #111827;
 }
 
@@ -1224,7 +1225,7 @@ body.cell-range-dragging {
     grid-template-columns 0.55s var(--spring-smooth, var(--ease-spring)),
     column-gap 0.55s var(--spring-smooth, var(--ease-spring));
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fefefd, #f2f6fa); /* 표면 판 — 구름빛 화이트 */
+  background: linear-gradient(180deg, #fffdf8, #f3efee); /* 표면 판 — 웜 밀크 */
   padding: 18px;
   box-shadow: var(--shadow-2);
 }
@@ -1342,7 +1343,7 @@ body.cell-range-dragging {
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   /* 위가 살짝 밝은 그라데이션 — 평면 단색보다 '포스터 카드'로 읽힌다. 골드는 글자가 맡는다. */
-  background: linear-gradient(180deg, #fffefb 0%, #fbfcfd 45%, #f0f4f8 100%);
+  background: linear-gradient(180deg, #fffdf6 0%, #fdfaf3 45%, #f2ede3 100%);
   box-shadow: var(--shadow-2);
   padding: 14px 16px 11px;
 }
@@ -1467,7 +1468,7 @@ body.cell-range-dragging {
 .legend-title {
   display: block;
   margin-bottom: 8px;
-  color: #47566b;
+  color: #6a5c49;
   font-size: 17px;
   line-height: 1.1;
   font-weight: 900;
@@ -1477,11 +1478,11 @@ body.cell-range-dragging {
 .legend-subhead {
   margin-top: 5px;
   padding-top: 6px;
-  border-top: 1px dashed #dfe6ee;
+  border-top: 1px dashed #eae2d6;
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.05em;
-  color: #8494a8;
+  color: #a3958a;
 }
 
 /* 콘텐츠 색상 안내(세로) — 태그 최대 20종 + 하트 + 필터해제까지 달력 높이 안에 들어오도록
@@ -1495,7 +1496,7 @@ body.cell-range-dragging {
   gap: 4px 2px;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  background: #fbfcfe;
+  background: #fffdfa;
   /* 사이드바 패널 공통 안쪽 여백 12px 대칭 — support-card와 같은 세로선 공유(정렬 조화).
      표면 안이라 PNG·스티커 좌표가 살짝 바뀜(소유자가 스티커 재배치). */
   padding: var(--space-3); /* 12 — 10/14 비대칭 정리 */
@@ -3187,7 +3188,7 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
   border: 1px solid var(--cal-frame);
   border-radius: 18px;
   background: var(--cal-surface-dim); /* 칸 뒤 바탕 — 달력 한색 층과 한 식구 */
-  box-shadow: 0 4px 16px rgb(80 100 140 / 8%);
+  box-shadow: 0 4px 16px rgb(120 100 80 / 9%);
 }
 /* 월 바뀔 때 포스터 표면 전체가 함께 좌/우 슬라이드 — 제목·메모·달력·색상안내·텍스트·스티커가
    다 같이 움직인다(표면을 월마다 재마운트해 재생). 중심에서 멀수록(양옆 패널) 슬라이드 폭을
@@ -4167,7 +4168,7 @@ html[data-reduce-motion] .slc-player img {
   width: min(560px, 100%);
   max-height: min(84vh, 760px);
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fefefd, #f2f6fa); /* 표면 판 — 구름빛 화이트 */
+  background: linear-gradient(180deg, #fffdf8, #f3efee); /* 표면 판 — 웜 밀크 */
   box-shadow: var(--shadow-3);
   overflow: hidden;
   /* 등장은 스프링(살짝 넘쳤다 안착) — 유리판이 아니라 물체가 올라오는 느낌(A1). */
@@ -4804,13 +4805,13 @@ html[data-reduce-motion] .pi-retry:active {
   width: 344px;
   max-height: min(64vh, 520px);
   border-radius: 20px;
-  border: 1px solid rgb(70 90 120 / 16%);
+  border: 1px solid rgb(110 90 70 / 16%);
   background: var(--surface);
   padding: 0 20px 18px;
   overflow: hidden auto;
   box-shadow:
-    0 24px 56px rgb(50 65 90 / 18%),
-    0 2px 8px rgb(50 65 90 / 7%);
+    0 24px 56px rgb(85 68 52 / 18%),
+    0 2px 8px rgb(85 68 52 / 7%);
   animation: detail-pop-in var(--dur-spring-smooth, 0.34s)
     var(--spring-smooth, cubic-bezier(0.34, 1.4, 0.5, 1)) both;
 }
@@ -4890,7 +4891,7 @@ html[data-reduce-motion] .agenda-detail-backdrop.is-pop .agenda-detail-sheet {
   align-items: center;
   padding-bottom: 10px;
   margin-bottom: 12px;
-  border-bottom: 1px solid rgb(70 90 120 / 12%);
+  border-bottom: 1px solid rgb(110 90 70 / 12%);
 }
 /* 날짜 = 헤더의 주인공(사용자 요청: 더 크게). 요일·기간·특별한 날이 한 줄 위계로 정렬. */
 .agenda-detail-backdrop.is-pop .agenda-detail-day {
@@ -4922,7 +4923,7 @@ html[data-reduce-motion] .agenda-detail-backdrop.is-pop .agenda-detail-sheet {
 /* 태그 칩 — 중립 재질 필(색은 점만). Apple 세그먼트처럼 조용하게. */
 .agenda-detail-backdrop.is-pop .agenda-detail-tag {
   border: 0;
-  background: rgb(70 90 120 / 7%);
+  background: rgb(110 90 70 / 7%);
   font-weight: 800;
   color: #4a5568;
 }
@@ -4960,14 +4961,14 @@ html[data-reduce-motion] .agenda-detail-backdrop.is-pop .agenda-detail-sheet {
   height: 32px;
   border: 0;
   border-radius: 999px;
-  background: rgb(50 65 90 / 7%);
+  background: rgb(85 68 52 / 7%);
   color: #5b6577;
   transition:
     background var(--dur-1) var(--ease),
     transform var(--dur-2) var(--spring-bouncy, var(--ease-spring, var(--ease)));
 }
 .agenda-detail-backdrop.is-pop .agenda-detail-close:hover {
-  background: rgb(50 65 90 / 13%);
+  background: rgb(85 68 52 / 13%);
   transform: rotate(90deg);
 }
 .agenda-detail-backdrop.is-pop .agenda-detail-close:active {

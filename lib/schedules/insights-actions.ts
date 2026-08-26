@@ -9,6 +9,12 @@ import { CALENDAR_SLUG } from "@/lib/config/site";
 // 원천: events · event_tags · broadcast_tags · 하트/기대 집계 RPC. 전부 읽기 전용(select) —
 // 쓰기 없음이므로 캐시 무효화 대상이 아니다. 방문자·방송시간류는 데이터 원천이 없어 다루지 않는다.
 
+// VIC StackTrendChart와 같은 형태 — cats(표시 순서·색) + 월별 counts.
+export type TrendStack = {
+  cats: { key: string; label: string; color: string }[];
+  months: { ym: string; counts: Record<string, number>; total: number }[];
+};
+
 export type MonthInsights = {
   year: number;
   month: number;
@@ -16,13 +22,24 @@ export type MonthInsights = {
   dayoffDays: number; // 휴뱅 날 수
   totalEvents: number; // draft·취소 제외 일정 수
   draftCount: number; // 아직 발행 전
-  tagRank: { id: string; name: string; colorKey: string; bgHex: string | null; count: number }[];
+  tagRank: { id: string; name: string; color: string; count: number; ratio: number }[];
   heartsTotal: number; // 이 달 일정들에 눌린 하트 합(누적)
   heartsTop: { title: string; dateKey: string; count: number }[]; // 상위 3
   hopeTotal: number; // 이 달 떡밥 '기대돼요' 합
   prev: { broadcastDays: number; heartsTotal: number }; // 전월 비교
-  // 트렌드 탭: 이 달 포함 최근 6개월(과거→현재 순).
-  trend: { year: number; month: number; broadcastDays: number; heartsTotal: number }[];
+  // VIC 일정 패널 동등 필드.
+  nextBroadcast: { dateKey: string; titles: string[] } | null; // 오늘(KST) 이후 첫 방송일
+  busiestWeekday: number | null; // 0=일 … 6=토 (이 달 컨텐츠 기준)
+  quietestWeekday: number | null;
+  // 트렌드 탭(VIC 문법): 6개월 시리즈 + 태그별 누적 스택.
+  trend: {
+    months: string[]; // YYYY-MM, 오래된→최신(보는 달로 끝)
+    content: number[]; // 휴뱅 제외 일정 수
+    hearts: number[]; // 하트 합
+    contentByTag: TrendStack; // 콘텐츠 대분류별(휴뱅 포함)
+    modifierByTag: TrendStack; // 형식(합방·시참 등)별
+    heartsByTag: TrendStack; // 하트 받은 태그 — 일정당 평균 하트
+  };
   // 하이라이트 탭.
   highlight: {
     topHeart: { title: string; dateKey: string; count: number } | null;
@@ -96,7 +113,7 @@ export async function getMonthInsightsAction(input: {
   const startIdx = mIndex - 5;
   const windowStart = `${Math.floor(startIdx / 12)}-${String((startIdx % 12) + 1).padStart(2, "0")}-01`;
 
-  const [allRes, heartRes, hopeRes, tagsRes] = await Promise.all([
+  const [allRes, heartRes, hopeRes, tagsRes, palRes] = await Promise.all([
     supabase
       .from("events")
       .select("id, date_key, public_title, category, status")
@@ -109,6 +126,10 @@ export async function getMonthInsightsAction(input: {
     supabase
       .from("broadcast_tags")
       .select("id, display_name, color_key, bg_hex, parent_id, kind")
+      .eq("calendar_id", calendar.id),
+    supabase
+      .from("color_palette")
+      .select("key, bg_color")
       .eq("calendar_id", calendar.id)
   ]);
   if (allRes.error) {
@@ -171,6 +192,14 @@ export async function getMonthInsightsAction(input: {
     }
     return t;
   };
+  const palByKey = new Map(
+    (((palRes.data ?? []) as { key: string; bg_color: string }[]) ?? []).map((p) => [
+      p.key,
+      p.bg_color
+    ])
+  );
+  const colorOf = (t: TagRow) => t.bg_hex ?? palByKey.get(t.color_key) ?? "#cfd6bb";
+
   const activeIds = curSum.active.map((r) => r.id);
   const rankCount = new Map<string, number>();
   if (activeIds.length > 0) {
@@ -189,28 +218,127 @@ export async function getMonthInsightsAction(input: {
       rankCount.set(top.id, (rankCount.get(top.id) ?? 0) + 1);
     }
   }
+  const rankMax = Math.max(1, ...rankCount.values());
   const tagRank = [...rankCount.entries()]
     .map(([id, count]) => {
       const t = tagById.get(id)!;
-      return { id, name: t.display_name, colorKey: t.color_key, bgHex: t.bg_hex, count };
+      return {
+        id,
+        name: t.display_name,
+        color: colorOf(t),
+        count,
+        ratio: count / rankMax
+      };
     })
     .sort((a, b) => b.count - a.count);
 
-  // 트렌드: 이 달 포함 6개월(과거→현재).
-  const trend: MonthInsights["trend"] = [];
+  // 트렌드(VIC 문법): 6개월 시리즈 + 태그별 누적 스택. 링크는 이미 이 달 범위의
+  // event_tags를 갖고 있지만 스택은 6개월 전체가 필요해 별도로 한 번 더 읽는다.
+  const monthKeys: string[] = [];
   for (let i = 5; i >= 0; i -= 1) {
     const idx = mIndex - i;
-    const ty = Math.floor(idx / 12);
-    const tm = (idx % 12) + 1;
-    const rows = allRows.filter((r) => inMonth(r, ty, tm));
-    const sum = summarize(rows);
-    trend.push({
-      year: ty,
-      month: tm,
-      broadcastDays: sum.broadcastDays,
-      heartsTotal: sum.active.reduce((n, r) => n + (heartByEvent.get(r.id) ?? 0), 0)
-    });
+    monthKeys.push(`${Math.floor(idx / 12)}-${String((idx % 12) + 1).padStart(2, "0")}`);
   }
+  const ymOf = (r: EvRow) => r.date_key.slice(0, 7);
+  const activeAll = allRows.filter((r) => r.status !== "cancelled" && r.status !== "draft");
+  const contentSeries = monthKeys.map(
+    (ym) => activeAll.filter((r) => ymOf(r) === ym && r.category !== "dayoff").length
+  );
+  const heartsSeries = monthKeys.map((ym) =>
+    activeAll.filter((r) => ymOf(r) === ym).reduce((n, r) => n + (heartByEvent.get(r.id) ?? 0), 0)
+  );
+
+  // 6개월 전체 이벤트의 태그 링크(스택용).
+  const allActiveIds = activeAll.map((r) => r.id);
+  const linksAll: { event_id: string; tag_id: string }[] = [];
+  for (let off = 0; off < allActiveIds.length; off += 150) {
+    const slice = allActiveIds.slice(off, off + 150);
+    const { data: rows } = await supabase
+      .from("event_tags")
+      .select("event_id, tag_id")
+      .in("event_id", slice);
+    linksAll.push(...(((rows ?? []) as { event_id: string; tag_id: string }[]) ?? []));
+  }
+  const evById = new Map(activeAll.map((r) => [r.id, r]));
+
+  type StackAgg = Map<string, Map<string, number>>; // ym -> topTagId -> value
+  const contentAgg: StackAgg = new Map();
+  const modifierAgg: StackAgg = new Map();
+  const heartAggSum: StackAgg = new Map();
+  const heartAggCnt: StackAgg = new Map();
+  const usedContent = new Map<string, TagRow>();
+  const usedModifier = new Map<string, TagRow>();
+  const bump = (agg: StackAgg, ym: string, id: string, v: number) => {
+    const m = agg.get(ym) ?? new Map<string, number>();
+    m.set(id, (m.get(id) ?? 0) + v);
+    agg.set(ym, m);
+  };
+  const seenPer = new Set<string>();
+  for (const link of linksAll) {
+    const ev = evById.get(link.event_id);
+    if (!ev) continue;
+    const ym = ymOf(ev);
+    if (!monthKeys.includes(ym)) continue;
+    const raw = tagById.get(link.tag_id);
+    if (!raw) continue;
+    if (raw.kind === "modifier") {
+      const dk = `m:${ev.id}:${raw.id}`;
+      if (seenPer.has(dk)) continue;
+      seenPer.add(dk);
+      usedModifier.set(raw.id, raw);
+      bump(modifierAgg, ym, raw.id, 1);
+      continue;
+    }
+    const top = topOf(link.tag_id);
+    if (!top || top.kind !== "content") continue;
+    const dk = `c:${ev.id}:${top.id}`;
+    if (seenPer.has(dk)) continue;
+    seenPer.add(dk);
+    usedContent.set(top.id, top);
+    bump(contentAgg, ym, top.id, 1);
+    const h = heartByEvent.get(ev.id) ?? 0;
+    bump(heartAggSum, ym, top.id, h);
+    bump(heartAggCnt, ym, top.id, 1);
+  }
+
+  const buildStack = (
+    agg: StackAgg,
+    used: Map<string, TagRow>,
+    avgOf?: StackAgg
+  ): TrendStack => {
+    const totals = new Map<string, number>();
+    for (const m of agg.values()) {
+      for (const [id, v] of m) totals.set(id, (totals.get(id) ?? 0) + v);
+    }
+    const cats = [...used.values()]
+      .sort((a, b) => (totals.get(b.id) ?? 0) - (totals.get(a.id) ?? 0))
+      .map((t) => ({ key: t.id, label: t.display_name, color: colorOf(t) }));
+    const months = monthKeys.map((ym) => {
+      const src = agg.get(ym) ?? new Map<string, number>();
+      const counts: Record<string, number> = {};
+      let total = 0;
+      for (const c of cats) {
+        let v = src.get(c.key) ?? 0;
+        if (avgOf) {
+          const cnt = avgOf.get(ym)?.get(c.key) ?? 0;
+          v = cnt > 0 ? Math.round((v / cnt) * 10) / 10 : 0;
+        }
+        if (v > 0) counts[c.key] = v;
+        total += v;
+      }
+      return { ym, counts, total: Math.round(total * 10) / 10 };
+    });
+    return { cats, months };
+  };
+
+  const trend: MonthInsights["trend"] = {
+    months: monthKeys,
+    content: contentSeries,
+    hearts: heartsSeries,
+    contentByTag: buildStack(contentAgg, usedContent),
+    modifierByTag: buildStack(modifierAgg, usedModifier),
+    heartsByTag: buildStack(heartAggSum, usedContent, heartAggCnt)
+  };
 
   // 하이라이트: 최장 연속 방송일(이 달, 시작일 기준).
   const bDays = [
@@ -227,6 +355,30 @@ export async function getMonthInsightsAction(input: {
     prevDay = d;
   }
 
+  // 다음 방송(오늘 KST 이후 첫 컨텐츠 날) — 그 날의 제목들.
+  const todayKey = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  const upcoming = activeAll
+    .filter((r) => r.category !== "dayoff" && r.date_key >= todayKey)
+    .sort((a, b) => a.date_key.localeCompare(b.date_key));
+  const nextBroadcast = upcoming.length
+    ? {
+        dateKey: upcoming[0].date_key,
+        titles: upcoming
+          .filter((r) => r.date_key === upcoming[0].date_key)
+          .map((r) => r.public_title.split("\n")[0] || "일정")
+      }
+    : null;
+
+  // 요일 분포(이 달 컨텐츠 기준) → 바쁜/한가한 요일.
+  const byWeekday = new Array(7).fill(0) as number[];
+  for (const r of curSum.active.filter((x) => x.category !== "dayoff")) {
+    const [yy, mm, dd] = r.date_key.split("-").map(Number);
+    byWeekday[new Date(Date.UTC(yy, mm - 1, dd)).getUTCDay()] += 1;
+  }
+  const anyContent = byWeekday.some((n) => n > 0);
+  const busiestWeekday = anyContent ? byWeekday.indexOf(Math.max(...byWeekday)) : null;
+  const quietestWeekday = anyContent ? byWeekday.indexOf(Math.min(...byWeekday)) : null;
+
   return {
     ok: true,
     data: {
@@ -241,6 +393,9 @@ export async function getMonthInsightsAction(input: {
       heartsTop,
       hopeTotal,
       prev: { broadcastDays: prevSum.broadcastDays, heartsTotal: prevHearts },
+      nextBroadcast,
+      busiestWeekday,
+      quietestWeekday,
       trend,
       highlight: {
         topHeart: heartsTop[0] ?? null,

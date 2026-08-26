@@ -164,3 +164,24 @@ Files: db/migrations/0062, app/api/unlock-private-layer/route.ts,
 lib/schedules/security-actions.ts, components/studio/{month-insights.tsx,insights.css},
 components/poster/public-poster.{tsx,css}, components/studio/studio-shell.css
 Related: PLAN-20260826-005(연장), ADR-0009·0011
+
+### CHG-20260826-016 — STYLE/FEAT — 인사이트·기록 시트 전면 VIC 충실 이식 + 아이보리 배경
+
+사용자 피드백 "모든 탭·시청자 시트 디자인이 VIC과 다르다" → 어설픈 재해석 폐기, 원본 이식:
+- 일정 탭: insight-next(다음 방송+제목 칩)·5타일(컨텐츠/있는 날/휴뱅/바쁜·한가한 요일,
+  ▲▼ 증감 배지)·컨텐츠 순위 바 — VIC renderContent 구조 그대로.
+- 참여 탭: 하트 2타일·월별 하트 vt-chart·인기 TOP 목록 — VIC renderEngagement.
+- 트렌드 탭: 컨텐츠·하트 스파크(TrendDeltaBadge·진행 중 달 빗금) + 콘텐츠별·형식별·
+  하트 받은 태그 StackTrendChart(호버 분해 박스 포함) — VIC renderTrend.
+  방송시간 차트만 부재(수집 없음).
+- 하이라이트: HighlightCards 이식(이모지 톤 카드 4장).
+- 시청자 '이 달 기록': VIC public-insights.tsx 통째 이식(pi-* 시트) — 임시 recap 폐기.
+  방송시간 카드만 없음, "빅타민들"→"팬치들".
+- 이식 컴포넌트: stack-trend-chart·trend-delta-badge·highlight-cards·month-progress +
+  insights.css에 VIC 규칙 94블록 추가(보라→잎빛 hue 이동).
+- 배경: 연두 과함 피드백 → 아이보리+그린 힌트로 톤 다운(--paper·포스터·편집실 그라데이션).
+- 액션 확장: nextBroadcast·바쁜/한가한 요일·tagRank(색·비율)·6개월 시리즈/스택 3종.
+Files: components/studio/{month-insights.tsx,insights.css,stack-trend-chart.tsx,
+trend-delta-badge.tsx,highlight-cards.tsx}, components/poster/{public-insights.tsx,
+public-poster.tsx,public-poster.css}, lib/insights/month-progress.ts,
+lib/schedules/insights-actions.ts, app/globals.css, studio-shell.css

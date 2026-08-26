@@ -348,3 +348,1035 @@
 .gate-security-msg.is-error {
   color: var(--status-danger, #c0392b);
 }
+
+/* ── VIC 트렌드 차트(스파크·누적 막대·증감 배지) 이식 ── */
+
+.insight-note {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #9a93ad;
+}
+
+.insight-note.warn {
+  color: #c2410c;
+  font-weight: 800;
+}
+
+.insight-trend {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.insight-trend.up {
+  color: #e0322f; /* 올라가면 빨강(주식 관례) */
+}
+
+.insight-trend.down {
+  color: #2f6bd8; /* 내려가면 파랑 */
+}
+
+.insight-trend.flat {
+  color: #9aa0ab; /* 동률(변화 없음)은 중립 회색 — 방향색 안 씀 */
+}
+
+.trend-row {
+  margin-bottom: 14px;
+}
+
+.trend-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.trend-head > span {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #6b6480;
+}
+
+.trend-head > strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: #3a3550;
+}
+
+.trend-head .insight-trend,
+.trend-new {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.trend-new {
+  color: #9aa0ab;
+}
+
+.trend-spark {
+  display: flex;
+  align-items: stretch;
+  gap: 9px;
+  height: 56px;
+}
+
+.trend-bcol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.trend-bwrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.trend-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 4px 4px 1px 1px;
+  background: #d7d0ec;
+  transition: height 0.5s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+}
+
+.trend-bar.cur {
+  background: linear-gradient(180deg, #8b7cf0, #6b5bd6);
+}
+
+/* 진행 중인 달(마지막 칸) — 빗금 + 열린 윗면. 끝난 달과 같은 자격으로 읽히면 안 된다.
+   (8월 7일치를 7월 전체와 나란히 놓고 "줄었다"로 읽던 오독을 막는 표시) */
+/* ⚠ 빗금을 background-image로 주면 안 된다 — `.trend-bar.cur`의 채움이 gradient(=background-image)라
+   덮어써서 막대가 통째로 투명해진다. 실제로 그렇게 나갔다: 이번 달 막대가 사라지고 점선만 공중에
+   떠 보였다(2026-08-07). 그래서 채움은 그대로 두고 ::before로 덮는다. */
+.trend-bar.partial,
+.vt-bar.partial,
+.dsess-bar.partial {
+  position: relative; /* ::before 덮개 기준 (.dsess-bar는 기본이 static이다) */
+  min-height: 5px; /* 값이 작아도 '막대'로 보이게 — 점선만 남으면 떠 있는 선처럼 읽힌다 */
+  border-top: 1px dashed rgba(91, 52, 240, 0.55);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.trend-bar.partial::before,
+.vt-bar.partial::before,
+.dsess-bar.partial::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  /* .vt-bar는 색 세그먼트(.vt-fill)가 자식이라, z-index 없으면 빗금이 그 아래 깔려 안 보인다. */
+  z-index: 1;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5) 0 3px,
+    rgba(255, 255, 255, 0) 3px 7px
+  );
+}
+
+.vt-day.partial {
+  color: var(--violet, #5b34f0);
+}
+
+.trend-bcol > span {
+  margin-top: 3px;
+  /* 1줄("5월")이든 2줄("26년/1월")이든 같은 높이를 차지해 막대 시작(바닥선)이 어긋나지 않게. */
+  height: 20px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #b3acc6;
+  line-height: 1.15;
+}
+
+.trend-x em {
+  display: block;
+  font-style: normal;
+  font-size: 7.5px;
+  color: #c5bfd6;
+}
+
+.vt-bar,
+.vt-hbar,
+.trend-bar {
+  position: relative;
+}
+
+.vt-col,
+.vt-hcol,
+.trend-bcol {
+  cursor: default;
+}
+
+.vt-col:hover .vt-bar,
+.vt-hcol:hover .vt-hbar,
+.trend-bcol:hover .trend-bar {
+  filter: brightness(1.12) saturate(1.1);
+  box-shadow: 0 0 0 2px rgb(107 91 214 / 28%);
+}
+
+.vt-bar[data-v]::after,
+.trend-bar::after {
+  content: attr(data-v);
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  transform-origin: bottom center;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  background: #3a3550;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 7px;
+  transition: opacity 0.12s var(--ease, ease), transform 0.12s var(--ease, ease);
+  z-index: 6;
+}
+
+.vt-col:hover .vt-bar[data-v]::after,
+.trend-bcol:hover .trend-bar::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.trend-spark .trend-bcol:first-child:hover .trend-bar::after {
+  transform: translateX(0) scale(1);
+}
+
+.trend-spark .trend-bcol:last-child .trend-bar::after {
+  left: auto;
+  right: 0;
+  transform: translateX(0) scale(0.8);
+  transform-origin: bottom right;
+}
+
+.trend-spark .trend-bcol:last-child:hover .trend-bar::after {
+  transform: translateX(0) scale(1);
+}
+
+.vt-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.vt-col:hover .vt-fill {
+  filter: brightness(1.08);
+}
+
+.vt-barwrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.vt-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 5px 5px 2px 2px;
+  background: #f0ecf9;
+  transition: height 0.5s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+}
+
+.vt-fill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.vt-seg {
+  width: 100%;
+  min-height: 3px;
+}
+
+.vt-day {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #9a93ad;
+}
+
+.vt-legend {
+  list-style: none;
+  margin: 9px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.vt-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #6b6480;
+}
+
+.vt-legend li span {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.vt-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  /* 여백(양쪽 96px) ≥ 툴팁 반폭 — '하루 평균 N분 머묾 · 최고 N명' 헤더(반폭 ~91px) 기준.
+     studio-shell.css의 동일 규칙과 값이 같아야 한다(이 파일이 뒤에 로드되어 이긴다). */
+  left: clamp(96px, var(--tip-x, 50%), calc(100% - 96px));
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 86px;
+  padding: 7px 9px;
+  background: #3a3550;
+  color: #fff;
+  border-radius: 9px;
+  white-space: nowrap;
+  z-index: 8;
+  box-shadow: 0 8px 20px -8px rgb(58 53 80 / 60%);
+  animation: vt-tip-in 0.12s var(--ease, ease);
+}
+
+.vt-tip-float {
+  bottom: auto;
+  left: auto;
+  max-width: min(260px, 92vw);
+  box-shadow: 0 14px 34px -10px rgb(20 16 35 / 55%);
+}
+
+.vt-tip > strong {
+  font-size: 12px;
+  font-weight: 900;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgb(255 255 255 / 18%);
+}
+
+.vt-tip-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.vt-tip-grid {
+  min-width: 150px;
+  max-width: min(240px, 90vw);
+  left: clamp(122px, var(--tip-x, 50%), calc(100% - 122px));
+}
+
+.vt-tip-grid .vt-tip-rows {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 12px;
+}
+
+.vt-tip-note {
+  font-size: 10px;
+  font-weight: 800;
+  color: #cfc9e0;
+}
+
+.vt-tip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.vt-tip-row i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.vt-tip-row b {
+  margin-left: auto;
+  padding-left: 10px;
+  font-weight: 900;
+}
+
+/* ── VIC 이식 2차: 하이라이트 카드·다음 방송·인기 목록·시청자 기록 시트(pi-*) ── */
+
+.insight-tile[data-tone="public"] {
+  background: linear-gradient(180deg, #f0fbf3, #e7f7ec);
+  border-color: #cdeed6;
+}
+
+.insight-tile[data-tone="public"] strong {
+  color: #2f7d4f;
+}
+
+.insight-tile[data-tone="private"] {
+  background: linear-gradient(180deg, #fff6ef, #ffeede);
+  border-color: #fad9bd;
+}
+
+.insight-tile[data-tone="private"] strong {
+  color: #b5651d;
+}
+
+.insight-tile[data-tone="soon"] strong {
+  color: #5b6bd6;
+}
+
+.insight-tile[data-tone="warn"] {
+  background: linear-gradient(180deg, #fff7ed, #ffe9cf);
+  border-color: #f5c98a;
+}
+
+.insight-tile[data-tone="warn"] strong {
+  color: #c2410c;
+}
+
+.insight-headline {
+  margin: 0 0 10px;
+  padding: 8px 14px;
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, #f4f1ff, #efeaff);
+  color: #4b3fb0;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.insight-rows {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.insight-rows li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2); /* 8 */
+  padding: var(--space-2) var(--space-3); /* 8/12 */
+  background: #faf9fe;
+  border: 1px solid #efeaf9;
+  border-radius: var(--r-md); /* 12 */
+}
+
+.insight-rows li span {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #8a82a6;
+}
+
+.insight-rows li strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: #3a3550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+
+.insight-rows.wrap li strong {
+  white-space: normal;
+  max-width: 64%;
+  text-align: right;
+  word-break: break-all;
+}
+
+.insight-next {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 12px 16px;
+  border: 1px solid #e4ecfb;
+  border-radius: var(--r-card);
+  background: linear-gradient(180deg, #f3f9ff, #e9f2ff);
+}
+
+.insight-next > span {
+  flex: none;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #5b6bd6;
+}
+
+.insight-next > strong {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.35;
+  color: #2f3a6b;
+  word-break: break-all;
+}
+
+.insight-next .muted {
+  color: #9aa0ab;
+  font-weight: 700;
+}
+
+.insight-next-body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.insight-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.insight-chip {
+  padding: 4px 11px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  border: 1px solid #d7e3fb;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #2f3a6b;
+}
+
+.insight-rows li span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.highlight-card .hl-emoji {
+  flex: none;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.highlight-card .hl-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.highlight-card .hl-main {
+  font-size: 16px;
+  font-weight: 900;
+  color: #3a3550;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.highlight-card[data-tone="day"] {
+  background: linear-gradient(155deg, #f1f7ff, #e2ecff);
+  border-color: #d3e2fb;
+}
+
+.highlight-card[data-tone="day"] .hl-sub {
+  color: #2f6bd8;
+}
+
+.highlight-card[data-tone="hour"] {
+  background: linear-gradient(155deg, #fff7ed, #ffe9cf);
+  border-color: #f7d9b0;
+}
+
+.highlight-card[data-tone="hour"] .hl-sub {
+  color: #c2410c;
+}
+
+.highlight-card[data-tone="top"] {
+  background: linear-gradient(155deg, #fff1f5, #ffdfe9);
+  border-color: #fbcdda;
+}
+
+.highlight-card[data-tone="top"] .hl-sub {
+  color: #d11d54;
+}
+
+.highlight-card[data-tone="wd"] {
+  background: linear-gradient(155deg, #f0fbf3, #e0f4e7);
+  border-color: #cdeed6;
+}
+
+.highlight-card[data-tone="wd"] .hl-main {
+  color: #2f7d4f;
+}
+
+.hl-lbreak {
+  display: block;
+  height: 0;
+}
+
+.hl-heart {
+  font-style: normal;
+  font-size: 1.35em;
+  color: #e11d48;
+  margin-right: 3px;
+  vertical-align: -0.04em;
+}
+
+.insight-tile,
+.highlight-card {
+  transition: transform 0.15s var(--ease, ease), box-shadow 0.15s var(--ease, ease);
+}
+
+.insight-tile:hover,
+.highlight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -10px rgb(80 60 140 / 40%);
+}
+
+.pi-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 97; /* 하트 토스트(96)·스티커 토스트(95)보다 위, 미니게임(45)보다 위 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(24 20 32 / 42%);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  padding: 24px 16px;
+  animation: pi-fade var(--dur-2) var(--ease-enter) both;
+}
+
+@keyframes pi-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pi-sheet {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  max-height: min(84vh, 760px);
+  border-radius: var(--r-xl);
+  background: linear-gradient(180deg, #fffdf6, #fdf6e6);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+  /* 등장은 스프링(살짝 넘쳤다 안착) — 유리판이 아니라 물체가 올라오는 느낌(A1). */
+  animation: pi-rise var(--dur-spring-smooth, var(--dur-4)) var(--spring-smooth, var(--ease-enter))
+    both;
+}
+
+@keyframes pi-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+html[data-reduce-motion] .pi-sheet,
+html[data-reduce-motion] .pi-backdrop {
+  animation: none;
+}
+
+@keyframes pi-rise-sheet {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pi-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #efe6d3;
+  padding: 16px 18px;
+}
+
+.pi-head strong {
+  display: block;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--ink, #23303f);
+}
+
+.pi-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line, #ece9f5);
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    transform var(--dur-2) var(--spring-bouncy, var(--ease-spring, var(--ease)));
+}
+
+.pi-close:active {
+  transform: rotate(90deg) scale(0.9);
+}
+
+html[data-reduce-motion] .pi-close:hover,
+html[data-reduce-motion] .pi-close:active {
+  transform: none;
+}
+
+.pi-body {
+  display: grid;
+  gap: 12px;
+  overflow-y: auto;
+  /* 가로는 막는다 — 긴 제목은 …로 잘려야지(툴팁이 전체를 보여준다) 시트를 가로로 늘려
+     짜투리 스크롤바를 만들면 안 된다. 툴팁은 폭 안으로 clamp돼 안 잘린다. */
+  overflow-x: hidden;
+  padding: 16px 18px 22px;
+}
+
+.pi-card {
+  /* 그리드 아이템 기본 min-width:auto 해제 — 안의 긴 글이 카드를 밖으로 밀지 못하게. */
+  min-width: 0;
+  border: 1px solid #efe6d3;
+  border-radius: var(--r-card);
+  background: #fffdf6;
+  padding: 13px 14px;
+}
+
+.pi-card.pi-broadcast {
+  border-color: rgb(244 183 64 / 55%);
+  background: linear-gradient(180deg, #fffaf0, #fffdf6);
+}
+
+.pi-label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.pi-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pi-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-radius: var(--r-md);
+  background: rgb(0 0 0 / 3%);
+  padding: 9px 10px;
+}
+
+.pi-stat b {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--ink, #23303f);
+  line-height: 1.1;
+}
+
+.pi-stat span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.pi-stat i.up {
+  color: #16a34a;
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.pi-stat i.down {
+  color: #b45309;
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.pi-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@keyframes pi-shimmer {
+  to {
+    background-position: -150% 0;
+  }
+}
+
+html[data-reduce-motion] .pi-skeleton {
+  animation: none;
+}
+
+.pi-retry {
+  border: 1px solid var(--line, #ece2cd);
+  border-radius: var(--r-pill);
+  background: var(--surface, #fffdf6);
+  padding: 7px 14px;
+  min-height: 36px;
+  color: var(--ink, #23303f);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform var(--dur-1) var(--ease),
+    background var(--dur-1) var(--ease);
+}
+
+.pi-retry:hover {
+  background: var(--surface-2, #fdf6e8);
+}
+
+.pi-retry:active {
+  transform: scale(0.94);
+}
+
+.pi-next {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  border-top: 1px dashed #efe6d3;
+  padding-top: 10px;
+}
+
+.pi-next span {
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+
+.pi-next strong {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ink, #23303f);
+}
+
+.pi-bar i {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  transition: width var(--dur-5) var(--ease-enter);
+}
+
+.pi-bar.heart i {
+  background: linear-gradient(90deg, #ff8fab, #ff5c8a);
+}
+
+.pi-top {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pi-top li {
+  display: grid;
+  grid-template-columns: 24px 1fr 84px;
+  align-items: center;
+  gap: 8px;
+}
+
+.pi-rank {
+  font-size: 15px;
+}
+
+.pi-top-title {
+  color: var(--ink, #23303f);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pi-sheet {
+  border: var(--stroke-hairline) solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+}
+
+.pi-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  gap: var(--space-3);
+  border-color: var(--line);
+  background: var(--surface);
+  padding: var(--space-4) var(--space-5);
+}
+
+.pi-head strong {
+  color: var(--ink);
+  font-size: var(--text-title);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.pi-close,
+.pi-retry {
+  min-width: var(--control-hit);
+  min-height: var(--control-hit);
+  border: var(--stroke-hairline) solid var(--line);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  color: var(--ink-soft);
+}
+
+.pi-close {
+  width: var(--control-hit);
+  height: var(--control-hit);
+}
+
+.pi-close:hover,
+.pi-retry:hover {
+  border-color: var(--selection-border);
+  background: var(--selection-fill);
+  color: var(--violet);
+}
+
+.pi-body {
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+.pi-card {
+  border: var(--stroke-hairline) solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-1);
+}
+
+.pi-card.pi-broadcast {
+  border-color: var(--status-warning);
+  background: var(--status-warning-fill);
+}
+
+.pi-label {
+  margin-bottom: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.pi-stats {
+  gap: var(--space-2);
+}
+
+.pi-stat {
+  gap: var(--space-1);
+  border: var(--stroke-hairline) solid var(--line-soft);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  padding: var(--space-3);
+}
+
+.pi-stat b {
+  color: var(--ink);
+  font-size: var(--text-title);
+  font-weight: var(--weight-semibold);
+}
+
+.pi-stat span,
+.pi-empty,
+.pi-next {
+  color: var(--muted);
+  font-size: var(--text-body);
+  line-height: var(--lh-body);
+}
+
+.pi-next {
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  border-color: var(--line);
+  padding-top: var(--space-3);
+}
+
+.pi-next strong,
+.pi-top-title {
+  color: var(--ink);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+}
+
+.pi-top {
+  gap: var(--space-2);
+}
+
+.pi-top li {
+  gap: var(--space-2);
+  min-height: var(--control-hit);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  padding: var(--space-2) var(--space-3);
+}
+
+.pi-bar {
+  background: var(--line-soft);
+}
+
+.pi-skeleton {
+  background: var(--surface-2);
+}
+
+html[data-reduce-motion] .pi-close,
+html[data-reduce-motion] .pi-retry,
+html[data-reduce-motion] .pi-bar i {
+  transition: none;
+}
+
+html[data-reduce-motion] .pi-close:hover,
+html[data-reduce-motion] .pi-close:active,
+html[data-reduce-motion] .pi-retry:active {
+  transform: none;
+}

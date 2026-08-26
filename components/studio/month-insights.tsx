@@ -10,6 +10,10 @@ import {
   getGateInfoAction
 } from "@/lib/schedules/security-actions";
 import { hapticError, hapticSuccess, hapticTick } from "@/lib/ui/haptics";
+import { HighlightCards, type HighlightCard } from "@/components/studio/highlight-cards";
+import { StackTrendChart } from "@/components/studio/stack-trend-chart";
+import { TrendDeltaBadge } from "@/components/studio/trend-delta-badge";
+import { monthProgress } from "@/lib/insights/month-progress";
 
 // 월별 인사이트 — VIC(빅토리)의 4패널 문법·디자인을 그대로 잇는다(사용자 결정 2026-08-26:
 // 디자인은 VIC 것, 탭 구성만 이 프로젝트에 맞게). 데이터는 일정 파생만(ADR-0011).
@@ -28,6 +32,16 @@ type Props = {
   initialMonth: number;
   loadAction: (input: { year: number; month: number }) => Promise<MonthInsightsResult>;
 };
+
+const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
+function weekdayLabel(wd: number | null): string {
+  return wd !== null ? `${WEEKDAY[wd]}요일` : "—";
+}
+function fmtMonthDay(dateKey: string): string {
+  const [yy, mm, dd] = dateKey.split("-").map(Number);
+  const wd = WEEKDAY[new Date(Date.UTC(yy, mm - 1, dd)).getUTCDay()] ?? "";
+  return `${mm}/${dd}(${wd})`;
+}
 
 export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Props) {
   const [view, setView] = useState({ year: initialYear, month: initialMonth });
@@ -74,27 +88,62 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const last = PANELS.length - 1;
 
-  const delta = (now: number, before: number) => {
-    const d = now - before;
-    return d === 0 ? "±0" : d > 0 ? `+${d}` : `${d}`;
-  };
-  const maxTag = data?.tagRank[0]?.count ?? 0;
 
   function renderContent(d: MonthInsights) {
+    // 이번/지난달 컨텐츠 수(휴뱅 제외) — 트렌드 시리즈의 마지막 두 값이 정확히 그것이다.
+    const thisContent = d.trend.content[d.trend.content.length - 1] ?? 0;
+    const lastContent = d.trend.content[d.trend.content.length - 2] ?? 0;
+    const contentTrend = thisContent - lastContent;
     return (
       <>
+        <div className="insight-next">
+          <span>다음 방송</span>
+          {d.nextBroadcast ? (
+            <div className="insight-next-body">
+              <strong>{fmtMonthDay(d.nextBroadcast.dateKey)}</strong>
+              <div className="insight-chips">
+                {d.nextBroadcast.titles.map((t, i2) => (
+                  <span className="insight-chip" key={`${t}-${i2}`}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <strong className="muted">예정된 방송 없음</strong>
+          )}
+        </div>
         <div className="insight-grid">
+          <div className="insight-tile" data-tone="public">
+            <strong>
+              {thisContent}
+              {contentTrend !== 0 ? (
+                <em
+                  className={`insight-trend ${contentTrend > 0 ? "up" : "down"}`}
+                  title={`지난달 ${lastContent}건과 비교`}
+                >
+                  {contentTrend > 0 ? "▲" : "▼"}
+                  {Math.abs(contentTrend)}
+                </em>
+              ) : null}
+            </strong>
+            <span>이번 달 컨텐츠</span>
+          </div>
           <div className="insight-tile">
             <strong>{d.broadcastDays}</strong>
-            <span>방송 일수 (전월 {delta(d.broadcastDays, d.prev.broadcastDays)})</span>
+            <span>컨텐츠 있는 날</span>
           </div>
           <div className="insight-tile">
             <strong>{d.dayoffDays}</strong>
-            <span>휴뱅 일수</span>
+            <span>휴뱅 날</span>
           </div>
-          <div className="insight-tile">
-            <strong>{d.totalEvents}</strong>
-            <span>일정 수{d.draftCount > 0 ? ` · 발행 전 ${d.draftCount}` : ""}</span>
+          <div className="insight-tile" data-text="">
+            <strong>{weekdayLabel(d.busiestWeekday)}</strong>
+            <span>바쁜 요일</span>
+          </div>
+          <div className="insight-tile" data-text="">
+            <strong>{weekdayLabel(d.quietestWeekday)}</strong>
+            <span>한가한 요일</span>
           </div>
         </div>
         <h4 className="insight-subhead">이번 달 컨텐츠 순위</h4>
@@ -108,10 +157,7 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
                 <span className="insight-bar-track">
                   <span
                     className="insight-bar-fill"
-                    style={{
-                      width: `${maxTag > 0 ? Math.max(8, Math.round((t.count / maxTag) * 100)) : 0}%`,
-                      background: t.bgHex ?? undefined
-                    }}
+                    style={{ width: `${Math.round(t.ratio * 100)}%`, background: t.color }}
                   />
                 </span>
                 <span className="insight-bar-count">{t.count}</span>
@@ -124,37 +170,45 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
   }
 
   function renderEngagement(d: MonthInsights) {
+    const monthly = d.trend.months.map((ym, i2) => ({ ym, count: d.trend.hearts[i2] ?? 0 }));
+    const monMax = Math.max(1, ...monthly.map((m) => m.count));
     return (
       <>
         <div className="insight-grid">
           <div className="insight-tile" data-tone="heart">
             <strong>{d.heartsTotal.toLocaleString()}</strong>
-            <span>하트 (전월 {delta(d.heartsTotal, d.prev.heartsTotal)})</span>
+            <span>{d.month}월 하트</span>
           </div>
-          <div className="insight-tile">
+          <div className="insight-tile" data-tone="heart">
             <strong>{d.hopeTotal.toLocaleString()}</strong>
             <span>기대돼요</span>
           </div>
         </div>
-        <h4 className="insight-subhead">하트 많은 일정</h4>
+        <h4 className="insight-subhead">월별 하트 (최근 6개월)</h4>
+        <div aria-label="월별 하트 그래프" className="vt-chart" role="img">
+          {monthly.map((mo) => (
+            <div className="vt-col" key={mo.ym}>
+              <div className="vt-barwrap">
+                <div
+                  className="vt-bar heart"
+                  data-v={`♥ ${mo.count}`}
+                  style={{ height: `${Math.round((mo.count / monMax) * 100)}%` }}
+                />
+              </div>
+              <span className="vt-day">{Number(mo.ym.slice(5, 7))}월</span>
+            </div>
+          ))}
+        </div>
+        <h4 className="insight-subhead">이번 달 인기 컨텐츠 TOP</h4>
         {d.heartsTop.length === 0 ? (
-          <p className="insight-empty">아직 하트가 눌린 일정이 없어요.</p>
+          <p className="insight-empty">이 달엔 하트를 받은 일정이 없어요.</p>
         ) : (
-          <ul className="insight-bars">
-            {d.heartsTop.map((e) => (
-              <li key={`${e.dateKey}-${e.title}`}>
-                <span className="insight-bar-label">
-                  {e.dateKey.slice(5).replace("-", "/")} {e.title}
+          <ul className="insight-rows">
+            {d.heartsTop.map((t, i2) => (
+              <li key={`${t.title}-${i2}`}>
+                <span>
+                  {i2 + 1}. {t.title}
                 </span>
-                <span className="insight-bar-track">
-                  <span
-                    className="insight-bar-fill heart"
-                    style={{
-                      width: `${Math.max(10, Math.round((e.count / Math.max(1, d.heartsTop[0].count)) * 100))}%`
-                    }}
-                  />
-                </span>
-                <span className="insight-bar-count">{e.count.toLocaleString()}</span>
               </li>
             ))}
           </ul>
@@ -163,51 +217,104 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
     );
   }
 
+  // 트렌드 — VIC 원본 문법 그대로(컨텐츠·하트 스파크 + 콘텐츠별·형식별·하트 태그 누적 스택).
+  // 방송시간 차트만 없다: 방송시간 수집 자체가 이 프로젝트에 없다(ADR-0004·0011).
   function renderTrend(d: MonthInsights) {
-    const maxB = Math.max(1, ...d.trend.map((x) => x.broadcastDays));
+    const xLabels = d.trend.months.map((mk, i) => {
+      const [yy, mm] = mk.split("-").map(Number);
+      const prevYy = i > 0 ? Number(d.trend.months[i - 1].split("-")[0]) : null;
+      return { showYear: i === 0 || yy !== prevYy, yy: yy % 100, mm };
+    });
+    const series = [
+      { key: "content", label: "🗓️ 컨텐츠", values: d.trend.content },
+      { key: "hearts", label: "💗 하트", values: d.trend.hearts }
+    ];
+    const lastYm = d.trend.months[d.trend.months.length - 1] ?? "";
+    const partial = monthProgress(lastYm);
     return (
       <>
-        <h4 className="insight-subhead">최근 6개월 방송 일수</h4>
-        <div className="mi-trend">
-          {d.trend.map((t) => (
-            <div className="mi-trend-col" key={`${t.year}-${t.month}`}>
-              <span className="mi-trend-num">{t.broadcastDays}</span>
-              <span
-                className={`mi-trend-bar${t.year === d.year && t.month === d.month ? " cur" : ""}`}
-                style={{ height: `${Math.max(6, Math.round((t.broadcastDays / maxB) * 72))}px` }}
-              />
-              <span className="mi-trend-label">{t.month}월</span>
-              <span className="mi-trend-sub">♥{t.heartsTotal.toLocaleString()}</span>
+        <p className="insight-note">
+          최근 6개월 추이 · 배지는 지난달 대비 변화
+          {partial ? " (이번 달은 진행 중이라 지난달 같은 페이스와 비교)" : ""}
+        </p>
+        {series.map((sr) => {
+          const cur = sr.values[sr.values.length - 1] ?? 0;
+          const prev = sr.values[sr.values.length - 2] ?? 0;
+          const max = Math.max(1, ...sr.values);
+          return (
+            <div className="trend-row" key={sr.key}>
+              <div className="trend-head">
+                <span>{sr.label}</span>
+                <strong>{cur.toLocaleString()}</strong>
+                <TrendDeltaBadge cur={cur} prev={prev} ym={lastYm} />
+              </div>
+              <div className="trend-spark">
+                {sr.values.map((v, i) => (
+                  <div className="trend-bcol" key={i}>
+                    <div className="trend-bwrap">
+                      <div
+                        className={`trend-bar ${i === sr.values.length - 1 ? "cur" : ""}${
+                          partial && i === sr.values.length - 1 ? " partial" : ""
+                        }`}
+                        data-v={`${v}`}
+                        style={{ height: `${Math.max(4, Math.round((v / max) * 100))}%` }}
+                      />
+                    </div>
+                    <span className="trend-x">
+                      {xLabels[i].showYear ? <em>{xLabels[i].yy}년</em> : null}
+                      {xLabels[i].mm}월
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
+        <StackTrendChart data={d.trend.contentByTag} showLegend={false} title="🗓️ 콘텐츠별" />
+        <StackTrendChart data={d.trend.modifierByTag} showLegend={false} title="🎛️ 형식별" />
+        <StackTrendChart
+          data={d.trend.heartsByTag}
+          rankLabel="일정당 평균 하트 순"
+          showLegend={false}
+          showNumbers={false}
+          title="💗 하트 받은 태그"
+        />
       </>
     );
   }
 
   function renderHighlight(d: MonthInsights) {
-    return (
-      <div className="insight-grid">
-        <div className="insight-tile" data-text="">
-          <strong>
-            {d.highlight.topHeart
-              ? `${d.highlight.topHeart.title} ♥${d.highlight.topHeart.count.toLocaleString()}`
-              : "아직 없음"}
-          </strong>
-          <span>🏆 하트 1위</span>
-        </div>
-        <div className="insight-tile" data-text="">
-          <strong>
-            {d.highlight.topTag ? `${d.highlight.topTag.name} ${d.highlight.topTag.count}회` : "아직 없음"}
-          </strong>
-          <span>🎯 최다 컨텐츠</span>
-        </div>
-        <div className="insight-tile" data-text="">
-          <strong>{d.highlight.longestStreak > 0 ? `${d.highlight.longestStreak}일` : "아직 없음"}</strong>
-          <span>🔥 최장 연속 방송</span>
-        </div>
-      </div>
-    );
+    const cards: HighlightCard[] = [
+      {
+        key: "top",
+        emoji: "💗",
+        tone: "top",
+        label: ["인기", "컨텐츠"],
+        main: d.highlight.topHeart ? d.highlight.topHeart.title : "—"
+      },
+      {
+        key: "wd",
+        emoji: "🔥",
+        tone: "wd",
+        label: ["컨텐츠", "최다요일"],
+        main: weekdayLabel(d.busiestWeekday)
+      },
+      {
+        key: "tag",
+        emoji: "🎯",
+        tone: "day",
+        label: ["최다", "컨텐츠"],
+        main: d.highlight.topTag ? `${d.highlight.topTag.name} ${d.highlight.topTag.count}회` : "—"
+      },
+      {
+        key: "streak",
+        emoji: "📺",
+        tone: "hour",
+        label: ["최장 연속", "방송"],
+        main: d.highlight.longestStreak > 0 ? `${d.highlight.longestStreak}일` : "—"
+      }
+    ];
+    return <HighlightCards cards={cards} />;
   }
 
   return (

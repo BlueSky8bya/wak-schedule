@@ -76,6 +76,7 @@ import { captureFlip, playFlip } from "@/lib/ui/list-flip";
 import { popInnerOverlay, pushInnerOverlay } from "@/lib/ui/overlay-pop";
 import { writeLoadingToneCookie, writeViewCookie } from "@/lib/ui/view-cookie";
 import { LiveBeacon } from "@/components/poster/live-beacon";
+import { PublicInsights } from "@/components/poster/public-insights";
 import { useLivePresence } from "@/components/poster/use-live";
 import { createWheelStepper, normalizeWheelDelta, stepCalZoom } from "@/lib/ui/calendar-zoom";
 // 포스터 CSS는 이 컴포넌트와 함께 로드(루트 레이아웃 전역 import 제거에 대응). PublicPoster가 쓰이는
@@ -3359,135 +3360,20 @@ export function PublicPoster({
             );
           })()
         : null}
-      {/* '이 달 기록' 시트 — fork 때 시트 본체가 사라져 버튼이 무반응이었다(2026-08-26 복구).
-          서버 호출 없이 이미 받은 공개 스케줄로 즉석 집계(시청자 수와 무관 — ADR-0004). */}
-      {insightsOpen
-        ? (() => {
-            const ym = `${view.year}-${String(view.month).padStart(2, "0")}-`;
-            const dayKeyOf = (e: PublicScheduleEvent) => e.startsAt.slice(0, 10);
-            const monthEvents = schedule.events.filter(
-              (e) => dayKeyOf(e).startsWith(ym) && e.status !== "cancelled"
-            );
-            const bDays = new Set(
-              monthEvents.filter((e) => e.category !== "dayoff").map(dayKeyOf)
-            ).size;
-            const dayoff = new Set(
-              monthEvents.filter((e) => e.category === "dayoff").map(dayKeyOf)
-            ).size;
-            const tagById = new Map(schedule.tags.map((t) => [t.id, t]));
-            const topOf = (id: string) => {
-              let t = tagById.get(id) ?? null;
-              let hop = 0;
-              while (t && t.parentId && hop < 4) {
-                t = tagById.get(t.parentId) ?? null;
-                hop += 1;
-              }
-              return t;
-            };
-            const counts = new Map<string, number>();
-            for (const e of monthEvents) {
-              const seen = new Set<string>();
-              for (const id of e.tagIds ?? []) {
-                const top = topOf(id);
-                if (!top || top.kind === "modifier" || seen.has(top.id)) continue;
-                seen.add(top.id);
-                counts.set(top.id, (counts.get(top.id) ?? 0) + 1);
-              }
-            }
-            const rank = [...counts.entries()]
-              .map(([id, count]) => {
-                const t = tagById.get(id)!;
-                const pal = schedule.palette.find((c) => c.key === t.colorKey);
-                return { id, name: t.displayName, color: t.bgHex ?? pal?.bgColor ?? "#cfe0a5", count };
-              })
-              .sort((a, b) => b.count - a.count)
-              .slice(0, 6);
-            const maxRank = rank[0]?.count ?? 0;
-            const topHearts = [...monthEvents]
-              .filter((e) => (e.heartCount ?? 0) > 0)
-              .sort((a, b) => (b.heartCount ?? 0) - (a.heartCount ?? 0))
-              .slice(0, 3);
-            return (
-              <div
-                className="recap-backdrop"
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) setInsightsOpen(false);
-                }}
-                role="presentation"
-              >
-                <div aria-modal="true" className="recap-sheet" role="dialog">
-                  <div className="recap-head">
-                    <strong>
-                      📊 {view.month}월 기록
-                    </strong>
-                    <button
-                      aria-label="닫기"
-                      className="recap-close"
-                      onClick={() => setInsightsOpen(false)}
-                      type="button"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                  <div className="recap-tiles">
-                    <div className="recap-tile">
-                      <b>{bDays}</b>
-                      <span>방송</span>
-                    </div>
-                    <div className="recap-tile">
-                      <b>{dayoff}</b>
-                      <span>휴뱅</span>
-                    </div>
-                    <div className="recap-tile">
-                      <b>{monthEvents.length}</b>
-                      <span>일정</span>
-                    </div>
-                  </div>
-                  {rank.length > 0 ? (
-                    <div className="recap-section">
-                      <h4>이 달의 컨텐츠</h4>
-                      <ul className="recap-bars">
-                        {rank.map((t) => (
-                          <li key={t.id}>
-                            <span className="recap-bar-label">{t.name}</span>
-                            <span className="recap-bar-track">
-                              <span
-                                className="recap-bar-fill"
-                                style={{
-                                  width: `${Math.max(10, Math.round((t.count / maxRank) * 100))}%`,
-                                  background: t.color
-                                }}
-                              />
-                            </span>
-                            <span className="recap-bar-count">{t.count}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                  {topHearts.length > 0 ? (
-                    <div className="recap-section">
-                      <h4>하트 많은 일정</h4>
-                      <ul className="recap-hearts">
-                        {topHearts.map((e) => (
-                          <li key={e.id}>
-                            <span className="recap-heart-date">
-                              {dayKeyOf(e).slice(5).replace("-", "/")}
-                            </span>
-                            <span className="recap-heart-title">
-                              {e.publicTitle.split("\n")[0]}
-                            </span>
-                            <span className="recap-heart-count">♥ {(e.heartCount ?? 0).toLocaleString()}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            );
-          })()
-        : null}
+      {/* '이 달 기록' — VIC public-insights 이식판(디자인 동일, 방송시간 카드만 없음). */}
+      {insightsOpen ? (
+        <PublicInsights
+          events={schedule.events}
+          heartCounts={Object.fromEntries(
+            schedule.events.map((e) => [e.id, e.heartCount ?? 0])
+          )}
+          month={view.month}
+          onClose={() => setInsightsOpen(false)}
+          palette={schedule.palette}
+          tags={schedule.tags}
+          year={view.year}
+        />
+      ) : null}
       {celebrate ? (
         <div className="celebrate-overlay" aria-hidden="true">
           {confetti.map((c, i) => (

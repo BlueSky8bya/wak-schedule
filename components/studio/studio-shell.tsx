@@ -87,6 +87,7 @@ import {
   createMemoNoteAction,
   deleteMemoNoteAction,
   listMemoNotesAction,
+  reorderMemoNotesAction,
   updateMemoNoteAction
 } from "@/lib/schedules/memo-actions";
 import { getMonthInsightsAction } from "@/lib/schedules/insights-actions";
@@ -4909,7 +4910,8 @@ export function StudioShell({
                   list: listMemoNotesAction,
                   create: createMemoNoteAction,
                   update: updateMemoNoteAction,
-                  remove: deleteMemoNoteAction
+                  remove: deleteMemoNoteAction,
+                  reorder: reorderMemoNotesAction
                 }}
                 canWrite={canEdit && !previewRole}
               />

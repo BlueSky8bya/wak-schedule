@@ -329,3 +329,17 @@ app/globals.css(--memo-font-*), lib/schedules/memo-actions.ts(글씨체 화이�
 Files: components/studio/memo-notes.tsx, components/studio/studio-shell.css,
 lib/schedules/memo-actions.ts
 
+### CHG-20260826-029 — FEAT — 메모 P0: 수동 순서 + 저장 코디네이터 (ADR-0015)
+
+- 0066(라이브 적용): sort_order + backfill + 정렬 인덱스 + reorder RPC(단일 UPDATE 원자).
+- 액션: 목록 sort_order asc(수정해도 탭 안 점프) · 생성 맨 위 · reorder(전체 집합
+  검증) · update가 updatedAt 반환 · 6색 allowlist(paper·lavender).
+- 코디네이터(부모 소유): 실패 patch 유지 + 재시도, 창 닫아도 저장 지속, beforeunload.
+- 탭 드래그 재정렬(lib/tags/reorder 재사용, Esc/실패 복구 + 재시도 배너),
+  탭 = 형제 버튼(중첩 제거) + 색 스트립 + 내용 미리보기, 같은 탭 재클릭 = 초점.
+- 사용자 심판 4건: + 우측 끝 · 색 상시 스트립 · 서체 분위기 5(옛 키 호환 렌더) ·
+  크기 −/+ 4단 스테퍼(옛 값은 근사 표시). 창 clamp 높이 반영 + posRef 저장.
+Files: db/migrations/0066, lib/schedules/memo-actions.ts,
+components/studio/{memo-notes.tsx,studio-shell.tsx,studio-shell.css},
+docs/agent/decisions/ADR-0015-memo-order-and-trust.md
+

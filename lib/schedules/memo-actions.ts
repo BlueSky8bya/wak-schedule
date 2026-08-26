@@ -111,6 +111,7 @@ export type MemoNote = {
   fontFamily: string;
   fontSize: number;
   bold: boolean;
+  sortOrder: number;
   updatedAt: string;
 };
 export type MemoListResult = { ok: true; notes: MemoNote[] } | { ok: false; error: string };
@@ -118,7 +119,7 @@ export type MemoNoteResult = { ok: true; note: MemoNote } | { ok: false; error: 
 
 const MEMO_NOTE_MAX = 30; // 계정당 쪽지 수 상한
 const MEMO_TITLE_MAX = 100;
-const MEMO_COLORS = new Set(["yellow", "mint", "sky", "pink"]);
+const MEMO_COLORS = new Set(["paper", "yellow", "mint", "sky", "pink", "lavender"]);
 const MEMO_FONTS = new Set([
   "sans",
   "serif", // 구버전 호환(=명조)
@@ -144,6 +145,7 @@ type MemoRow = {
   font_family: string;
   font_size: number;
   bold: boolean;
+  sort_order: number;
   updated_at: string;
 };
 
@@ -156,6 +158,7 @@ function toNote(r: MemoRow): MemoNote {
     fontFamily: r.font_family,
     fontSize: r.font_size,
     bold: r.bold,
+    sortOrder: r.sort_order,
     updatedAt: r.updated_at
   };
 }
@@ -167,9 +170,11 @@ export async function listMemoNotesAction(): Promise<MemoListResult> {
   }
   const { data, error } = await ctx.supabase
     .from("calendar_memos")
-    .select("id, title, body, color, font_family, font_size, bold, updated_at")
+    .select("id, title, body, color, font_family, font_size, bold, sort_order, updated_at")
     .eq("calendar_id", ctx.calendarId)
     .eq("user_id", ctx.userId)
+    // 수동 순서가 진실(ADR-0015) — 본문을 고쳐도 탭이 점프하지 않는다.
+    .order("sort_order", { ascending: true })
     .order("updated_at", { ascending: false })
     .limit(MEMO_NOTE_MAX);
   if (error) {
@@ -191,10 +196,19 @@ export async function createMemoNoteAction(): Promise<MemoNoteResult> {
   if ((count ?? 0) >= MEMO_NOTE_MAX) {
     return { ok: false, error: `메모는 ${MEMO_NOTE_MAX}개까지예요.` };
   }
+  const { data: top } = await ctx.supabase
+    .from("calendar_memos")
+    .select("sort_order")
+    .eq("calendar_id", ctx.calendarId)
+    .eq("user_id", ctx.userId)
+    .order("sort_order", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  const topOrder = ((top?.sort_order as number | undefined) ?? 1) - 1;
   const { data, error } = await ctx.supabase
     .from("calendar_memos")
-    .insert({ calendar_id: ctx.calendarId, user_id: ctx.userId })
-    .select("id, title, body, color, font_family, font_size, bold, updated_at")
+    .insert({ calendar_id: ctx.calendarId, user_id: ctx.userId, sort_order: topOrder })
+    .select("id, title, body, color, font_family, font_size, bold, sort_order, updated_at")
     .single();
   if (error || !data) {
     return { ok: false, error: safeActionError("메모 만들기", error) };
@@ -212,12 +226,13 @@ export async function updateMemoNoteAction(
     fontSize?: number;
     bold?: boolean;
   }
-): Promise<MemoSaveResult> {
+): Promise<{ ok: true; updatedAt: string } | { ok: false; error: string }> {
   const ctx = await memoContext();
   if (ctx.error !== undefined) {
     return { ok: false, error: ctx.error };
   }
-  const row: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  const now = new Date().toISOString();
+  const row: Record<string, unknown> = { updated_at: now };
   if (patch.title !== undefined) {
     if (typeof patch.title !== "string" || patch.title.length > MEMO_TITLE_MAX) {
       return { ok: false, error: `제목은 ${MEMO_TITLE_MAX}자 이내여야 합니다.` };
@@ -259,6 +274,41 @@ export async function updateMemoNoteAction(
     .eq("user_id", ctx.userId);
   if (error) {
     return { ok: false, error: safeActionError("메모 저장", error) };
+  }
+  return { ok: true, updatedAt: now };
+}
+
+// 수동 순서 저장(ADR-0015) — 전체 id 배열을 받아 단일 UPDATE RPC로 원자 적용.
+// 검증: 본인 메모 전체와 정확히 일치(누락·중복·남의 id 거부).
+export async function reorderMemoNotesAction(orderedIds: string[]): Promise<MemoSaveResult> {
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0 || orderedIds.length > MEMO_NOTE_MAX) {
+    return { ok: false, error: "순서 형식이 올바르지 않습니다." };
+  }
+  if (new Set(orderedIds).size !== orderedIds.length) {
+    return { ok: false, error: "순서에 중복이 있습니다." };
+  }
+  const ctx = await memoContext();
+  if (ctx.error !== undefined) {
+    return { ok: false, error: ctx.error };
+  }
+  const { data: mine, error: listErr } = await ctx.supabase
+    .from("calendar_memos")
+    .select("id")
+    .eq("calendar_id", ctx.calendarId)
+    .eq("user_id", ctx.userId);
+  if (listErr) {
+    return { ok: false, error: safeActionError("순서 저장", listErr) };
+  }
+  const myIds = new Set(((mine ?? []) as { id: string }[]).map((r) => r.id));
+  if (orderedIds.length !== myIds.size || orderedIds.some((id) => !myIds.has(id))) {
+    return { ok: false, error: "메모 목록이 바뀌었어요. 새로고침 후 다시 시도해 주세요." };
+  }
+  const { error } = await ctx.supabase.rpc("reorder_calendar_memos", {
+    p_calendar: ctx.calendarId,
+    p_ids: orderedIds
+  });
+  if (error) {
+    return { ok: false, error: safeActionError("순서 저장", error) };
   }
   return { ok: true };
 }

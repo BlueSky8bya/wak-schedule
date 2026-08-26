@@ -13369,7 +13369,8 @@ html[data-reduce-motion] .event-drag-ghost {
   border: 1.5px dashed rgb(196 168 78 / 45%);
   background: #fdf3bd;
 }
-/* 런처(레일 카드 안): 목록 + 새 메모. 행 = 색 점 + 제목/메타 + 삭제. */
+/* ── 메모(ADR-0015) — 런처(수동 순서·드래그)와 떠 있는 쪽지 창 ─────────────
+   chrome은 중립 표면, 파스텔은 메모지·색 스트립에만(감사 문서 색 원칙). */
 .memo-notes {
   display: flex;
   flex-direction: column;
@@ -13380,7 +13381,7 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-notes-head {
   display: flex;
   align-items: center;
-  gap: 8px; /* +는 제목 바로 옆(사용자 지정) */
+  justify-content: space-between; /* +는 오른쪽 끝(사용자 심판 — trailing action) */
 }
 .memo-notes-title {
   font-size: 14px;
@@ -13391,8 +13392,8 @@ html[data-reduce-motion] .event-drag-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: 0;
   border-radius: var(--r-pill);
   background: var(--accent);
@@ -13419,64 +13420,124 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-notes-empty.warn {
   color: #b3261e;
 }
+.memo-inline-retry {
+  margin-left: 4px;
+  padding: 1px 8px;
+  border: 1px solid rgb(179 38 30 / 35%);
+  border-radius: var(--r-pill);
+  background: #fff;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #b3261e;
+  cursor: pointer;
+}
+.memo-notes-blank {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 4px;
+}
+.memo-notes-blank b {
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.memo-notes-blank span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.memo-blank-cta {
+  margin-top: 6px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
 .memo-note-list {
   display: flex;
   flex-direction: column;
   gap: 7px;
   margin: -3px -2px 0;
-  /* 스크롤 컨테이너 안에서 호버 lift(-1px)·포커스 링이 모서리 잘리던 버그 — 안쪽 여유로 해결. */
-  padding: 3px 2px 4px;
+  padding: 3px 2px 4px; /* 호버 lift가 스크롤 컨테이너에 안 잘리게 안쪽 여유 */
   list-style: none;
   overflow-y: auto;
   min-height: 0;
 }
+/* 행 = [손잡이][색 스트립][열기(제목+미리보기)][삭제] — 형제 조작(중첩 버튼 금지). */
 .memo-row {
   display: flex;
-  align-items: center;
-  gap: 9px;
+  align-items: stretch;
   width: 100%;
-  height: 54px; /* 일반/삭제확인 행 높이 통일(고정) */
-  padding: 0 10px;
+  height: 60px;
   border: 1px solid var(--line-soft);
   border-radius: var(--r-md);
   background: var(--surface);
-  cursor: pointer;
-  text-align: left;
+  overflow: hidden;
   box-shadow: 0 1px 2px rgb(60 50 30 / 4%);
   transition: background 0.12s var(--ease), box-shadow 0.12s var(--ease),
     transform 0.12s var(--ease);
 }
 .memo-row:hover {
-  background: #fbfaf4;
   box-shadow: var(--shadow-1);
   transform: translateY(-1px);
 }
-.memo-row:active {
-  transform: scale(0.985);
-}
 .memo-row.open {
-  border-color: rgb(169 118 10 / 45%);
-  box-shadow: 0 0 0 2px rgb(255 200 61 / 22%);
+  border-color: rgb(var(--violet-rgb) / 45%);
+  box-shadow: 0 0 0 2px rgb(var(--violet-rgb) / 16%);
 }
-.memo-dot {
+.memo-row.dragging {
+  opacity: 0.4;
+  outline: 2px dashed rgb(var(--violet-rgb) / 45%);
+  outline-offset: -2px;
+}
+.memo-handle {
   flex: none;
-  width: 10px;
-  height: 10px;
-  border-radius: var(--r-pill);
-  border: 1px solid rgb(0 0 0 / 8%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  border: 0;
+  background: transparent;
+  color: rgb(0 0 0 / 22%);
+  cursor: grab;
+  touch-action: none;
 }
-.memo-c-yellow .memo-dot { background: #ffe483; }
-.memo-c-mint .memo-dot { background: #bdecc8; }
-.memo-c-sky .memo-dot { background: #bfdcf8; }
-.memo-c-pink .memo-dot { background: #f9cede; }
-.memo-row-main {
+.memo-handle:hover {
+  color: rgb(0 0 0 / 45%);
+}
+.memo-handle:active {
+  cursor: grabbing;
+}
+.memo-strip {
+  flex: none;
+  width: 4px;
+  margin: 8px 0;
+  border-radius: var(--r-pill);
+}
+.memo-c-paper .memo-strip { background: #dbe6f2; }
+.memo-c-yellow .memo-strip { background: #e8d78b; }
+.memo-c-mint .memo-strip { background: #cbe6c4; }
+.memo-c-sky .memo-strip { background: #c9ddf6; }
+.memo-c-pink .memo-strip { background: #ebcdd8; }
+.memo-c-lavender .memo-strip { background: #d8d0f5; }
+.memo-row-open {
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-  flex: 1 1 auto;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
 }
-.memo-row-main b {
+.memo-row-open b {
   font-size: 13.5px;
   font-weight: 800;
   color: var(--ink);
@@ -13484,21 +13545,29 @@ html[data-reduce-motion] .event-drag-ghost {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.memo-row-main em {
+.memo-row-open em {
   font-style: normal;
   font-size: 11.5px;
   color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.memo-row-err {
+  color: #b3261e;
+  font-weight: 800;
 }
 .memo-del {
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--r-sm);
-  color: rgb(122 98 26 / 55%);
+  width: 30px;
+  border: 0;
+  background: transparent;
+  color: rgb(122 98 26 / 45%);
   opacity: 0;
+  cursor: pointer;
   transition: opacity 0.12s var(--ease), background 0.12s var(--ease);
 }
 .memo-row:hover .memo-del,
@@ -13506,30 +13575,47 @@ html[data-reduce-motion] .event-drag-ghost {
   opacity: 1;
 }
 .memo-del:hover {
-  background: rgb(179 38 30 / 10%);
+  background: rgb(179 38 30 / 8%);
   color: #b3261e;
+}
+/* 드래그 유령 — 포인터 1:1, 살짝 들림. */
+.memo-row-ghost {
+  position: fixed;
+  z-index: 10060;
+  display: flex;
+  align-items: stretch;
+  height: 60px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 14px 30px rgb(50 40 20 / 22%);
+  transform: scale(1.02);
+  opacity: 0.97;
+  pointer-events: none;
+  overflow: hidden;
+  margin: 0;
+  list-style: none;
 }
 .memo-row-confirm {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  height: 54px; /* 일반 행과 같은 높이(사용자 지적) */
-  padding: 0 10px;
+  height: 60px; /* 일반 행과 동일 */
+  padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
-  background: var(--surface); /* 흰색 계열 — 주변과 조화. 위험색은 버튼에만. */
+  background: var(--surface);
   font-size: 12.5px;
   font-weight: 800;
   color: var(--ink);
-  cursor: default;
 }
 .memo-row-confirm-btns {
   display: flex;
   gap: 4px;
 }
 .memo-row-confirm-btns button {
-  padding: 3px 9px;
+  padding: 4px 10px;
   border: 1px solid rgb(179 38 30 / 30%);
   border-radius: var(--r-pill);
   background: #fff;
@@ -13543,35 +13629,37 @@ html[data-reduce-motion] .event-drag-ghost {
   border-color: var(--line);
 }
 
-/* 떠 있는 쪽지 창 — body 포털(fixed), 헤더 드래그 이동, 쪽지 단위 서식. */
+/* ── 떠 있는 쪽지 창 ── */
 .memo-win {
   position: fixed;
-  z-index: 10050; /* 편집 팝오버·모달 위 */
+  z-index: 10050;
   display: flex;
   flex-direction: column;
-  width: min(380px, calc(100vw - 32px));
-  height: 420px;
+  width: min(400px, calc(100vw - 32px));
+  height: 440px;
   max-height: calc(100vh - 40px);
   border-radius: 16px;
-  /* 애플식 층진 그림자 — 넓고 옅은 앰비언트 + 짧은 접촉면. */
   box-shadow:
     0 24px 60px -12px rgb(60 50 20 / 28%),
     0 4px 14px -4px rgb(60 50 20 / 14%),
     inset 0 1px 0 rgb(255 255 255 / 55%);
   overflow: hidden;
   resize: both;
-  min-width: 260px;
-  min-height: 220px;
+  min-width: 280px;
+  min-height: 240px;
 }
-.memo-win.memo-c-yellow { background: linear-gradient(180deg, #fdf6c9, #faeeab); }
-.memo-win.memo-c-mint { background: linear-gradient(180deg, #e8f8eb, #d8f0dd); }
-.memo-win.memo-c-sky { background: linear-gradient(180deg, #e9f2fc, #dbe9f9); }
-.memo-win.memo-c-pink { background: linear-gradient(180deg, #fcecf2, #f7dde8); }
+/* 메모지 6색 — 단색 파스텔(콘텐츠 표면), 상태색과 분리. */
+.memo-win.memo-c-paper { background: #fffefd; }
+.memo-win.memo-c-yellow { background: #fff5cc; }
+.memo-win.memo-c-mint { background: #ecf9e8; }
+.memo-win.memo-c-sky { background: #eaf3ff; }
+.memo-win.memo-c-pink { background: #fceaf1; }
+.memo-win.memo-c-lavender { background: #f0edff; }
 .memo-win-grip {
   position: relative;
   display: flex;
-  align-items: center; /* X는 아래 margin-left:auto로 항상 오른쪽 — 저장 칩 유무로 점프 금지 */
-  min-height: 30px;
+  align-items: center;
+  min-height: 32px;
   padding: 6px 8px 2px 12px;
   cursor: grab;
   touch-action: none;
@@ -13580,7 +13668,6 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-win-grip:active {
   cursor: grabbing;
 }
-/* 잡는 손잡이 — 시각적으로 '여기를 잡아라'가 읽히는 중앙 알약. */
 .memo-grip-pill {
   position: absolute;
   left: 50%;
@@ -13596,6 +13683,10 @@ html[data-reduce-motion] .event-drag-ghost {
 }
 .memo-win-save {
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 64px; /* 문구가 생겨도 옆 요소가 점프하지 않게 자리 고정 */
   font-size: 10.5px;
   font-weight: 800;
   color: rgb(0 0 0 / 40%);
@@ -13603,14 +13694,24 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-win-save.st-error {
   color: #b3261e;
 }
+.memo-save-retry {
+  padding: 1px 8px;
+  border: 1px solid rgb(179 38 30 / 40%);
+  border-radius: var(--r-pill);
+  background: rgb(255 255 255 / 75%);
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #b3261e;
+  cursor: pointer;
+}
 .memo-win-close {
   flex: none;
-  margin-left: auto; /* 저장 칩이 없어도 항상 오른쪽 위 고정(사용자 버그 신고) */
+  margin-left: auto; /* 항상 오른쪽 위 고정 */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: 0;
   border-radius: var(--r-pill);
   background: rgb(0 0 0 / 6%);
@@ -13620,23 +13721,58 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-win-close:hover {
   background: rgb(0 0 0 / 12%);
 }
+/* 툴 줄 = 상시 색상 스트립(사용자 심판) + Aa. */
 .memo-win-tools {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 0 12px 6px;
+  padding: 2px 12px 8px;
 }
-.memo-tool {
+.memo-color-strip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mm-swatch {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  cursor: pointer;
+}
+.mm-swatch span {
+  width: 17px;
+  height: 17px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgb(0 0 0 / 10%);
+  transition: transform 0.1s var(--ease);
+}
+.mm-swatch:hover span {
+  transform: scale(1.15);
+}
+.mm-swatch.sw-paper span { background: #fffefd; }
+.mm-swatch.sw-yellow span { background: #ffe89e; }
+.mm-swatch.sw-mint span { background: #cdedc4; }
+.mm-swatch.sw-sky span { background: #bfdcf8; }
+.mm-swatch.sw-pink span { background: #f4cede; }
+.mm-swatch.sw-lavender span { background: #d8d0f5; }
+.mm-swatch.on span {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 90%), 0 0 0 3.5px rgb(0 0 0 / 45%);
+}
+.memo-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   border: 0;
   border-radius: 8px;
   background: transparent;
-  font-size: 13px;
-  font-weight: 900;
   color: rgb(0 0 0 / 52%);
   cursor: pointer;
   transition: background 0.12s var(--ease), transform 0.1s var(--ease);
@@ -13647,28 +13783,24 @@ html[data-reduce-motion] .event-drag-ghost {
 .memo-tool:active {
   transform: scale(0.9);
 }
-.memo-tool-b.on {
-  background: rgb(0 0 0 / 78%);
-  color: #fff;
-}
-.memo-tool-set {
+.memo-tool-aa {
   margin-left: auto;
 }
-.memo-tool-set.on {
+.memo-tool-aa.on {
   background: rgb(0 0 0 / 10%);
   color: rgb(0 0 0 / 80%);
 }
-/* ⋯ 드롭다운 메뉴 — 흰 카드, 색상 줄 + 글자 크기 스테퍼 + 글꼴 리스트(자기 서체 미리보기). */
-.memo-menu {
+/* Aa 메뉴 — 크기 스테퍼(4단) + 분위기 5 + 전체 강조. */
+.memo-aa {
   position: absolute;
-  top: 62px;
+  top: 66px;
   right: 10px;
   z-index: 3;
   display: flex;
   flex-direction: column;
-  width: 190px;
-  max-height: min(320px, calc(100% - 76px));
-  padding: 8px;
+  gap: 7px;
+  width: 200px;
+  padding: 10px;
   border: 1px solid rgb(0 0 0 / 7%);
   border-radius: 12px;
   background: rgb(255 255 255 / 96%);
@@ -13682,59 +13814,12 @@ html[data-reduce-motion] .event-drag-ghost {
     transform: translateY(-4px) scale(0.98);
   }
 }
-.memo-menu-sec {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 6px 8px;
-}
-.mm-sec-label {
-  font-size: 11.5px;
-  font-weight: 800;
-  color: var(--muted);
-}
-.mm-colors {
-  display: flex;
-  gap: 6px;
-}
-.mm-swatch {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--r-pill);
-  background: transparent;
-  cursor: pointer;
-}
-.mm-swatch span {
-  width: 15px;
-  height: 15px;
-  border-radius: var(--r-pill);
-  border: 1px solid rgb(0 0 0 / 10%);
-  transition: transform 0.1s var(--ease);
-}
-.mm-swatch:hover span {
-  transform: scale(1.15);
-}
-.mm-swatch.sw-yellow span { background: #ffe483; }
-.mm-swatch.sw-mint span { background: #bdecc8; }
-.mm-swatch.sw-sky span { background: #bfdcf8; }
-.mm-swatch.sw-pink span { background: #f9cede; }
-.mm-swatch.on span {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px rgb(0 0 0 / 45%);
-}
-.memo-menu-size {
+.memo-aa-size {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 4px;
-  border-top: 1px solid rgb(0 0 0 / 6%);
-  border-bottom: 1px solid rgb(0 0 0 / 6%);
 }
-.memo-menu-size em {
+.memo-aa-size em {
   flex: 1 1 auto;
   text-align: center;
   font-style: normal;
@@ -13742,15 +13827,15 @@ html[data-reduce-motion] .event-drag-ghost {
   font-weight: 700;
   color: var(--ink-soft);
 }
-.memo-menu-size em b {
+.memo-aa-size em b {
   font-variant-numeric: tabular-nums;
 }
-.memo-menu-size button {
+.memo-aa-size button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: 1px solid rgb(0 0 0 / 10%);
   border-radius: 8px;
   background: #fff;
@@ -13759,41 +13844,55 @@ html[data-reduce-motion] .event-drag-ghost {
   color: var(--ink-soft);
   cursor: pointer;
 }
-.memo-menu-size button:hover:not(:disabled) {
+.memo-aa-size button:hover:not(:disabled) {
   background: rgb(0 0 0 / 5%);
 }
-.memo-menu-size button:disabled {
+.memo-aa-size button:disabled {
   opacity: 0.35;
   cursor: default;
 }
-.memo-menu-fonts {
+.memo-aa-fonts {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding-top: 6px;
-  overflow-y: auto;
-  min-height: 0;
+  border-top: 1px solid rgb(0 0 0 / 6%);
+  padding-top: 7px;
 }
-.mm-font {
+.memo-aa-fonts button {
   padding: 6px 8px;
   border: 0;
   border-radius: 8px;
   background: transparent;
   text-align: left;
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--ink);
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-.mm-font:hover {
+.memo-aa-fonts button:hover {
   background: rgb(0 0 0 / 5%);
 }
-.mm-font.on {
+.memo-aa-fonts button.on {
   background: var(--violet-soft);
   color: var(--violet-strong);
   font-weight: 700;
+}
+.memo-aa-fonts button.legacy {
+  font-size: 12.5px;
+}
+.memo-aa-bold {
+  padding: 6px 8px;
+  border: 1px solid rgb(0 0 0 / 10%);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.memo-aa-bold.on {
+  background: rgb(0 0 0 / 78%);
+  border-color: transparent;
+  color: #fff;
 }
 .memo-win-body {
   flex: 1 1 auto;
@@ -13801,7 +13900,7 @@ html[data-reduce-motion] .event-drag-ghost {
   margin: 0;
   padding: 4px 16px 16px;
   border: 0;
-  background: transparent; /* 종이(쪽지 색) 위에 바로 쓴다 — 흰 상자 제거(애플 노트 문법) */
+  background: transparent;
   color: rgb(0 0 0 / 82%);
   font-size: inherit;
   line-height: 1.65;
@@ -13815,7 +13914,7 @@ html[data-reduce-motion] .event-drag-ghost {
   font-weight: 800;
 }
 .memo-win.mf-sans .memo-win-body { font-family: inherit; }
-.memo-win.mf-serif .memo-win-body, /* 구버전 호환(=명조) */
+.memo-win.mf-serif .memo-win-body, /* 구키 호환(=명조) */
 .memo-win.mf-myeongjo .memo-win-body { font-family: var(--memo-font-myeongjo); }
 .memo-win.mf-mono .memo-win-body { font-family: var(--memo-font-mono); }
 .memo-win.mf-nanumpen .memo-win-body { font-family: var(--memo-font-nanumpen); }

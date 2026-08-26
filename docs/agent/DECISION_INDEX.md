@@ -16,5 +16,6 @@
 | [ADR-0012](decisions/ADR-0012-broadcast-hours.md) | Accepted | 제품 | 방송시간 추적 재도입 — 라이브 캐시 피기백(고정 부하) | 표본 공백 문제 시 |
 | [ADR-0013](decisions/ADR-0013-color-debt-p0.md) | Accepted | 디자인 | 색 부채 P0(의미 토큰·보라 수렴·표면 스냅·죽은 스타일 제거) — 전면 리팔레트는 보류 | '왁물원 피크닉' 채택 시 |
 | [ADR-0014](decisions/ADR-0014-memo-notes.md) | Accepted | 제품 | 메모 = 붙임쪽지 런처 + 떠 있는 창(ADR-0009 대체) | 체크리스트형 요구 시 |
+| [ADR-0015](decisions/ADR-0015-memo-order-and-trust.md) | Accepted | 제품 | 메모 수동 순서·저장 코디네이터 + 심판 4건(+우측·색 상시·서체 5·크기 4단) | 모바일 시트/검색/Undo |
 
 열림: A-04(개인 도구 저장소 잔류 여부). A-05는 ADR-0009로 해소.

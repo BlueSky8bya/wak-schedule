@@ -4685,6 +4685,10 @@ html[data-reduce-motion] .editor-anchor-link line {
 }
 .studio-workspace .event-editor-panel .tp-chip {
   justify-content: flex-start;
+  /* 3열 고정에서 칸이 좁아져도 칩이 넘치지 않게 — 긴 이름은 잘린다. */
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
   gap: 7px;
   border: var(--stroke-hairline) solid var(--line);
   background: var(--surface);
@@ -7554,12 +7558,14 @@ html[data-reduce-motion] .delete-snack {
 /* 웹: 가로폭 활용 — 흐르는 격자(여러 열) + 호버 떠오름. 칩은 큰 터치타깃 불필요. */
 @media (min-width: 1000px) {
   .tp-content {
-    grid-template-columns: repeat(auto-fill, minmax(94px, 1fr));
+    /* auto-fill은 패널 폭 따라 열수가 출렁였다(최초공개 모드에서 2열로 떨어짐 — 사용자
+       지적). 팝오버 태그는 항상 3열 고정, 칩이 칸에 맞춰 줄어든다. */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
     padding: 13px;
   }
   .tp-mods {
-    grid-template-columns: repeat(auto-fill, minmax(94px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .tp-content .tp-chip,
   .tp-mods .tp-chip {

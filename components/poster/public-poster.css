@@ -66,9 +66,9 @@
   align-content: start;
   gap: 6px;
   /* 통일: 날짜 카드(.agenda-day)와 같은 테두리색·라운드·그림자·패딩 — 형제처럼 보이게. */
-  border: 1px solid #dde5c8;
+  border: 1px solid #e6dcc0;
   border-radius: var(--r-card);
-  background: #fbfdf2;
+  background: #fdf9ec;
   padding: 10px 9px;
   box-shadow: var(--shadow-2);
 }
@@ -107,7 +107,7 @@
   white-space: nowrap;
   box-shadow: var(--shadow-2);
 }
-/* 대비: 예전 #8a7a4a는 이 배경(#fbfdf2)에서 4.16:1로 WCAG AA(4.5:1) 미달이었다 → --muted(4.68:1).
+/* 대비: 예전 #8a7a4a는 이 배경(#fdf9ec)에서 4.16:1로 WCAG AA(4.5:1) 미달이었다 → --muted(4.68:1).
    크기도 11 → 12px(작은 글자일수록 대비가 더 필요하고, 포스터는 통째로 축소돼 더 작아진다). */
 .agenda-legend strong {
   font-size: 12px;
@@ -224,9 +224,9 @@
 }
 .agenda-legend-clear {
   margin-top: 2px;
-  border: 1px solid var(--line, #dde5c8);
+  border: 1px solid var(--line, #e6dcc0);
   border-radius: var(--r-sm);
-  background: var(--surface-2, #f2f7e2);
+  background: var(--surface-2, #f7f1dc);
   padding: 4px;
   font-size: 10.5px;
   font-weight: 800;
@@ -247,9 +247,9 @@
 .agenda-tier-help {
   margin-top: 10px;
   padding: 8px;
-  border: 1px solid #dfe7c8;
+  border: 1px solid #e6dcc0;
   border-radius: var(--r-md);
-  background: linear-gradient(180deg, #fbfdf2, #f1f6df);
+  background: linear-gradient(180deg, #fdf9ec, #f6efd9);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 60%);
   display: grid;
   gap: 6px;
@@ -653,8 +653,8 @@ html[data-reduce-motion] .mb-live-dot {
   align-items: flex-start;
   gap: 10px;
   border-radius: var(--r-card);
-  background: #fbfdf2;
-  border: 1px solid #dde5c8;
+  background: #fdf9ec;
+  border: 1px solid #e6dcc0;
   /* 좌우 패딩을 동일하게(10px) — 카드 안 좌우 여백이 어긋나 보이지 않게. 하트는 아래에서
      음수 마진을 0으로 맞춰 같은 자리(오른쪽 10px)에 그대로 둔다. */
   padding: 10px;
@@ -1674,7 +1674,7 @@ html[data-reduce-motion] .poster-export-reward-spark {
     grid-template-columns 0.55s var(--spring-smooth, var(--ease-spring)),
     column-gap 0.55s var(--spring-smooth, var(--ease-spring));
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fbfdf2, #f1f6df);
+  background: linear-gradient(180deg, #fdf9ec, #f6efd9);
   padding: 18px;
   box-shadow: var(--shadow-2);
 }
@@ -1717,9 +1717,9 @@ html[data-reduce-motion] .poster-export-reward-spark {
   align-items: center;
   gap: 10px;
   --lh-size: 34px;
-  border: 1.5px solid #e0e8ca;
+  border: 1.5px solid #e8dfc4;
   border-radius: var(--r-pill, 999px);
-  background: #fbfdf2;
+  background: #fdf9ec;
   padding: 5px 18px 5px 12px;
   cursor: pointer;
   box-shadow: var(--shadow-1);
@@ -1789,10 +1789,10 @@ html[data-reduce-motion] .poster-export-reward-spark {
 .rail-info-card {
   display: flex;
   flex-direction: column;
-  border: 1px solid #dde5c8;
+  border: 1px solid #e6dcc0;
   border-radius: var(--r-lg);
   /* 위가 살짝 밝은 크림 그라데이션 — 평면 단색보다 '포스터 카드'로 읽힌다(캡쳐에도 찍힘). */
-  background: linear-gradient(180deg, #fcfef5 0%, #fbfdf2 45%, #f0f5de 100%);
+  background: linear-gradient(180deg, #fefaf0 0%, #fdf9ec 45%, #f4edd6 100%);
   box-shadow: var(--shadow-2);
   padding: 14px 16px 11px;
 }
@@ -2003,9 +2003,9 @@ html[data-reduce-motion] .support-bar.is-clickable.is-hover .sb-sprout {
   grid-template-columns: 1fr 1fr;
   align-content: start;
   gap: 4px 2px;
-  border: 1px solid #dde5c8;
+  border: 1px solid #e6dcc0;
   border-radius: var(--r-lg);
-  background: #fbfdf2;
+  background: #fdf9ec;
   /* 사이드바 패널 공통 안쪽 여백 12px 대칭 — support-card와 같은 세로선 공유(정렬 조화).
      표면 안이라 PNG·스티커 좌표가 살짝 바뀜(소유자가 스티커 재배치). */
   padding: var(--space-3); /* 12 — 10/14 비대칭 정리 */
@@ -2142,7 +2142,7 @@ html[data-reduce-motion] .support-bar.is-clickable.is-hover .sb-sprout {
     background var(--dur-1) var(--ease);
 }
 .legend-clear:hover {
-  background: var(--surface-2, #f2f7e2);
+  background: var(--surface-2, #f7f1dc);
 }
 .legend-clear:active {
   transform: scale(0.94);
@@ -2950,7 +2950,7 @@ html[data-reduce-motion] .reveal-secondary .pill-dots i {
 .agenda-detail-sheet.is-teaser,
 .agenda-detail-backdrop .agenda-detail-sheet.is-teaser,
 .agenda-detail-backdrop.is-pop .agenda-detail-sheet.is-teaser {
-  --hy-sheet-cool: #fbfdf2;
+  --hy-sheet-cool: #fdf9ec;
   --hy-sheet-hot: #fff0d2;
   background: color-mix(
     in srgb,
@@ -3552,7 +3552,7 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
   gap: 2px;
   border: 1px solid #efe3c2;
   border-radius: var(--r-pill, 999px);
-  background: #fcfef5;
+  background: #fefaf0;
   padding: 2px;
 }
 .memo-align-group button {
@@ -3678,9 +3678,9 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
 
 
 .support-card {
-  border: 1px solid #dde5c8;
+  border: 1px solid #e6dcc0;
   border-radius: var(--r-lg);
-  background: #fbfdf2;
+  background: #fdf9ec;
   box-shadow: var(--shadow-2);
   overflow: hidden;
 }
@@ -3713,9 +3713,9 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
 
 .weekday-row {
   margin-bottom: 10px;
-  border: 1px solid #e2e9cd;
+  border: 1px solid #e6dcc0;
   border-radius: var(--r-card);
-  background: #f2f6e2;
+  background: #f7f0da;
   overflow: hidden;
 }
 
@@ -3741,9 +3741,9 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
 
 .public-month-grid {
   overflow: hidden;
-  border: 1px solid #e2e9cd;
+  border: 1px solid #e6dcc0;
   border-radius: 18px;
-  background: #f6f9ea; /* 순백 → 잎빛(CHG-20260826-012) */
+  background: #fbf5e3; /* 순백 → 잎빛(CHG-20260826-012) */
   box-shadow: 0 4px 16px rgb(120 90 60 / 8%);
 }
 /* 월 바뀔 때 포스터 표면 전체가 함께 좌/우 슬라이드 — 제목·메모·달력·색상안내·텍스트·스티커가
@@ -3834,9 +3834,9 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
   --day-head-h: calc(27px * var(--cal-zoom, 1));
   /* 칸 높이는 행(grid-auto-rows: minmax(150px,auto))이 정하고, 칸은 그 행에 stretch로 꽉 찬다.
      일정이 많으면 행이 자라 칸도 커지므로 일정이 잘리지 않는다(클립 없음). */
-  border-right: 1px solid #e6ecd4;
-  border-bottom: 1px solid #e6ecd4;
-  background: #fcfdf4;
+  border-right: 1px solid #eee5cd;
+  border-bottom: 1px solid #eee5cd;
+  background: #fffbee;
 }
 
 .public-day .day-strip,
@@ -3870,7 +3870,7 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
 }
 
 .public-day.outside {
-  background: #e9efd7; /* 바깥 달 */
+  background: #ece3cb; /* 바깥 달 */
 }
 /* 흐림은 셀 opacity(그룹 합성) 대신 반투명 흰 베일로. 셀마다 베일이 맞물려 깔려
    스패닝 일정 막대는 불투명하게 이어지고 그 위 베일만 균일하게 흐려진다 → 경계 세로선 제거.
@@ -5983,7 +5983,7 @@ html[data-reduce-motion] .heart-toast {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgb(169 15 54 / 25%);
-  background: #fbfdf2;
+  background: #fdf9ec;
   box-shadow: 0 18px 44px rgb(120 20 50 / 26%);
   animation: slb-in 260ms var(--ease) both;
 }
@@ -6189,7 +6189,7 @@ html[data-reduce-motion] .slc-player img {
   width: min(560px, 100%);
   max-height: min(84vh, 760px);
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fbfdf2, #f1f6df);
+  background: linear-gradient(180deg, #fdf9ec, #f6efd9);
   box-shadow: var(--shadow-3);
   overflow: hidden;
   /* 등장은 스프링(살짝 넘쳤다 안착) — 유리판이 아니라 물체가 올라오는 느낌(A1). */
@@ -6274,12 +6274,12 @@ html[data-reduce-motion] .pi-close:active {
   min-width: 0;
   border: 1px solid #efe6d3;
   border-radius: var(--r-card);
-  background: #fbfdf2;
+  background: #fdf9ec;
   padding: 13px 14px;
 }
 .pi-card.pi-broadcast {
   border-color: rgb(244 183 64 / 55%);
-  background: linear-gradient(180deg, #fffaf0, #fbfdf2);
+  background: linear-gradient(180deg, #fffaf0, #fdf9ec);
 }
 .pi-label {
   display: block;
@@ -6341,7 +6341,7 @@ html[data-reduce-motion] .pi-close:active {
      (측정: 웹 1600 기준 210px. 이 값이 어긋나면 아래 카드들이 그만큼 밀린다.) */
   height: 210px;
   border-radius: var(--r-md);
-  background: linear-gradient(100deg, #f6efe0 30%, #fbfdf2 50%, #f6efe0 70%) 0 0 / 300% 100%;
+  background: linear-gradient(100deg, #f6efe0 30%, #fdf9ec 50%, #f6efe0 70%) 0 0 / 300% 100%;
   animation: pi-shimmer 1.25s linear infinite;
 }
 @keyframes pi-shimmer {
@@ -6362,9 +6362,9 @@ html[data-reduce-motion] .pi-skeleton {
   flex-direction: column;
 }
 .pi-retry {
-  border: 1px solid var(--line, #dde5c8);
+  border: 1px solid var(--line, #e6dcc0);
   border-radius: var(--r-pill);
-  background: var(--surface, #fbfdf2);
+  background: var(--surface, #fdf9ec);
   padding: 7px 14px;
   min-height: 36px;
   color: var(--ink, #23303f);
@@ -6376,7 +6376,7 @@ html[data-reduce-motion] .pi-skeleton {
     background var(--dur-1) var(--ease);
 }
 .pi-retry:hover {
-  background: var(--surface-2, #f2f7e2);
+  background: var(--surface-2, #f7f1dc);
 }
 .pi-retry:active {
   transform: scale(0.94);
@@ -7194,7 +7194,7 @@ html[data-reduce-motion] .pi-retry:active {
   overflow-y: auto;
   overscroll-behavior: contain;
   border-radius: var(--r-xl) var(--r-xl) 0 0;
-  background: var(--surface, #fbfdf2);
+  background: var(--surface, #fdf9ec);
   padding: var(--space-4) var(--space-4)
     calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   box-shadow: var(--shadow-3);
@@ -7225,7 +7225,7 @@ html[data-reduce-motion] .pi-retry:active {
   max-height: min(64vh, 520px);
   border-radius: 20px;
   border: 1px solid rgb(120 100 60 / 16%);
-  background: #fbfdf2;
+  background: #fdf9ec;
   padding: 0 20px 18px;
   overflow: hidden auto;
   box-shadow:

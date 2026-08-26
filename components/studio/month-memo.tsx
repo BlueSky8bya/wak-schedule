@@ -11,14 +11,11 @@ type Props = {
   canWrite: boolean; // 클라 게이트(UX) — 서버 액션이 별도로 재검사한다(BR-AUTHZ-001)
   loadAction: (ym: string) => Promise<{ ok: boolean; body?: string; error?: string }>;
   saveAction: (ym: string, body: string) => Promise<{ ok: boolean; error?: string }>;
-  // 패널 좌/우 위치 — 토글은 메모 레이어 안 중앙(사용자 결정 2026-08-26).
-  side: "left" | "right";
-  onPickSide: (side: "left" | "right") => void;
 };
 
 const AUTOSAVE_MS = 1200;
 
-export function MonthMemo({ ym, monthLabel, canWrite, loadAction, saveAction, side, onPickSide }: Props) {
+export function MonthMemo({ ym, monthLabel, canWrite, loadAction, saveAction }: Props) {
   const [text, setText] = useState("");
   const [status, setStatus] = useState<"loading" | "idle" | "dirty" | "saving" | "saved" | "error">(
     "loading"
@@ -137,24 +134,6 @@ export function MonthMemo({ ym, monthLabel, canWrite, loadAction, saveAction, si
             <em>{statusLabel}</em>
           </span>
         ) : null}
-      </div>
-      <div aria-label="메모 위치" className="month-memo-sidectl" role="group">
-        <button
-          aria-pressed={side === "left"}
-          className={side === "left" ? "on" : ""}
-          onClick={() => onPickSide("left")}
-          type="button"
-        >
-          왼쪽
-        </button>
-        <button
-          aria-pressed={side === "right"}
-          className={side === "right" ? "on" : ""}
-          onClick={() => onPickSide("right")}
-          type="button"
-        >
-          오른쪽
-        </button>
       </div>
       <textarea
         aria-label={`${monthLabel} 메모`}

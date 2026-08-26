@@ -138,3 +138,12 @@ Change: 미정 토글 제거+옵션 접기 해체(최초공개 직노출) · 메
 Files: studio-shell.{tsx,css}, month-memo.tsx, month-insights.tsx, memo-actions.ts,
 insights-actions.ts, db/{migrations/0061,seeds/0014}, sample-public-data.ts, public-poster.tsx
 Related: ADR-0009(3차), ADR-0011, PLAN-20260826-005
+
+### CHG-20260826-014 — STYLE — 배색 레이어링 + 메모 토글 액션바 중앙
+
+Change: 전부 초록 계열로 맞춰 층이 없다는 피드백 → 페이지(잎빛 그린)는 유지하고
+표면(달력 판·셀·요일줄·카드 토큰)을 웜 크림으로 — '초록 바탕 위 크림 카드'.
+올리브 배경+크림 표면+머스터드 액센트 정석 배색. 메모 좌/우 토글은 액션바
+(태그 편집·인사이트·단축키 줄) 정중앙 absolute 고정으로 이동(사용자 의도 재확인).
+Files: `app/globals.css`, `components/poster/public-poster.css`,
+`components/studio/{studio-shell.tsx,studio-shell.css,month-memo.tsx}`

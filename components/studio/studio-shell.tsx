@@ -4866,9 +4866,7 @@ export function StudioShell({
                 canWrite={canEdit && !previewRole}
                 loadAction={getMonthMemoAction}
                 monthLabel={`${view.month}월`}
-                onPickSide={pickAvatarSide}
                 saveAction={saveMonthMemoAction}
-                side={avatarSide}
                 ym={`${view.year}-${String(view.month).padStart(2, "0")}`}
               />
             </div>
@@ -5032,7 +5030,29 @@ export function StudioShell({
               </button>
             </>
           ) : null}
-          {/* (메모 좌/우 토글은 메모 레이어 안 중앙으로 이사 — 사용자 결정 2026-08-26.) */}
+          {/* 메모 좌/우 토글 — 액션바(태그 편집·월별 인사이트·단축키 줄) '가운데' 고정
+              (사용자 결정 2026-08-26 2차). 버튼들이 늘어도 절대 중앙을 지키게 absolute. */}
+          {avatarEditor ? (
+            <div aria-label="메모 위치" className="memo-side-center" role="group">
+              <span className="memo-side-label">📝 메모</span>
+              <button
+                aria-pressed={avatarSide === "left"}
+                className={avatarSide === "left" ? "on" : ""}
+                onClick={() => pickAvatarSide("left")}
+                type="button"
+              >
+                왼쪽
+              </button>
+              <button
+                aria-pressed={avatarSide === "right"}
+                className={avatarSide === "right" ? "on" : ""}
+                onClick={() => pickAvatarSide("right")}
+                type="button"
+              >
+                오른쪽
+              </button>
+            </div>
+          ) : null}
           {/* 우측 묶음: 단축키 + 비공개 일정 보기(토글) + 달력 꾸미기.
               (저장 상태 칩은 헤더의 버전 캡슐 아래로 이사 — 사용자 지정 배치.) */}
           <div className="studio-actionbar-right">

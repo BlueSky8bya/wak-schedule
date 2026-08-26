@@ -22,7 +22,7 @@ html {
   background:
     radial-gradient(120% 55% at 12% -6%, #f5ffee 0%, transparent 46%),
     radial-gradient(120% 55% at 88% -6%, #eaf4ff 0%, transparent 46%),
-    linear-gradient(180deg, #f4f8e6 0%, #eaf1d6 100%);
+    linear-gradient(180deg, #f7f1de 0%, #eaf1d6 100%);
   color: #314027;
 }
 
@@ -13678,35 +13678,6 @@ html[data-reduce-motion] .event-drag-ghost {
 .month-memo-status.st-error .mm-dot {
   background: var(--status-danger, #c0392b);
 }
-/* 좌/우 위치 토글 — 메모 레이어 안, 가로 중앙(사용자 결정 2026-08-26). */
-.month-memo-sidectl {
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-  padding: 2px;
-  margin: 0 auto;
-  background: rgb(214 178 62 / 18%);
-  border-radius: var(--r-pill);
-  width: fit-content;
-}
-.month-memo-sidectl button {
-  border: 0;
-  background: transparent;
-  color: #7a621a;
-  font-weight: 700;
-  font-size: 12px;
-  padding: 4px 12px;
-  border-radius: var(--r-pill);
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.08s ease;
-}
-.month-memo-sidectl button.on {
-  background: #fffce8;
-  box-shadow: 0 1px 3px rgb(122 98 26 / 20%);
-}
-.month-memo-sidectl button:active {
-  transform: scale(0.95);
-}
 .month-memo-input {
   flex: 1 1 auto;
   min-height: 0;
@@ -13883,7 +13854,7 @@ html[data-reduce-motion] .event-drag-ghost {
   display: flex;
   gap: 4px;
   padding: 3px;
-  background: var(--surface-2, #f4f8e6);
+  background: var(--surface-2, #f7f1de);
   border-radius: var(--r-pill);
   width: fit-content;
   margin: 0 auto;
@@ -13960,7 +13931,7 @@ html[data-reduce-motion] .event-drag-ghost {
   gap: 8px;
   padding: 12px;
   border-radius: 14px;
-  background: var(--surface-2, #f4f8e6);
+  background: var(--surface-2, #f7f1de);
 }
 .mi-card-ic {
   font-size: 20px;
@@ -13979,4 +13950,47 @@ html[data-reduce-motion] .event-drag-ghost {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 메모 좌/우 토글 — 액션바 정중앙 고정(버튼 수와 무관하게 중앙 유지). */
+.studio-actionbar {
+  position: relative;
+}
+.memo-side-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  background: rgb(255 252 232 / 85%);
+  border: 1px solid rgb(196 168 78 / 35%);
+  border-radius: var(--r-pill);
+}
+.memo-side-center .memo-side-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #7a621a;
+  user-select: none;
+  padding-right: 2px;
+}
+.memo-side-center button {
+  border: 0;
+  background: transparent;
+  color: #7a621a;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+.memo-side-center button.on {
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(122 98 26 / 22%);
+}
+.memo-side-center button:active {
+  transform: scale(0.95);
 }

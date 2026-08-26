@@ -37,7 +37,8 @@ const FONTS = [
   { key: "gugi", label: "구기" },
   { key: "blackhan", label: "블랙한" }
 ] as const;
-const SIZES = [13, 15, 18, 22] as const;
+const SIZE_MIN = 12;
+const SIZE_MAX = 24;
 
 // 창 위치는 기기 편의라 localStorage(서버엔 내용·서식만). 뷰포트 밖으로 안 나가게 clamp.
 function loadPos(id: string): { x: number; y: number } | null {
@@ -251,7 +252,8 @@ function MemoWindow({
     fontSize: note.fontSize,
     bold: note.bold
   });
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "dirty" | "saving" | "saved" | "error">(
     "idle"
   );
@@ -423,16 +425,33 @@ function MemoWindow({
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Esc로 닫기 — 편집실 다른 Esc 소비자보다 먼저(capture).
+  // ⋯ 메뉴 바깥 클릭 닫기.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as HTMLElement;
+      if (menuRef.current?.contains(t)) return;
+      if (t.closest("[data-act='memo-settings']")) return;
+      setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown, true);
+    return () => document.removeEventListener("pointerdown", onDown, true);
+  }, [menuOpen]);
+
+  // Esc — 메뉴가 열려 있으면 메뉴만, 아니면 창 닫기(편집실 다른 Esc 소비자보다 먼저).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       e.stopPropagation();
+      if (menuOpen) {
+        setMenuOpen(false);
+        return;
+      }
       onClose();
     };
     document.addEventListener("keydown", onKey, true);
     return () => document.removeEventListener("keydown", onKey, true);
-  }, [onClose]);
+  }, [menuOpen, onClose]);
 
   const saveLabel =
     saveState === "saving"
@@ -479,58 +498,70 @@ function MemoWindow({
            data-act="memo-bold">
             B
           </button>
-          {COLORS.map((c) => (
-            <button
-              aria-label={`배경색 ${c}`}
-              aria-pressed={style.color === c}
-              className={`memo-tool memo-swatch sw-${c}${style.color === c ? " on" : ""}`}
-              key={c}
-              onClick={() => setStylePart({ color: c })}
-              type="button"
-             data-act="memo-color">
-              <span aria-hidden="true" />
-            </button>
-          ))}
           <button
-            aria-expanded={settingsOpen}
-            aria-label="글씨 설정"
-            className={`memo-tool memo-tool-set${settingsOpen ? " on" : ""}`}
-            onClick={() => setSettingsOpen((v) => !v)}
-            title="글씨 설정"
+            aria-expanded={menuOpen}
+            aria-label="메모 설정"
+            className={`memo-tool memo-tool-set${menuOpen ? " on" : ""}`}
+            onClick={() => setMenuOpen((v) => !v)}
+            title="색상·글꼴·크기"
             type="button"
            data-act="memo-settings">
-            <MoreHorizontal aria-hidden="true" size={15} />
+            <MoreHorizontal aria-hidden="true" size={16} />
           </button>
         </div>
       ) : null}
-      {settingsOpen && canWrite ? (
-        <div className="memo-win-settings">
-          <em className="mws-label">글씨체</em>
-          <div className="mws-fonts">
+      {menuOpen && canWrite ? (
+        <div className="memo-menu" ref={menuRef} role="menu" aria-label="메모 설정">
+          <div className="memo-menu-sec">
+            <span className="mm-sec-label">색상</span>
+            <div className="mm-colors">
+              {COLORS.map((c) => (
+                <button
+                  aria-label={`배경색 ${c}`}
+                  aria-pressed={style.color === c}
+                  className={`mm-swatch sw-${c}${style.color === c ? " on" : ""}`}
+                  key={c}
+                  onClick={() => setStylePart({ color: c })}
+                  type="button"
+                 data-act="memo-color">
+                  <span aria-hidden="true" />
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="memo-menu-size">
+            <button
+              aria-label="글자 작게"
+              disabled={style.fontSize <= SIZE_MIN}
+              onClick={() => setStylePart({ fontSize: Math.max(SIZE_MIN, style.fontSize - 1) })}
+              type="button"
+             data-act="memo-size-down">
+              −
+            </button>
+            <em>
+              글자 크기 <b>{style.fontSize}</b>
+            </em>
+            <button
+              aria-label="글자 크게"
+              disabled={style.fontSize >= SIZE_MAX}
+              onClick={() => setStylePart({ fontSize: Math.min(SIZE_MAX, style.fontSize + 1) })}
+              type="button"
+             data-act="memo-size-up">
+              +
+            </button>
+          </div>
+          <div className="memo-menu-fonts" role="listbox" aria-label="글꼴">
             {FONTS.map((f) => (
               <button
-                aria-pressed={style.fontFamily === f.key}
-                className={style.fontFamily === f.key ? "on" : ""}
+                aria-selected={style.fontFamily === f.key}
+                className={`mm-font${style.fontFamily === f.key ? " on" : ""}`}
                 key={f.key}
                 onClick={() => setStylePart({ fontFamily: f.key })}
+                role="option"
                 style={{ fontFamily: `var(--memo-font-${f.key}, inherit)` }}
                 type="button"
                data-act="memo-font">
-                {f.label}
-              </button>
-            ))}
-          </div>
-          <em className="mws-label">크기</em>
-          <div className="mws-sizes">
-            {SIZES.map((n) => (
-              <button
-                aria-pressed={style.fontSize === n}
-                className={style.fontSize === n ? "on" : ""}
-                key={n}
-                onClick={() => setStylePart({ fontSize: n })}
-                type="button"
-               data-act="memo-size">
-                {n}
+                {f.label} 가나다
               </button>
             ))}
           </div>

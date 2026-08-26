@@ -316,3 +316,16 @@ docs/agent/decisions/ADR-0014-memo-notes.md
 Files: components/studio/memo-notes.tsx, components/studio/studio-shell.css,
 app/globals.css(--memo-font-*), lib/schedules/memo-actions.ts(글씨체 화이트리스트)
 
+### CHG-20260826-028 — UX — 메모 3차(높이 통일·애플 폴리시·⋯ 메뉴·X 점프)
+
+- 삭제 확인 행과 일반 행 높이 고정 통일(54px).
+- 쪽지 창 애플식 폴리시: 층진 그림자 + 미묘한 그라데이션 종이, 본문 흰 상자 제거
+  (종이 위에 바로), 툴 고스트 버튼화, 라운드 16.
+- ⋯ 드롭다운 메뉴(참고 사진 문법): 흰 카드 — 색상 줄 · 글자 크기 −/+ 스테퍼
+  (12~24 연속, 서버 검증도 범위형으로) · 글꼴 리스트(각 항목 자기 서체 미리보기,
+  선택 = 보라 하이라이트). 바깥 클릭/Esc 닫기.
+- X 버튼 점프 수정: 저장 칩 유무에 따라 space-between이 X를 좌↔우로 밀던 것 —
+  margin-left:auto로 항상 오른쪽 고정.
+Files: components/studio/memo-notes.tsx, components/studio/studio-shell.css,
+lib/schedules/memo-actions.ts
+

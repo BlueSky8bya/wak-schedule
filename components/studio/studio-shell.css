@@ -13435,16 +13435,19 @@ html[data-reduce-motion] .event-drag-ghost {
   align-items: center;
   gap: 9px;
   width: 100%;
-  min-height: 48px; /* 얇아서 가벼워 보인다는 피드백 — 도톰하게 */
-  padding: 10px 10px;
-  border: 1px solid rgb(196 168 78 / 30%);
+  height: 54px; /* 일반/삭제확인 행 높이 통일(고정) */
+  padding: 0 10px;
+  border: 1px solid var(--line-soft);
   border-radius: var(--r-md);
   background: var(--surface);
   cursor: pointer;
   text-align: left;
-  transition: transform 0.12s var(--ease), box-shadow 0.12s var(--ease);
+  box-shadow: 0 1px 2px rgb(60 50 30 / 4%);
+  transition: background 0.12s var(--ease), box-shadow 0.12s var(--ease),
+    transform 0.12s var(--ease);
 }
 .memo-row:hover {
+  background: #fbfaf4;
   box-shadow: var(--shadow-1);
   transform: translateY(-1px);
 }
@@ -13452,8 +13455,8 @@ html[data-reduce-motion] .event-drag-ghost {
   transform: scale(0.985);
 }
 .memo-row.open {
-  border-color: rgb(169 118 10 / 55%);
-  box-shadow: 0 0 0 2px rgb(255 200 61 / 25%);
+  border-color: rgb(169 118 10 / 45%);
+  box-shadow: 0 0 0 2px rgb(255 200 61 / 22%);
 }
 .memo-dot {
   flex: none;
@@ -13511,14 +13514,15 @@ html[data-reduce-motion] .event-drag-ghost {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 48px;
-  padding: 10px;
+  height: 54px; /* 일반 행과 같은 높이(사용자 지적) */
+  padding: 0 10px;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
-  background: var(--surface); /* 흰색 계열 — 주변과 조화(사용자 지정). 위험색은 버튼에만. */
+  background: var(--surface); /* 흰색 계열 — 주변과 조화. 위험색은 버튼에만. */
   font-size: 12.5px;
   font-weight: 800;
   color: var(--ink);
+  cursor: default;
 }
 .memo-row-confirm-btns {
   display: flex;
@@ -13546,24 +13550,27 @@ html[data-reduce-motion] .event-drag-ghost {
   display: flex;
   flex-direction: column;
   width: min(380px, calc(100vw - 32px));
-  height: 400px;
+  height: 420px;
   max-height: calc(100vh - 40px);
-  border-radius: 14px;
-  box-shadow: 0 18px 44px rgb(80 60 20 / 25%), 0 2px 8px rgb(80 60 20 / 12%);
+  border-radius: 16px;
+  /* 애플식 층진 그림자 — 넓고 옅은 앰비언트 + 짧은 접촉면. */
+  box-shadow:
+    0 24px 60px -12px rgb(60 50 20 / 28%),
+    0 4px 14px -4px rgb(60 50 20 / 14%),
+    inset 0 1px 0 rgb(255 255 255 / 55%);
   overflow: hidden;
   resize: both;
   min-width: 260px;
   min-height: 220px;
 }
-.memo-win.memo-c-yellow { background: #fdf3bd; }
-.memo-win.memo-c-mint { background: #e2f6e6; }
-.memo-win.memo-c-sky { background: #e2effc; }
-.memo-win.memo-c-pink { background: #fbe6ee; }
+.memo-win.memo-c-yellow { background: linear-gradient(180deg, #fdf6c9, #faeeab); }
+.memo-win.memo-c-mint { background: linear-gradient(180deg, #e8f8eb, #d8f0dd); }
+.memo-win.memo-c-sky { background: linear-gradient(180deg, #e9f2fc, #dbe9f9); }
+.memo-win.memo-c-pink { background: linear-gradient(180deg, #fcecf2, #f7dde8); }
 .memo-win-grip {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: center; /* X는 아래 margin-left:auto로 항상 오른쪽 — 저장 칩 유무로 점프 금지 */
   min-height: 30px;
   padding: 6px 8px 2px 12px;
   cursor: grab;
@@ -13598,6 +13605,7 @@ html[data-reduce-motion] .event-drag-ghost {
 }
 .memo-win-close {
   flex: none;
+  margin-left: auto; /* 저장 칩이 없어도 항상 오른쪽 위 고정(사용자 버그 신고) */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -13622,102 +13630,181 @@ html[data-reduce-motion] .event-drag-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: 1px solid rgb(0 0 0 / 10%);
-  border-radius: var(--r-pill);
-  background: rgb(255 255 255 / 55%);
-  font-size: 12.5px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 13px;
   font-weight: 900;
-  color: rgb(0 0 0 / 55%);
+  color: rgb(0 0 0 / 52%);
   cursor: pointer;
-  transition: transform 0.1s var(--ease);
+  transition: background 0.12s var(--ease), transform 0.1s var(--ease);
+}
+.memo-tool:hover {
+  background: rgb(0 0 0 / 7%);
 }
 .memo-tool:active {
   transform: scale(0.9);
 }
 .memo-tool-b.on {
-  background: rgb(0 0 0 / 72%);
+  background: rgb(0 0 0 / 78%);
   color: #fff;
-  border-color: transparent;
-}
-.memo-swatch span {
-  width: 13px;
-  height: 13px;
-  border-radius: var(--r-pill);
-  border: 1px solid rgb(0 0 0 / 12%);
-}
-.memo-swatch.sw-yellow span { background: #ffe483; }
-.memo-swatch.sw-mint span { background: #bdecc8; }
-.memo-swatch.sw-sky span { background: #bfdcf8; }
-.memo-swatch.sw-pink span { background: #f9cede; }
-.memo-swatch.on {
-  border-color: rgb(0 0 0 / 45%);
 }
 .memo-tool-set {
   margin-left: auto;
-  width: auto;
-  padding: 0 9px;
-  font-size: 11.5px;
 }
 .memo-tool-set.on {
-  background: rgb(0 0 0 / 72%);
-  color: #fff;
+  background: rgb(0 0 0 / 10%);
+  color: rgb(0 0 0 / 80%);
 }
-.memo-win-settings {
+/* ⋯ 드롭다운 메뉴 — 흰 카드, 색상 줄 + 글자 크기 스테퍼 + 글꼴 리스트(자기 서체 미리보기). */
+.memo-menu {
+  position: absolute;
+  top: 62px;
+  right: 10px;
+  z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin: 0 12px 6px;
-  padding: 9px 10px;
-  border-radius: 10px;
-  background: rgb(255 255 255 / 60%);
+  width: 190px;
+  max-height: min(320px, calc(100% - 76px));
+  padding: 8px;
+  border: 1px solid rgb(0 0 0 / 7%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 96%);
+  box-shadow: 0 16px 40px -10px rgb(40 35 15 / 30%), 0 2px 8px rgb(40 35 15 / 10%);
+  backdrop-filter: blur(10px);
+  animation: memo-menu-in 0.16s var(--ease-enter, ease) both;
 }
-.mws-label {
-  font-style: normal;
-  font-size: 11px;
+@keyframes memo-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+.memo-menu-sec {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 8px;
+}
+.mm-sec-label {
+  font-size: 11.5px;
   font-weight: 800;
-  color: rgb(0 0 0 / 45%);
+  color: var(--muted);
 }
-.mws-fonts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
+.mm-colors {
+  display: flex;
+  gap: 6px;
 }
-.mws-fonts button,
-.mws-sizes button {
-  padding: 4px 8px;
-  border: 1px solid rgb(0 0 0 / 12%);
-  border-radius: var(--r-sm);
+.mm-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
   background: transparent;
-  font-size: 13px;
+  cursor: pointer;
+}
+.mm-swatch span {
+  width: 15px;
+  height: 15px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgb(0 0 0 / 10%);
+  transition: transform 0.1s var(--ease);
+}
+.mm-swatch:hover span {
+  transform: scale(1.15);
+}
+.mm-swatch.sw-yellow span { background: #ffe483; }
+.mm-swatch.sw-mint span { background: #bdecc8; }
+.mm-swatch.sw-sky span { background: #bfdcf8; }
+.mm-swatch.sw-pink span { background: #f9cede; }
+.mm-swatch.on span {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px rgb(0 0 0 / 45%);
+}
+.memo-menu-size {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 4px;
+  border-top: 1px solid rgb(0 0 0 / 6%);
+  border-bottom: 1px solid rgb(0 0 0 / 6%);
+}
+.memo-menu-size em {
+  flex: 1 1 auto;
+  text-align: center;
+  font-style: normal;
+  font-size: 12px;
   font-weight: 700;
-  color: rgb(0 0 0 / 62%);
+  color: var(--ink-soft);
+}
+.memo-menu-size em b {
+  font-variant-numeric: tabular-nums;
+}
+.memo-menu-size button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgb(0 0 0 / 10%);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.memo-menu-size button:hover:not(:disabled) {
+  background: rgb(0 0 0 / 5%);
+}
+.memo-menu-size button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.memo-menu-fonts {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-top: 6px;
+  overflow-y: auto;
+  min-height: 0;
+}
+.mm-font {
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  font-size: 14px;
+  color: var(--ink);
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
-.mws-sizes {
-  display: flex;
-  gap: 4px;
+.mm-font:hover {
+  background: rgb(0 0 0 / 5%);
 }
-.mws-fonts button.on,
-.mws-sizes button.on {
-  background: rgb(0 0 0 / 72%);
-  color: #fff;
-  border-color: transparent;
+.mm-font.on {
+  background: var(--violet-soft);
+  color: var(--violet-strong);
+  font-weight: 700;
 }
 .memo-win-body {
   flex: 1 1 auto;
   min-height: 0;
-  margin: 0 8px 8px;
-  padding: 8px 10px;
+  margin: 0;
+  padding: 4px 16px 16px;
   border: 0;
-  border-radius: 10px;
-  background: rgb(255 255 255 / 35%);
-  color: rgb(0 0 0 / 80%);
+  background: transparent; /* 종이(쪽지 색) 위에 바로 쓴다 — 흰 상자 제거(애플 노트 문법) */
+  color: rgb(0 0 0 / 82%);
   font-size: inherit;
-  line-height: 1.6;
+  line-height: 1.65;
   resize: none;
   outline: none;
 }

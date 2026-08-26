@@ -133,7 +133,8 @@ const MEMO_FONTS = new Set([
   "gugi",
   "blackhan"
 ]);
-const MEMO_SIZES = new Set([13, 15, 18, 22]);
+const MEMO_SIZE_MIN = 12;
+const MEMO_SIZE_MAX = 24; // 스테퍼(±1)라 연속 정수 허용
 
 type MemoRow = {
   id: string;
@@ -238,7 +239,13 @@ export async function updateMemoNoteAction(
     row.font_family = patch.fontFamily;
   }
   if (patch.fontSize !== undefined) {
-    if (!MEMO_SIZES.has(patch.fontSize)) return { ok: false, error: "알 수 없는 크기입니다." };
+    if (
+      !Number.isInteger(patch.fontSize) ||
+      patch.fontSize < MEMO_SIZE_MIN ||
+      patch.fontSize > MEMO_SIZE_MAX
+    ) {
+      return { ok: false, error: "글자 크기 범위를 벗어났습니다." };
+    }
     row.font_size = patch.fontSize;
   }
   if (patch.bold !== undefined) {

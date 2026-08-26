@@ -5553,12 +5553,12 @@ html[data-reduce-motion] .editor-anchor-link line {
 
 .studio-weekdays {
   margin-bottom: 8px;
-  border: 1px solid var(--line, #e5dcc1);
+  border: 1px solid var(--cal-frame);
   border-radius: var(--r-card);
-  /* 연보라로 끝나던 그라데이션 제거(사용자 실측 부조화) — 크림 톤온톤. */
-  background: linear-gradient(180deg, #fdfaf0, #f4eedb);
+  /* 달력 한색 층(사용자: 푸르스름 한 방울) — 하늘빛 톤온톤. */
+  background: linear-gradient(180deg, #f8fbfe, var(--cal-head));
   overflow: hidden;
-  box-shadow: 0 1px 6px rgb(122 108 62 / 7%);
+  box-shadow: 0 1px 6px rgb(90 110 150 / 7%);
 }
 
 .studio-weekdays span {
@@ -5568,7 +5568,7 @@ html[data-reduce-motion] .editor-anchor-link line {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-align: center;
-  color: #7d7a5e;
+  color: var(--cal-head-ink);
 }
 
 .studio-weekdays span:last-child {
@@ -5590,10 +5590,10 @@ html[data-reduce-motion] .editor-anchor-link line {
      가로는 clip(월 이동 translateX 슬라이드용 + 둥근 모서리). */
   overflow-x: clip;
   overflow-y: auto;
-  border: 1px solid #f1f2ec;
+  border: 1px solid var(--cal-frame);
   border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 8px 26px rgb(131 160 110 / 12%);
+  background: var(--cal-surface);
+  box-shadow: 0 8px 26px rgb(90 115 150 / 12%);
   /* 칸 패널 높이를 채워 사이드바와 밑선을 맞춘다(행은 align-content:stretch 기본값으로 늘어남).
      flex:1 1 auto + min-height:0 = 뷰포트 높이에 맞춰(넘치면 위 overflow-y로 스크롤). */
   flex: 1 1 auto;
@@ -5633,9 +5633,9 @@ html[data-reduce-motion] .editor-anchor-link line {
   /* --cal-zoom(A안 방송용 확대, 기본 1): 칸·글자·간격이 함께 비례 — transform 없이 레이아웃만
      커져 드래그 좌표·삽입선 판정이 그대로 유효하다. 세로는 원래 내용 따라 자라는 구조라 안전. */
   min-height: calc(132px * var(--cal-zoom, 1));
-  border-right: 1px solid var(--line-soft);
-  border-bottom: 1px solid var(--line-soft);
-  background: var(--surface);
+  border-right: 1px solid var(--cal-line);
+  border-bottom: 1px solid var(--cal-line);
+  background: var(--cal-surface);
   cursor: pointer;
   transition: background-color var(--dur-1) var(--ease);
 }
@@ -5743,7 +5743,7 @@ body.cell-range-dragging {
 }
 
 .studio-day.outside {
-  background: #f5f6f2;
+  background: var(--cal-surface-dim);
 }
 /* 흐림은 셀 전체 opacity(그룹 합성) 대신 반투명 흰 베일을 한 겹 덮어서 낸다.
    셀마다 베일이 정확히 맞물려 깔리므로(겹침 없음) 스패닝 일정 막대는 불투명하게
@@ -5755,7 +5755,7 @@ body.cell-range-dragging {
   inset: 0 -1px -1px 0;
   /* 스티커 레이어보다 아래(셀 콘텐츠보다는 위)로 둬, 스티커는 흐려지지 않게 한다. */
   z-index: var(--z-cal-dim, 4);
-  background: rgb(243 248 240 / 60%);
+  background: rgb(241 245 250 / 60%); /* 달력 한색 층과 같은 온도의 흐림 베일 */
   pointer-events: none;
 }
 

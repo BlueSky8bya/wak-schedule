@@ -3154,9 +3154,9 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
 
 .weekday-row {
   margin-bottom: 10px;
-  border: 1px solid #e9e4cc;
+  border: 1px solid var(--cal-frame);
   border-radius: var(--r-card);
-  background: #f4f2dc;
+  background: var(--cal-head);
   overflow: hidden;
 }
 
@@ -3166,6 +3166,7 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
   font-weight: 800;
   letter-spacing: 0.05em;
   text-align: center;
+  color: var(--cal-head-ink); /* 한색 헤더 위 쿨 슬레이트(일·토는 아래서 덮음) */
 }
 
 .weekday-row span:last-child {
@@ -3182,10 +3183,10 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
 
 .public-month-grid {
   overflow: hidden;
-  border: 1px solid #e9e4cc;
+  border: 1px solid var(--cal-frame);
   border-radius: 18px;
-  background: #fbfaeb; /* 순백 → 잎빛(CHG-20260826-012) */
-  box-shadow: 0 4px 16px rgb(120 90 60 / 8%);
+  background: var(--cal-surface-dim); /* 칸 뒤 바탕 — 달력 한색 층과 한 식구 */
+  box-shadow: 0 4px 16px rgb(80 100 140 / 8%);
 }
 /* 월 바뀔 때 포스터 표면 전체가 함께 좌/우 슬라이드 — 제목·메모·달력·색상안내·텍스트·스티커가
    다 같이 움직인다(표면을 월마다 재마운트해 재생). 중심에서 멀수록(양옆 패널) 슬라이드 폭을
@@ -3270,9 +3271,9 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
   --day-head-h: calc(27px * var(--cal-zoom, 1));
   /* 칸 높이는 행(grid-auto-rows: minmax(150px,auto))이 정하고, 칸은 그 행에 stretch로 꽉 찬다.
      일정이 많으면 행이 자라 칸도 커지므로 일정이 잘리지 않는다(클립 없음). */
-  border-right: 1px solid #f0edd8;
-  border-bottom: 1px solid #f0edd8;
-  background: var(--surface);
+  border-right: 1px solid var(--cal-line);
+  border-bottom: 1px solid var(--cal-line);
+  background: var(--cal-surface);
 }
 
 .public-day .day-strip,
@@ -3306,7 +3307,7 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
 }
 
 .public-day.outside {
-  background: #efecd8; /* 바깥 달 */
+  background: var(--cal-surface-dim); /* 바깥 달 */
 }
 /* 흐림은 셀 opacity(그룹 합성) 대신 반투명 흰 베일로. 셀마다 베일이 맞물려 깔려
    스패닝 일정 막대는 불투명하게 이어지고 그 위 베일만 균일하게 흐려진다 → 경계 세로선 제거.

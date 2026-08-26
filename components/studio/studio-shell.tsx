@@ -385,7 +385,9 @@ export function StudioShell({
   // 좁은 화면(<1000px, P1-IPAD-1): 편집실을 아젠다(목록) + 인라인 편집 형태로 전환한다.
   // 아이패드 세로(768)·스플릿뷰도 압축 데스크톱 대신 터치 네이티브 아젠다를 받는다(L4).
   const [isNarrow, setIsNarrow] = useState(initialNarrow);
-  useEffect(() => {
+  // 페인트 전 측정(useLayoutEffect) — scene ON이 기본이 되면서, 좁은 화면의 첫 페인트가
+  // 데스크톱 레이아웃으로 새는 창을 닫는다.
+  useLayoutEffect(() => {
     const mq = window.matchMedia(STUDIO_AGENDA_QUERY);
     const apply = () => setIsNarrow(mq.matches);
     apply();
@@ -669,7 +671,7 @@ export function StudioShell({
   // 편집실 아바타 자리는 ≥1100px에서만(좁으면 달력 가독성 우선). 필터가 rail로 가므로 viewport
   // 폭을 React가 알아야 깔끔히 끌 수 있다(CSS만으론 rail의 필터를 그리드로 못 되돌림).
   const [avatarWideEnough, setAvatarWideEnough] = useState(true);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
     const mq = window.matchMedia("(min-width: 1100px)");
     const sync = () => setAvatarWideEnough(mq.matches);
@@ -685,10 +687,9 @@ export function StudioShell({
   // (시청자 포스터의 켜기/끄기 토글은 그대로 — wak_avatar_on 키는 포스터 전용으로 남는다.)
   // 최초(메모리 없음) 디폴트는 '왼쪽', 이후엔 마지막 값(편집실·미리보기 공유) 복원.
   const [avatarSide, setAvatarSide] = useState<"left" | "right">("left");
-  // localStorage(좌/우)를 읽기 전엔 scene을 렌더하지 않는다 — 기본값(왼쪽)으로 한 번 그렸다가
-  // 저장값(오른쪽)으로 점프하는 깜빡임 방지. useLayoutEffect라 '페인트 전'에 확정돼(SSR HTML은
-  // scene OFF 기준 → 하이드레이션 일치) 어느 쪽도 한 프레임도 안 깜빡인다.
-  const [avatarStorageRead, setAvatarStorageRead] = useState(false);
+  // 좌/우 저장값은 페인트 전에 복원한다(useLayoutEffect). scene 자체는 저장소 읽기를
+  // 기다리지 않는다 — 예전엔 읽기 전 scene OFF로 그려서 새로고침마다 VIC의 '좌측 얇은
+  // 필터'가 깜빡였다(사용자 지적). 왁 편집실 scene은 항상 켜짐이라 기다릴 이유가 없다.
   useLayoutEffect(() => {
     if (!avatarEditor || typeof window === "undefined") return;
     try {
@@ -696,7 +697,6 @@ export function StudioShell({
     } catch {
       /* 저장소 불가 무시 */
     }
-    setAvatarStorageRead(true);
   }, [avatarEditor]);
   function pickAvatarSide(side: "left" | "right") {
     hapticTick();
@@ -707,7 +707,7 @@ export function StudioShell({
       /* 무시 */
     }
   }
-  const avatarSceneOn = avatarEditor && avatarStorageRead;
+  const avatarSceneOn = avatarEditor;
   // 새로고침 직후 슬라이드/등장 애니가 한 번 튀는 것 방지 — 마운트 전엔 애니 끄고, 마운트 후 켠다
   // (이후 사용자 토글에서만 통통 애니).
   const [avatarReady, setAvatarReady] = useState(false);

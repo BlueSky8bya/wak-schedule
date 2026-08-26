@@ -4588,12 +4588,12 @@ export function StudioShell({
               <>
                 <button
                   className="button m-io m-io-tags"
-                  onClick={() => (blockedByPreview() ? null : setMobileMgmt(mobileMgmt === "tags" ? null : "tags"))}
+                  onClick={() => setMobileMgmt(mobileMgmt === "tags" ? null : "tags")}
                   type="button"
                  data-act="m-io-tags">
                   태그 이름 · 색상 · 순서 {mobileMgmt === "tags" ? "▲" : "▼"}
                 </button>
-                {mobileMgmt === "tags" && !previewRole ? (
+                {mobileMgmt === "tags" ? (
                   <TagLegendEditor
                     canEdit
                     onTagAdded={applyTagAdd}
@@ -5030,9 +5030,7 @@ export function StudioShell({
                 <button
                   className="button io-accent"
                   data-act="manage-tags"
-                  onClick={() => {
-                    if (!blockedByPreview()) setModal("tags");
-                  }}
+                  onClick={() => setModal("tags")}
                   type="button"
                 >
                   태그 편집
@@ -5041,9 +5039,7 @@ export function StudioShell({
               <button
                 className="button io-accent"
                 data-act="manage-insights"
-                onClick={() => {
-                  if (!blockedByPreview()) setModal("insights");
-                }}
+                onClick={() => setModal("insights")}
                 type="button"
               >
                 월별 인사이트

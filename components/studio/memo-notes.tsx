@@ -32,20 +32,27 @@ const COLORS = [
   { key: "pink", label: "꽃잎" },
   { key: "lavender", label: "라벤더" }
 ] as const;
-// 글씨 '분위기' 5개(사용자 심판: 축소). 옛 키는 계속 렌더되고 '기존 글꼴'로 표시.
+// 글씨체 — 로드된 한글 웹폰트 전부(사용자 재요청 2026-08-26: 다시 다양하게).
 const FONT_PRESETS = [
   { key: "sans", label: "깔끔" },
   { key: "myeongjo", label: "책처럼" },
+  { key: "mono", label: "모노" },
   { key: "nanumpen", label: "메모펜" },
+  { key: "gaegu", label: "개구쟁이" },
+  { key: "himelody", label: "하이멜로디" },
+  { key: "gamja", label: "감자꽃" },
   { key: "jua", label: "둥글게" },
-  { key: "mono", label: "모노" }
+  { key: "dohyeon", label: "도현" },
+  { key: "gugi", label: "구기" },
+  { key: "blackhan", label: "블랙한" }
 ] as const;
 // 크기 4단(사용자 심판: −/+ 스테퍼로 4단계 이동). 옛 임의값은 가장 가까운 단으로 표시.
 const SIZE_STEPS = [
   { px: 14, label: "작게" },
   { px: 16, label: "기본" },
   { px: 20, label: "크게" },
-  { px: 28, label: "아주 크게" } // 최대 상향(사용자 2026-08-26)
+  { px: 28, label: "아주 크게" },
+  { px: 36, label: "최대" } // 범위 확장(사용자 2026-08-26 2차)
 ] as const;
 function nearestSizeIdx(px: number): number {
   let best = 0;

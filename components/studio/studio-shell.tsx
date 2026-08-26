@@ -83,9 +83,14 @@ import { isTaxonomyV3, legacyTagView } from "@/lib/tags/taxonomy";
 import { createTagVisualResolver } from "@/lib/tags/tag-visual";
 import { toggleEventHeartAction } from "@/lib/schedules/heart-actions";
 import { removeTagAction, saveTagsAction } from "@/lib/schedules/tag-actions";
-import { getMonthMemoAction, saveMonthMemoAction } from "@/lib/schedules/memo-actions";
+import {
+  createMemoNoteAction,
+  deleteMemoNoteAction,
+  listMemoNotesAction,
+  updateMemoNoteAction
+} from "@/lib/schedules/memo-actions";
 import { getMonthInsightsAction } from "@/lib/schedules/insights-actions";
-import { MonthMemo } from "@/components/studio/month-memo";
+import { MemoNotes } from "@/components/studio/memo-notes";
 import { MonthInsightsPanel } from "@/components/studio/month-insights";
 import { CalendarSkeleton } from "@/components/skeleton/calendar-skeleton";
 import { TagLegendEditor } from "@/components/tags/tag-legend-editor";
@@ -4898,12 +4903,15 @@ export function StudioShell({
               내부 클래스명(avatar-*)은 검증된 rail 레이아웃 CSS를 그대로 쓰기 위한 유산 이름. */}
           <div className="avatar-slot avatar-slot-memo">
             <div className="avatar-dock-inner">
-              <MonthMemo
+              {/* ADR-0014: 월별 단일 메모 → 붙임쪽지 런처(+ 새 메모, 행 클릭 = 떠 있는 쪽지 창). */}
+              <MemoNotes
+                actions={{
+                  list: listMemoNotesAction,
+                  create: createMemoNoteAction,
+                  update: updateMemoNoteAction,
+                  remove: deleteMemoNoteAction
+                }}
                 canWrite={canEdit && !previewRole}
-                loadAction={getMonthMemoAction}
-                monthLabel={`${view.month}월`}
-                saveAction={saveMonthMemoAction}
-                ym={`${view.year}-${String(view.month).padStart(2, "0")}`}
               />
             </div>
           </div>

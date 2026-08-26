@@ -290,3 +290,16 @@ components/tags/tag-legend-editor.tsx, components/studio/{studio-shell.tsx,studi
 - 재보정 계약: 실분포 확인 후 모수·비율만 수정(lib/schedules/heart-tiers.ts 단일 출처).
 Files: lib/schedules/heart-tiers.ts
 
+### CHG-20260826-026 — FEAT — 메모 개편: 붙임쪽지 런처 + 떠 있는 쪽지 창 (ADR-0014)
+
+- calendar_memos(0065, 라이브 적용) — (calendar, user) 스코프 여러 장, 월 구속 제거.
+  기존 월별 메모는 보존 + 1회 이식(제목 'N월 메모'). RLS 자기 것만 + service_role GRANT.
+- 액션 4종(list/create/update/delete, memo-actions.ts 동거 — 캐시 EXCEPT 승계),
+  한도 30장/4000자/제목 100자, 서식 화이트리스트 검증.
+- memo-notes.tsx: 레일 런처(+ 새 메모, 행 클릭 열기, 2단 삭제 확인) + 쪽지 창
+  (body 포털, 헤더 드래그 이동 + 위치 localStorage, 모서리 resize, 배경색 4·굵게·
+  글씨체 3·크기 4, 디바운스+직렬 저장, Esc 닫기). month-memo.tsx 제거.
+Files: db/migrations/0065_memo_notes.sql, lib/schedules/memo-actions.ts,
+components/studio/{memo-notes.tsx,studio-shell.tsx,studio-shell.css},
+docs/agent/decisions/ADR-0014-memo-notes.md
+

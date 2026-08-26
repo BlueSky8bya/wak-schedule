@@ -464,17 +464,6 @@ export function MemoNotes({ canWrite, actions }: Props) {
       ) : null}
       {status === "loading" ? <p className="memo-notes-empty">불러오는 중…</p> : null}
       {status === "error" ? <p className="memo-notes-empty warn">{errorMsg}</p> : null}
-      {status === "idle" && notes.length === 0 ? (
-        <div className="memo-notes-blank">
-          <b>아직 메모가 없어요</b>
-          <span>방송 아이디어나 할 일을 바로 적어 두세요.</span>
-          {canWrite ? (
-            <button className="memo-blank-cta" onClick={() => void addNote()} type="button" data-act="memo-add-first">
-              첫 메모 만들기
-            </button>
-          ) : null}
-        </div>
-      ) : null}
       <ul className="memo-note-list" ref={listRef}>
         {notes.map((n) => {
           const st = saveStates[n.id];

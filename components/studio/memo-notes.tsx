@@ -795,7 +795,7 @@ function MemoWindow({
         onBlur={onFlushNow}
         onChange={(e) => onPatch({ body: e.target.value })}
         onKeyDown={onBodyKeyDown}
-        placeholder={canWrite ? "첫 줄이 제목이 돼요. '- '로 목록, Tab으로 들여쓰기" : "메모(읽기 전용)"}
+        placeholder={canWrite ? "첫 줄 제목. '-'로 목록, Tab으로 들여쓰기" : "메모(읽기 전용)"}
         ref={bodyRef}
         spellCheck
         value={note.body}

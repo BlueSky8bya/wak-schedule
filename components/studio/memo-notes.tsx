@@ -115,7 +115,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
   const [focusTick, setFocusTick] = useState(0);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [orderError, setOrderError] = useState(false);
+  const [orderState, setOrderState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const notesRef = useRef(notes);
   notesRef.current = notes;
@@ -371,15 +371,16 @@ export function MemoNotes({ canWrite, actions }: Props) {
     }
     const ids = orderIds();
     if (snapshot && ids.join("|") === snapshot.join("|")) return; // 변화 없음
+    setOrderState("saving");
     void (async () => {
       const res = await actions.reorder(ids);
       if (res.ok) {
         serverOrderRef.current = ids;
-        setOrderError(false);
+        setOrderState("saved");
         setNotes((cur) => cur.map((n, i) => ({ ...n, sortOrder: i })));
       } else {
         applyOrder(serverOrderRef.current);
-        setOrderError(true);
+        setOrderState("error");
       }
     })();
   }
@@ -407,37 +408,28 @@ export function MemoNotes({ canWrite, actions }: Props) {
 
   async function retryOrder() {
     const ids = orderIds();
+    setOrderState("saving");
     const res = await actions.reorder(ids);
     if (res.ok) {
       serverOrderRef.current = ids;
-      setOrderError(false);
+      setOrderState("saved");
+    } else {
+      setOrderState("error");
     }
   }
 
   const openNote = openId ? (notes.find((n) => n.id === openId) ?? null) : null;
 
-  // 헤더 집계 배지(사용자 요청) — 전 메모의 저장 상태를 한 알약으로. 우선순위:
-  // 실패 > 저장 중 > 입력 중 > 저장됨. idle뿐이면 숨김.
-  const states = Object.values(saveStates);
-  const aggState: SaveState = states.includes("error")
-    ? "error"
-    : states.includes("saving")
-      ? "saving"
-      : states.includes("dirty")
-        ? "dirty"
-        : states.includes("saved")
-          ? "saved"
-          : "idle";
-  const aggLabel =
-    aggState === "error"
-      ? "저장 실패"
-      : aggState === "saving"
-        ? "저장 중"
-        : aggState === "dirty"
-          ? "입력 중"
-          : aggState === "saved"
-            ? "저장됨"
-            : "";
+  // 헤더 배지 = '탭 순서 저장' 관할(사용자 지정 2026-08-26 2차).
+  // 본문 저장 상태는 쪽지 창 배지가 담당 — 역할을 섞지 않는다.
+  const orderLabel =
+    orderState === "error"
+      ? "순서 저장 실패"
+      : orderState === "saving"
+        ? "순서 저장 중"
+        : orderState === "saved"
+          ? "순서 저장됨"
+          : "";
 
   return (
     <div className="memo-notes" ref={rootRef}>
@@ -445,9 +437,9 @@ export function MemoNotes({ canWrite, actions }: Props) {
       <div className="memo-notes-head">
         <span className="memo-notes-title">
           📝 메모
-          {aggLabel ? (
-            <span aria-live="polite" className={`memo-head-save st-${aggState}`}>
-              {aggLabel}
+          {orderLabel ? (
+            <span aria-live="polite" className={`memo-head-save st-${orderState}`}>
+              {orderLabel}
             </span>
           ) : null}
         </span>
@@ -462,7 +454,7 @@ export function MemoNotes({ canWrite, actions }: Props) {
           <Plus aria-hidden="true" size={16} />
         </button>
       </div>
-      {orderError ? (
+      {orderState === "error" ? (
         <p className="memo-notes-empty warn">
           순서를 저장하지 못했어요{" "}
           <button className="memo-inline-retry" onClick={() => void retryOrder()} type="button" data-act="memo-order-retry">

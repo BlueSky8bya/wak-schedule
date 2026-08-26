@@ -7533,25 +7533,21 @@ html[data-reduce-motion] .delete-snack {
   opacity: 0.4;
   cursor: default;
 }
-/* 선택 순서 번호 — 칩 좌상단 모서리에 작은 카운트 뱃지로 띄운다. 인라인이 아니라 절대배치라
-   이름 폭을 차지하지 않아 텍스트가 밀리거나 줄바꿈되지 않는다(칩 높이 균일 유지). */
+/* 선택 순서 번호 — 칩 '안' 오른쪽 끝 인라인 배지. 예전 좌상단 절대배치(-5px)는 칩 밖으로
+   떠서 윗줄 칩의 숫자와 겹쳐 보였다(사용자 스샷 2026-08-26). 안에 넣으면 충돌 자체가 없다. */
 .tp-order {
-  position: absolute;
-  top: -5px;
-  left: -3px;
-  z-index: 1;
+  flex: none;
+  margin-left: auto;
   display: inline-grid;
   place-items: center;
-  min-width: 18px;
-  height: 18px;
+  min-width: 16px;
+  height: 16px;
   padding: 0 3px;
   border-radius: var(--r-pill);
-  border: 1.5px solid #fff;
-  background: #304025;
+  background: rgb(0 0 0 / 55%);
   color: #fff;
-  font-size: 10px; /* 마이크로 배지 — 역할 스케일 의도적 예외 */
+  font-size: 9.5px; /* 마이크로 배지 — 역할 스케일 의도적 예외 */
   font-weight: 900;
-  box-shadow: 0 1px 4px -1px rgb(42 37 80 / 55%);
   animation: tp-pop 0.22s var(--ease, ease);
 }
 /* 웹: 넉넉한 칩 + 호버 떠오름·글로우, 패널 여유(가로폭 활용). */

@@ -210,3 +210,12 @@ Files: db/migrations/0063, lib/schedules/{memo,security}-actions.ts,
 components/studio/{month-insights.tsx,insights.css,studio-shell.css},
 components/poster/{public-insights.tsx,public-poster.css}, app/globals.css
 Related: ADR-0009(4차 — 계정별)
+
+### CHG-20260826-019 — FIX — 보안 목록 내부 계정 숨김·역할 팝오버 잘림
+
+- 보안 탭 접근 자격자에서 운영·테스트 계정(whiteheaven·blackspace) 숨김 —
+  권한은 그대로, 표시만 제외(HIDDEN_GATE_EMAILS). 개발자 섹션은 표시할 계정이
+  있을 때만 렌더.
+- 역할 배지 팝오버: 배지가 액션바 오른쪽 끝으로 이사한 뒤 화면 밖으로 잘림 —
+  오른쪽 기준 정렬 + 긴 이메일 overflow-wrap.
+Files: lib/schedules/security-actions.ts, components/studio/{month-insights.tsx,studio-shell.css}

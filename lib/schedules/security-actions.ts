@@ -12,6 +12,9 @@ import { CALENDAR_SLUG } from "@/lib/config/site";
 // 캐시 무효화 없음 — 관리 전용 데이터(공개 DTO 무관, BR-CACHE-001 EXCEPT 등재 사유).
 
 const INITIAL_PASS = "0724";
+// 보안 탭 접근 자격자 목록에서 숨길 운영·테스트 계정(사용자 결정 2026-08-26) —
+// 권한은 그대로, 표시만 뺀다. 왁굳형에게 보여줄 목록에 내부 계정이 섞이지 않게.
+const HIDDEN_GATE_EMAILS = new Set(["whiteheaven231233@gmail.com", "blackspace665@gmail.com"]);
 const PASS_RE = /^\d{4,12}$/;
 
 function hashPass(calendarId: string, pass: string): string {
@@ -106,8 +109,10 @@ export async function getGateInfoAction(): Promise<GateInfoResult> {
     data: {
       isInitial,
       updatedAt: ctx.updatedAt,
-      owners: [...owners].map((email) => ({ email, role: "owner" as const })),
-      developers
+      owners: [...owners]
+        .filter((email) => !HIDDEN_GATE_EMAILS.has(email))
+        .map((email) => ({ email, role: "owner" as const })),
+      developers: developers.filter((d) => !HIDDEN_GATE_EMAILS.has(d.email))
     }
   };
 }

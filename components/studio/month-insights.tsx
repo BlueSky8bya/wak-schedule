@@ -523,7 +523,10 @@ function SecurityPanel() {
         </p>
       ) : null}
       {renderSection("관리자", "관리자", "owner", info?.owners ?? [])}
-      {renderSection("개발자", "개발자", "developer", info?.developers ?? [])}
+      {/* 개발자 섹션은 표시할 계정이 있을 때만 — 내부 계정은 목록에서 숨긴다. */}
+      {(info?.developers.length ?? 0) > 0
+        ? renderSection("개발자", "개발자", "developer", info?.developers ?? [])
+        : null}
     </>
   );
 }

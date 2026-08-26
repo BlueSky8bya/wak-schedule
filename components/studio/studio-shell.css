@@ -328,7 +328,7 @@ html {
   gap: 5px;
   padding: 4px 8px;
   border-radius: var(--r-sm);
-  background: #f4f6ee;
+  background: var(--paper);
   color: var(--violet-strong);
   font-size: 12.5px;
   font-weight: 900;
@@ -779,7 +779,7 @@ html {
 
 .actor-badge.developer {
   border-color: #e3ebc7;
-  background: #fbfcf6;
+  background: var(--surface);
 }
 
 .private-toggle {
@@ -985,7 +985,7 @@ html[data-reduce-motion] .private-warning-float {
     border-color var(--dur-1) var(--ease);
 }
 .dp-live-tile.is-watching {
-  background: #fbfcf6;
+  background: var(--surface);
   border-color: #f0f4e0;
   color: #5fb621;
 }
@@ -1226,7 +1226,7 @@ html[data-reduce-motion] .act-skeleton span { animation: none; }
     background-color var(--dur-1) var(--ease),
     transform var(--dur-1) var(--ease);
 }
-.act-tool:hover { background: #fbfcf8; }
+.act-tool:hover { background: var(--surface); }
 .act-tool:active { transform: scale(0.94); }
 .act-tool.is-on {
   background: rgb(var(--violet-rgb) / 12%);
@@ -1405,7 +1405,7 @@ html[data-reduce-motion] .act-live::before {
   font-size: 12px;
   transition: background-color var(--dur-1) var(--ease);
 }
-.act-items > li:hover { background: #fdfefb; }
+.act-items > li:hover { background: var(--surface); }
 .act-t {
   color: #b4c4a9;
   font-variant-numeric: tabular-nums;
@@ -1622,7 +1622,7 @@ html[data-reduce-motion] .upick-menu {
   transition: background-color var(--dur-1) var(--ease);
 }
 .upick-menu button:hover {
-  background: #fbfcf8;
+  background: var(--surface);
 }
 .upick-menu button.is-on {
   background: rgb(var(--violet-rgb) / 12%);
@@ -1765,7 +1765,7 @@ html[data-reduce-motion] .upick-menu {
     background-color var(--dur-1) var(--ease),
     transform var(--dur-1) var(--ease);
 }
-.usage-more:hover { background: #fbfcf8; }
+.usage-more:hover { background: var(--surface); }
 .usage-more:active { transform: scale(0.985); }
 
 /* 창이 2단이라 뷰포트가 넓어도 이 칸은 좁다 → 칸 폭 기준으로만 키운다. */
@@ -1805,7 +1805,7 @@ html[data-reduce-motion] .upick-menu {
 .perf-windows button {
   border: 1px solid var(--line, #edeee7);
   border-radius: var(--r-pill);
-  background: #fcfdfa;
+  background: var(--surface);
   padding: 4px 11px;
   font-size: 11.5px;
   font-weight: 800;
@@ -1865,9 +1865,9 @@ html[data-reduce-motion] .perf-spin {
   align-items: center;
   gap: 6px;
   padding: 7px 10px;
-  border: 1px solid #f4f5ee;
+  border: 1px solid var(--paper);
   border-radius: 9px;
-  background: #fcfdfa;
+  background: var(--surface);
   font-size: 12px;
 }
 .perf-row.perf-thead {
@@ -2055,7 +2055,7 @@ html[data-reduce-motion] .perf-spin {
   border: 1px solid #f0f3e5;
   border-left: 3px solid var(--violet);
   border-radius: 13px;
-  background: #fafcf6;
+  background: var(--surface);
 }
 .teaser-when-label {
   display: flex;
@@ -2105,7 +2105,7 @@ html[data-reduce-motion] .perf-spin {
 }
 .me-teaser-toggle.on {
   color: #54723f;
-  background: #f6f8ee;
+  background: var(--paper);
 }
 .me-row-stack .dtp {
   margin-top: 6px;
@@ -2135,7 +2135,7 @@ html[data-reduce-motion] .perf-spin {
 }
 .dtp-trigger:hover {
   border-color: #dfe5ca;
-  background: #fcfdfa;
+  background: var(--surface);
 }
 .dtp-trigger:active {
   transform: scale(0.99);
@@ -2187,7 +2187,7 @@ html[data-reduce-motion] .perf-spin {
     transform var(--dur-2) var(--spring-bouncy, var(--ease-spring, var(--ease)));
 }
 .dtp-pop-x:hover {
-  background: #f2f5e9;
+  background: var(--paper);
   transform: rotate(90deg);
 }
 .dtp-pop-x:active {
@@ -2289,7 +2289,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
     transform var(--dur-1) var(--ease);
 }
 .dtp-nav:hover {
-  background: #f2f5e9;
+  background: var(--paper);
 }
 .dtp-nav:active {
   transform: scale(0.88);
@@ -2403,7 +2403,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   .dtp-time {
     flex: 1;
     margin: 0 !important;
-    border-left: 1px solid #f4f5ee;
+    border-left: 1px solid var(--paper);
     padding-left: 12px;
     align-self: stretch;
   }
@@ -2419,7 +2419,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
 .dtp-readout {
   padding: 5px 14px;
   border-radius: var(--r-pill);
-  background: linear-gradient(180deg, #f7f8f3, #f3f5eb);
+  background: linear-gradient(180deg, #f7f8f3, var(--paper));
   color: #70a64a;
   font-size: 14px;
   font-weight: 900;
@@ -2557,7 +2557,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   color: #73955b;
 }
 .dtp-foot-btn.ghost:hover {
-  background: #f2f5e9;
+  background: var(--paper);
 }
 .dtp-foot-btn.primary {
   flex: 1.4;
@@ -2584,8 +2584,8 @@ html[data-reduce-motion] .dtp-pop-x:active {
     margin: 14px 0 2px;
     padding: 12px 6px 8px;
     border-radius: var(--r-lg);
-    background: #fcfdfa;
-    border: 1px solid #f4f5ee;
+    background: var(--surface);
+    border: 1px solid var(--paper);
   }
   .dtp-readout {
     font-size: 17px;
@@ -2604,7 +2604,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
     font-size: 19px;
   }
   .dtp-wheel-band {
-    background: #f4f6ec;
+    background: var(--paper);
   }
 }
 
@@ -2742,7 +2742,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
     padding: 16px 18px;
     border: 1px solid var(--line, #edeee7);
     border-radius: var(--r-lg);
-    background: linear-gradient(180deg, #fffefb, #fbfcf9);
+    background: linear-gradient(180deg, var(--surface), #fbfcf9);
     box-shadow: 0 6px 18px -14px rgb(93 140 60 / 35%);
   }
   .vcard > .insight-subhead:first-child,
@@ -2787,7 +2787,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   margin-left: 6px;
   padding: 1px 8px;
   border-radius: var(--r-pill);
-  background: #f4f5ee;
+  background: var(--paper);
   color: #93b07f;
   font-size: 10.5px;
   font-weight: 800;
@@ -2925,7 +2925,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   width: 100%;
   min-height: 2px;
   border-radius: 5px 5px 2px 2px;
-  background: #f4f6ef;
+  background: var(--paper);
   transition: height 0.5s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
 }
 /* 색 세그먼트는 안쪽 래퍼에서 둥글게 클리핑한다 → 바깥 .vt-bar는 overflow를 막지 않아
@@ -2994,7 +2994,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   border-radius: 3px 3px 0 0;
   /* 중립 배경 — 막대는 역할/기기 색 세그먼트(.vt-fill)로 채워진다. 예전 보라 그라데이션은
      매니저 색과 헷갈리고, 혹시 fill이 덜 채워질 때 오해를 줘서 .vt-bar와 같은 연회색으로. */
-  background: #f4f6ef;
+  background: var(--paper);
   transition: height 0.5s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
 }
 /* 점유 차트가 비었을 때 — 24칸 baseline + 시간축 골격은 그대로 보이되, 막대는 옅게 두고
@@ -3239,7 +3239,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   padding: 12px 14px;
   border: 1px solid var(--line, #edeee7);
   border-radius: var(--r-card);
-  background: linear-gradient(180deg, #fdfefb, #f9fbf5);
+  background: linear-gradient(180deg, var(--surface), #f9fbf5);
 }
 .vsum-head {
   display: flex;
@@ -3276,7 +3276,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   padding: 8px 4px;
   border-radius: 11px;
   background: #ffffff;
-  border: 1px solid #f4f5ee;
+  border: 1px solid var(--paper);
 }
 .vsum-kpis b {
   font-size: 16px;
@@ -3462,7 +3462,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   padding: 10px 6px;
   border-radius: var(--r-md);
   background: #fff;
-  border: 1px solid #f4f5ee;
+  border: 1px solid var(--paper);
   transition: transform 0.15s var(--ease, ease), box-shadow 0.15s var(--ease, ease);
 }
 .sec-kpis li:hover {
@@ -3508,7 +3508,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   padding: 9px 12px;
   border: 1px solid var(--line, #edeee7);
   border-radius: 11px;
-  background: #fcfdfa;
+  background: var(--surface);
   transition: background 0.12s var(--ease, ease);
 }
 .sys-emails li:hover {
@@ -3662,7 +3662,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
     padding: 9px 12px 9px 16px;
   }
   .vlog-row:nth-child(even) {
-    background: #fcfdfa;
+    background: var(--surface);
   }
   .vlog-row::before {
     content: "";
@@ -3772,7 +3772,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   padding: 9px 11px;
   border: 1px solid #f1f2ec;
   border-radius: var(--r-md);
-  background: #fcfdfa;
+  background: var(--surface);
 }
 .access-top {
   display: flex;
@@ -3802,7 +3802,7 @@ html[data-reduce-motion] .dtp-pop-x:active {
   color: #a9760a;
 }
 .access-card .rt.developer {
-  background: #f6f8ef;
+  background: var(--paper);
   color: var(--violet);
 }
 .access-card .rt.worker {
@@ -4736,7 +4736,7 @@ html[data-reduce-motion] .editor-anchor-link line {
   align-items: center;
   gap: 10px;
   border-bottom: 1px solid #f1f2ec;
-  background: #fcfdf9;
+  background: var(--surface);
   padding: 9px 18px;
 }
 .studio-actionbar-dev {
@@ -4866,7 +4866,7 @@ html[data-reduce-motion] .editor-anchor-link line {
   min-width: 0;
   border: 1px solid var(--line, #e8e1d6);
   border-radius: 12px;
-  background: var(--surface, #fffdf6);
+  background: var(--surface, var(--surface));
   overflow: hidden;
   box-shadow: var(--shadow-1, 0 1px 2px rgb(80 60 20 / 6%));
 }
@@ -4969,7 +4969,7 @@ html[data-reduce-motion] .editor-anchor-link line {
   color: var(--violet-strong);
 }
 .io-tags:hover:not(:disabled) {
-  background: #f3f6e9;
+  background: var(--paper);
   border-color: #e5ebd2;
   color: var(--violet-strong);
 }
@@ -5424,12 +5424,12 @@ html[data-reduce-motion] .editor-anchor-link line {
   padding: 12px;
   border: 1px solid var(--line, #f1f3ec);
   border-radius: var(--r-card);
-  background: #fefefc;
+  background: var(--surface);
 }
 .tag-editor-section.is-mod {
   border-style: dashed;
   border-color: #e3d7c0;
-  background: #fffdf6;
+  background: var(--surface);
 }
 .tag-editor-section-head {
   display: flex;
@@ -5469,7 +5469,7 @@ html[data-reduce-motion] .editor-anchor-link line {
     border-color 0.12s var(--ease, ease);
 }
 .tag-add-in-section:hover:not(:disabled) {
-  background: #f2f5e8;
+  background: var(--paper);
   border-color: var(--violet);
 }
 .tag-add-in-section:active:not(:disabled) {
@@ -6780,7 +6780,7 @@ html[data-reduce-motion] .cal-zoom-float {
   overflow-y: auto;
   border: 1px solid rgb(var(--violet-rgb) / 30%);
   border-radius: var(--r-card);
-  background: #fffdfa;
+  background: var(--surface);
   box-shadow: 0 14px 42px rgb(95 130 70 / 26%);
   animation: peek-in var(--dur-2, 0.18s) var(--ease-enter, var(--ease)) both;
 }
@@ -7446,7 +7446,7 @@ html[data-reduce-motion] .delete-snack {
   padding: 11px;
   border: 1px solid var(--line, #f1f2ec);
   border-radius: var(--r-card);
-  background: linear-gradient(180deg, #fffefb, #fbfcf9);
+  background: linear-gradient(180deg, var(--surface), #fbfcf9);
 }
 /* 방식 칸 — 콘텐츠와 다른 묶음임을 점선·중립 톤으로만 표시(방식 색이 제각각이라 칸은 안 튀게). */
 .tp-mod-section {
@@ -7454,7 +7454,7 @@ html[data-reduce-motion] .delete-snack {
   padding: 10px 11px 11px;
   border: 1px dashed var(--line, #eaece3);
   border-radius: var(--r-card);
-  background: linear-gradient(180deg, #fefefc, #f8f9f6);
+  background: linear-gradient(180deg, var(--surface), #f8f9f6);
 }
 .tp-section-label {
   display: flex;
@@ -7882,7 +7882,7 @@ html[data-reduce-motion] .modal-close:active {
   padding: 10px 12px;
   border: 1px solid var(--line, #f1f2ec);
   border-radius: var(--r-card);
-  background: linear-gradient(180deg, #fffefb, #fbfcf9);
+  background: linear-gradient(180deg, var(--surface), #fbfcf9);
 }
 .tag-cat-group .tag-editor-row {
   border-bottom: 0;
@@ -8053,7 +8053,7 @@ html[data-reduce-motion] .modal-close:active {
   flex-direction: column;
   gap: 12px;
   padding: 14px;
-  background: var(--surface, #fffdf6);
+  background: var(--surface, var(--surface));
   border: 1.5px solid var(--line, #ece0c9);
   border-radius: var(--r-lg, 16px);
   box-shadow: var(--shadow-3, 0 16px 40px rgb(17 24 39 / 14%));
@@ -8109,7 +8109,7 @@ html[data-reduce-motion] .modal-close:active {
   height: 36px;
   border: 1.5px solid var(--line, #e5e8dc);
   border-radius: var(--r-sm);
-  background: #fdfefb;
+  background: var(--surface);
   color: var(--ink-soft, #627753);
   cursor: pointer;
   transition: background var(--ease, 0.18s), transform 0.08s, color var(--ease, 0.18s);
@@ -8162,7 +8162,7 @@ html[data-reduce-motion] .modal-close:active {
 .tag-tone {
   border: 1.5px solid var(--line, #e5e8dc);
   border-radius: var(--r-pill);
-  background: #fdfefb;
+  background: var(--surface);
   padding: 7px 0;
   font-size: 12px;
   font-weight: 800;
@@ -8293,7 +8293,7 @@ html[data-reduce-motion] .modal-close:active {
   transition: background var(--ease, 0.18s), transform 0.08s;
 }
 .cpop-kind-swap:hover {
-  background: #f2f5e8;
+  background: var(--paper);
 }
 .cpop-kind-swap:active {
   transform: scale(0.95);
@@ -8412,7 +8412,7 @@ html[data-reduce-motion] .modal-close:active {
 /* 시청자 화면 전체보기: 스튜디오 대신 공개 화면만 꽉 채워 보여준다. */
 .viewer-fullscreen {
   min-height: 100vh;
-  background: #fffdf8;
+  background: var(--surface);
   position: relative; /* 미리보기 오버레이(흰 바 대체) 기준 */
 }
 
@@ -9155,7 +9155,7 @@ html[data-reduce-motion] .modal-close:active {
   color: #2f6fd0;
 }
 .perm-table thead th:nth-child(4) {
-  background: #f6f8ef;
+  background: var(--paper);
   color: var(--violet);
 }
 .perm-table thead th:nth-child(5) {
@@ -9341,7 +9341,7 @@ html[data-reduce-motion] .modal-close:active {
       transform 0.16s var(--ease, ease);
   }
   .member-row:hover {
-    background: #fcfdfa;
+    background: var(--surface);
     box-shadow: 0 8px 20px -12px rgb(75 110 50 / 32%);
     transform: translateY(-2px);
   }
@@ -9577,7 +9577,7 @@ html[data-reduce-motion] .modal-close:active {
   gap: 8px;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  background: var(--surface, #fbfaf6);
+  background: var(--surface, var(--surface));
   padding: 12px 14px;
 }
 .notice-preview-head {
@@ -9648,7 +9648,7 @@ html[data-reduce-motion] .modal-close:active {
 }
 .notice-method.recommended {
   border-color: #f4b740;
-  background: #fffdf3;
+  background: var(--surface);
   box-shadow: 0 2px 10px rgb(244 183 64 / 14%);
 }
 .notice-method-head {
@@ -10178,7 +10178,7 @@ html[data-reduce-motion] .modal-close:active {
   font-size: var(--text-body); /* 14→13.5 수렴 */
   font-weight: 600;
   color: #2b2f38;
-  background: #fffdf7;
+  background: var(--surface);
   transition:
     border-color var(--dur-1, 120ms) var(--ease, ease),
     box-shadow var(--dur-1, 120ms) var(--ease, ease),
@@ -10195,7 +10195,7 @@ html[data-reduce-motion] .modal-close:active {
   box-shadow: 0 0 0 3px rgb(245 184 27 / 22%);
 }
 .support-link-input:disabled {
-  background: #f6f4ee;
+  background: var(--paper);
   color: #9aa0ab;
 }
 /* "링크 열어 확인" — 입력칸 바로 아래, 같은 폭·같은 라운드로 맞춰 좌우 대칭이 되게 한다. */
@@ -10242,7 +10242,7 @@ html[data-reduce-motion] .modal-close:active {
   border-radius: var(--r-pill);
   font-size: var(--text-caption); /* 10.5→11 수렴 */
   font-weight: 800;
-  background: #f6f8ee;
+  background: var(--paper);
   color: #70a64a;
   white-space: nowrap;
 }
@@ -10312,7 +10312,7 @@ html[data-reduce-motion] .modal-close:active {
   color: var(--violet-strong);
 }
 .m-io-tags:active {
-  background: #f6f8eb;
+  background: var(--paper);
 }
 .m-io-members {
   background: #f1f6ed;
@@ -10623,7 +10623,7 @@ html[data-reduce-motion] .me-fold-body {
   gap: 4px;
   padding: 4px;
   border-radius: var(--r-md);
-  background: #f5f6f0;
+  background: var(--paper);
 }
 /* 잠금 상태 안내(P0-SEC-1) — 비공개 범위가 왜 안 보이는지 그 자리에서 말해준다. */
 .me-scope-hint {
@@ -10705,7 +10705,7 @@ html[data-reduce-motion] .me-fold-body {
   min-height: 46px;
   border: 1px dashed #e3d7bf;
   border-radius: 13px;
-  background: #fffdf3;
+  background: var(--surface);
   color: #8a6d2f;
   font-weight: 800;
   font-size: var(--text-body); /* 14→13.5 수렴 */
@@ -12707,7 +12707,7 @@ html[data-reduce-motion] .members-add .role-segment button:active {
   /* 머리글 줄은 한 가지 바탕으로 잔잔하게 — 역할 구분은 셀 색이 아니라 '칩'이 한다. */
   .perm-table thead th,
   .members-perms .perm-table thead th {
-    background: var(--surface-2, #fcfdfa);
+    background: var(--surface-2, var(--surface));
     color: var(--ink-soft, #718563);
     padding-top: var(--space-2);
     padding-bottom: var(--space-2);
@@ -12738,7 +12738,7 @@ html[data-reduce-motion] .members-add .role-segment button:active {
   }
   .perm-table thead th:nth-child(4) .perm-role-short,
   .perm-legend .pl-manager {
-    background: #f6f8ef;
+    background: var(--paper);
     color: var(--violet);
   }
   .perm-table thead th:nth-child(5) .perm-role-short,
@@ -13479,7 +13479,7 @@ html[data-reduce-motion] .event-drag-ghost {
   gap: 2px;
   padding: 12px 8px;
   border-radius: 14px;
-  background: #fcfdf9;
+  background: var(--surface);
 }
 .mi-tile-num {
   font-size: 22px;

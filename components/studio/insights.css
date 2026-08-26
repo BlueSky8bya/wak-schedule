@@ -29,7 +29,7 @@
   min-width: 0;
   border: 1px solid var(--line, #edeee7);
   border-radius: var(--r-md);
-  background: #fcfdfa;
+  background: var(--surface);
   padding: 9px 8px;
   font-size: 12.5px;
   font-weight: 800;
@@ -151,9 +151,9 @@
   justify-content: space-between;
   gap: var(--space-1); /* 4 */
   padding: var(--space-3); /* 12 — 12/14 → 12 정방 */
-  border: 1px solid #f4f5ee;
+  border: 1px solid var(--paper);
   border-radius: var(--r-card); /* 카드 공통 radius 패밀리(스튜디오 14px) 유지 */
-  background: linear-gradient(180deg, #fdfefb, #f9fbf5);
+  background: linear-gradient(180deg, var(--surface), #f9fbf5);
 }
 
 .insight-tile strong {
@@ -183,7 +183,7 @@
 }
 
 .insight-tile[data-tone="heart"] {
-  background: linear-gradient(180deg, #fafcf4, #f5f8ea);
+  background: linear-gradient(180deg, #fafcf4, var(--paper));
   border-color: #eaefd8;
   /* 하트 박스(2열, 넓음)는 라벨 왼쪽 + 큰 수치 오른쪽 가로 배치로 — 좌우로 길게 채운다. */
   flex-direction: row;
@@ -237,7 +237,7 @@
 .insight-bar-track {
   height: 10px;
   border-radius: var(--r-pill);
-  background: #f4f6ef;
+  background: var(--paper);
   overflow: hidden;
 }
 
@@ -781,7 +781,7 @@
   justify-content: space-between;
   gap: var(--space-2); /* 8 */
   padding: var(--space-2) var(--space-3); /* 8/12 */
-  background: #fbfef9;
+  background: var(--surface);
   border: 1px solid #f0f9ea;
   border-radius: var(--r-md); /* 12 */
 }
@@ -988,7 +988,7 @@
   width: min(560px, 100%);
   max-height: min(84vh, 760px);
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fffdf6, #fdf6e6);
+  background: linear-gradient(180deg, var(--surface), #fdf6e6);
   box-shadow: var(--shadow-3);
   overflow: hidden;
   /* 등장은 스프링(살짝 넘쳤다 안착) — 유리판이 아니라 물체가 올라오는 느낌(A1). */
@@ -1078,13 +1078,13 @@ html[data-reduce-motion] .pi-close:active {
   min-width: 0;
   border: 1px solid #efe6d3;
   border-radius: var(--r-card);
-  background: #fffdf6;
+  background: var(--surface);
   padding: 13px 14px;
 }
 
 .pi-card.pi-broadcast {
   border-color: rgb(244 183 64 / 55%);
-  background: linear-gradient(180deg, #fffaf0, #fffdf6);
+  background: linear-gradient(180deg, #fffaf0, var(--surface));
 }
 
 .pi-label {
@@ -1161,7 +1161,7 @@ html[data-reduce-motion] .pi-skeleton {
 .pi-retry {
   border: 1px solid var(--line, #ece2cd);
   border-radius: var(--r-pill);
-  background: var(--surface, #fffdf6);
+  background: var(--surface, var(--surface));
   padding: 7px 14px;
   min-height: 36px;
   color: var(--ink, #23303f);

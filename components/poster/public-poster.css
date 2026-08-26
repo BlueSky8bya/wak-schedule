@@ -226,7 +226,7 @@
   margin-top: 2px;
   border: 1px solid var(--line, #e9e4cc);
   border-radius: var(--r-sm);
-  background: var(--surface-2, #f8f6e4);
+  background: var(--surface-2, var(--surface-2));
   padding: 4px;
   font-size: 10.5px;
   font-weight: 800;
@@ -249,7 +249,7 @@
   padding: 8px;
   border: 1px solid #e9e4cc;
   border-radius: var(--r-md);
-  background: linear-gradient(180deg, #fdfcef, #f7f5e2);
+  background: linear-gradient(180deg, #fdfcef, var(--surface-2));
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 60%);
   display: grid;
   gap: 6px;
@@ -892,7 +892,7 @@ html[data-reduce-motion] .mb-live-dot {
        위쪽 햇살 웜 글로우는 남겨 노란 CTA·태그 파스텔과 조화. */
   background:
     radial-gradient(120% 80% at 50% -12%, #fdf6d8 0%, transparent 58%),
-    linear-gradient(180deg, #f9f8ec, #eef0d8); /* 편집실과 동일(타협점) */
+    linear-gradient(180deg, var(--paper), #eef0d8); /* 편집실과 동일(타협점) */
   color: #111827;
 }
 
@@ -1223,7 +1223,7 @@ body.cell-range-dragging {
     grid-template-columns 0.55s var(--spring-smooth, var(--ease-spring)),
     column-gap 0.55s var(--spring-smooth, var(--ease-spring));
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fdfcef, #f7f5e2);
+  background: linear-gradient(180deg, #fdfcef, var(--surface-2));
   padding: 18px;
   box-shadow: var(--shadow-2);
 }
@@ -1631,7 +1631,7 @@ body.cell-range-dragging {
     background var(--dur-1) var(--ease);
 }
 .legend-clear:hover {
-  background: var(--surface-2, #f8f6e4);
+  background: var(--surface-2, var(--surface-2));
 }
 .legend-clear:active {
   transform: scale(0.94);
@@ -3272,7 +3272,7 @@ html[data-reduce-motion] .agenda-item.teaser:has(.teaser-count.soon) .teaser-spa
      일정이 많으면 행이 자라 칸도 커지므로 일정이 잘리지 않는다(클립 없음). */
   border-right: 1px solid #f0edd8;
   border-bottom: 1px solid #f0edd8;
-  background: #fffdf2;
+  background: var(--surface);
 }
 
 .public-day .day-strip,
@@ -4165,7 +4165,7 @@ html[data-reduce-motion] .slc-player img {
   width: min(560px, 100%);
   max-height: min(84vh, 760px);
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, #fdfcef, #f7f5e2);
+  background: linear-gradient(180deg, #fdfcef, var(--surface-2));
   box-shadow: var(--shadow-3);
   overflow: hidden;
   /* 등장은 스프링(살짝 넘쳤다 안착) — 유리판이 아니라 물체가 올라오는 느낌(A1). */
@@ -4352,7 +4352,7 @@ html[data-reduce-motion] .pi-skeleton {
     background var(--dur-1) var(--ease);
 }
 .pi-retry:hover {
-  background: var(--surface-2, #f8f6e4);
+  background: var(--surface-2, var(--surface-2));
 }
 .pi-retry:active {
   transform: scale(0.94);

@@ -267,3 +267,19 @@ components/poster/public-poster.css, components/studio/studio-shell.css
   달력 --cal-* 토큰은 필터 통과 후 목표색이 나오도록 선보정.
 Files: lib/ui/motion.ts, app/layout.tsx, app/globals.css, components/poster/public-poster.css
 
+### CHG-20260826-024 — FIX/UX — 태그 순서 변경 P0/P1 수술 (감사 문서 §9의 1~6)
+
+- 순수 모델 lib/tags/reorder.ts: reorderAtEdge(행+edge, 같은 결과=같은 참조 no-op,
+  휴뱅 머리 고정은 클램프) + edgeForPointer(중앙선±데드존, 직전 edge 히스테리시스).
+  단위 테스트 12개(감사 §8 표 — '마지막 둘 못 바꾸던' P0 재현 포함) → 총 227.
+- 에디터: 유령 1:1 추적(관성·회전·랜덤 흔들림 제거), 동일 목적지 무렌더,
+  콘텐츠↔형식 경계 드래그 차단, 자동 스크롤 중에도 판정 갱신(맨 끝 드롭 가능),
+  Esc/pointercancel/창 blur 시 시작 스냅샷 복구, 리스너 4종 대칭 해제.
+- 자리표시자: 들린 행을 점선 슬롯(보라 6%)으로 — 놓일 자리가 읽힌다.
+- 닫기 경고: 에디터 dirty를 부모에 통지(렌더 단계 ref-guard, 콜백은 ref 대입만),
+  태그 모달 X·배경·Esc 닫기 시 '계속 편집/버리고 닫기' 확인 레이어.
+- applyTagUpdates에 kind/parentId 반영(감사 P2 — 종류 변경이 세션 상태에 안 실리던 것).
+- 별건: 팝오버 태그 칩 3열 고정(auto-fill 출렁임 — 사용자 지적).
+Files: lib/tags/reorder.ts, tests/unit/tag-reorder.test.ts,
+components/tags/tag-legend-editor.tsx, components/studio/{studio-shell.tsx,studio-shell.css}
+

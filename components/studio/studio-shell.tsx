@@ -39,6 +39,7 @@ import {
 import type {
   BroadcastTag,
   ColorKey,
+  TagKind,
   ColorPaletteEntry,
   MembershipRole,
   PublicSchedule,
@@ -308,6 +309,20 @@ export function StudioShell({
   // 모바일 아젠다 월 전환 방향(시청자 화면과 동일한 슬라이드 애니메이션용).
   const [monthDir, setMonthDir] = useState<"next" | "prev">("next");
   const [modal, setModal] = useState<null | "tags" | "insights">(null);
+  // 태그 편집기의 저장 전 변경 여부(에디터가 알려줌) — 닫기 경고 게이트.
+  const tagsDirtyRef = useRef(false);
+  const [tagsDiscardAsk, setTagsDiscardAsk] = useState(false);
+  // 태그 모달 닫기 요청 — dirty면 바로 닫지 않고 버리기 확인을 띄운다(드래그 직후엔 이미
+  // 화면 순서가 바뀌어 '적용된 것처럼' 보이므로, 조용한 유실이 특히 배신감이 크다).
+  const requestCloseModal = useCallback(() => {
+    setModal((cur) => {
+      if (cur === "tags" && tagsDirtyRef.current) {
+        setTagsDiscardAsk(true);
+        return cur;
+      }
+      return null;
+    });
+  }, []);
   // 빠른 휴방: 날짜 우클릭/롱프레스로 뜨는 미니 메뉴(화면 좌표 + 그 날 휴방 여부).
   const [restMenu, setRestMenu] = useState<
     { isoDate: string; x: number; y: number; hasRest: boolean } | null
@@ -1147,10 +1162,19 @@ export function StudioShell({
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       e.stopPropagation();
-      setModal(null);
+      if (tagsDiscardAsk) {
+        setTagsDiscardAsk(false); // 확인창에서 Esc = 계속 편집
+        return;
+      }
+      requestCloseModal();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
+  }, [modal, tagsDiscardAsk, requestCloseModal]);
+  // 모달이 바뀌거나 닫히면 확인창·dirty 흔적을 정리.
+  useEffect(() => {
+    setTagsDiscardAsk(false);
+    if (modal !== "tags") tagsDirtyRef.current = false;
   }, [modal]);
   // P1-DIALOG-1: 각 모달 카드에 Tab 포커스 가두기(순환)+초기 포커스. Esc·복원은 위 B2 효과.
   const mainModalTrapRef = useFocusTrap<HTMLDivElement>(modal !== null);
@@ -3849,7 +3873,15 @@ export function StudioShell({
     }
   }
   function applyTagUpdates(
-    updates: { id: string; displayName: string; colorKey: ColorKey; bgHex?: string | null; sortOrder?: number }[]
+    updates: {
+      id: string;
+      displayName: string;
+      colorKey: ColorKey;
+      bgHex?: string | null;
+      sortOrder?: number;
+      kind?: TagKind;
+      parentId?: string | null;
+    }[]
   ) {
     setTags((prev) => {
       const mapped = prev.map((t) => {
@@ -3861,7 +3893,11 @@ export function StudioShell({
               colorKey: u.colorKey,
               // bgHex가 payload에 오면 반영(커스텀 색 즉시 카드/범례에). undefined면 유지.
               bgHex: u.bgHex === undefined ? t.bgHex : u.bgHex,
-              sortOrder: u.sortOrder ?? t.sortOrder
+              sortOrder: u.sortOrder ?? t.sortOrder,
+              // 종류/부모 변경도 즉시 반영 — 서버엔 저장되는데 이 세션의 섹션 분류만
+              // 옛날에 머무르던 문제(태그 감사 P2).
+              kind: u.kind ?? t.kind,
+              parentId: u.parentId === undefined ? t.parentId : u.parentId
             }
           : t;
       });
@@ -5946,7 +5982,7 @@ export function StudioShell({
           }}
           onMouseUp={(e) => {
             if (backdropPressRef.current && e.target === e.currentTarget) {
-              setModal(null);
+              requestCloseModal();
             }
             backdropPressRef.current = false;
           }}
@@ -5964,7 +6000,7 @@ export function StudioShell({
                 aria-label="닫기"
                 className="modal-close"
                 data-act="close-modal"
-                onClick={() => setModal(null)}
+                onClick={requestCloseModal}
                 type="button"
               >
                 <X aria-hidden="true" size={18} />
@@ -5974,6 +6010,9 @@ export function StudioShell({
             {modal === "tags" && taxonomyV3 ? (
               <TagLegendEditor
                 canEdit
+                onDirtyChange={(d) => {
+                  tagsDirtyRef.current = d;
+                }}
                 onTagAdded={applyTagAdd}
                 onTagRemoved={applyTagRemove}
                 onTagsUpdated={applyTagUpdates}
@@ -5982,6 +6021,34 @@ export function StudioShell({
                 saveTagsAction={saveTagsAction}
                 tags={tags}
               />
+            ) : null}
+            {tagsDiscardAsk ? (
+              <div className="modal-discard-ask" role="alertdialog" aria-label="변경사항 확인">
+                <div className="mda-card">
+                  <p>저장하지 않은 변경사항이 있어요.</p>
+                  <div className="mda-actions">
+                    <button
+                      autoFocus
+                      className="button"
+                      onClick={() => setTagsDiscardAsk(false)}
+                      type="button"
+                     data-act="mda-keep">
+                      계속 편집
+                    </button>
+                    <button
+                      className="button mda-discard"
+                      onClick={() => {
+                        setTagsDiscardAsk(false);
+                        tagsDirtyRef.current = false;
+                        setModal(null);
+                      }}
+                      type="button"
+                     data-act="mda-discard">
+                      버리고 닫기
+                    </button>
+                  </div>
+                </div>
+              </div>
             ) : null}
             {modal === "insights" ? (
               <MonthInsightsPanel

@@ -7812,6 +7812,7 @@ textarea:disabled {
   z-index: 60;
 }
 .modal-card {
+  position: relative; /* 닫기 경고 오버레이(.modal-discard-ask)의 기준 */
   width: 100%;
   max-width: 460px;
   border-radius: var(--r-xl);
@@ -7972,7 +7973,16 @@ html[data-reduce-motion] .modal-close:active {
 }
 /* 드래그 중인 원래 자리는 들려 나간 듯 흐린 placeholder로(고스트=행 전체가 커서를 따라감). */
 .tag-editor-row.dragging {
-  opacity: 0.3;
+  /* 미리보기 순서상 '놓일 자리'를 빈 슬롯으로 — 점선 테두리 + 상호작용 보라 옅은 채움.
+     (라이브 미리보기 모델에선 이 슬롯이 곧 삽입 표시다 — 별도 삽입선은 이중 신호라 뺐다.) */
+  opacity: 0.45;
+  outline: 2px dashed rgb(var(--violet-rgb) / 45%);
+  outline-offset: -2px;
+  background: rgb(var(--violet-rgb) / 6%);
+  border-radius: 10px;
+}
+.tag-editor-row.dragging > * {
+  opacity: 0.55;
 }
 /* 손가락/커서를 따라 떠다니는 복제본 — 실제로 카드를 들어 옮기는 느낌. */
 .tag-drag-ghost {
@@ -7984,7 +7994,8 @@ html[data-reduce-motion] .modal-close:active {
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 14px 30px rgb(17 24 39 / 28%);
-  transform: scale(1.03) rotate(-1deg);
+  /* 정밀 조작(정렬) 중엔 회전·흔들림 없이 1:1 — 판정 지점과 시각 객체 일치(감사 P0). */
+  transform: scale(1.02);
   opacity: 0.97;
 }
 .tag-editor-row input {
@@ -13759,4 +13770,43 @@ html[data-reduce-motion] .event-drag-ghost {
 }
 .role-help-pop {
   overflow-wrap: anywhere;
+}
+
+/* ── 태그 모달 닫기 경고(저장 전 변경 버리기 확인) ───────────────────────── */
+.modal-discard-ask {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  background: rgb(255 255 255 / 55%);
+  backdrop-filter: blur(3px);
+  border-radius: inherit;
+}
+.modal-discard-ask .mda-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+}
+.modal-discard-ask .mda-card p {
+  margin: 0;
+  font-size: var(--text-ui);
+  font-weight: 800;
+  color: var(--ink);
+}
+.modal-discard-ask .mda-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.modal-discard-ask .mda-discard {
+  color: #b3261e;
+  border-color: rgb(179 38 30 / 35%);
+}
+.modal-discard-ask .mda-discard:hover {
+  background: rgb(179 38 30 / 8%);
 }

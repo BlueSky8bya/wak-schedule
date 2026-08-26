@@ -247,3 +247,14 @@ Files: app/globals.css, components/poster/public-poster.{css,tsx},
 components/studio/{studio-shell.css,studio-shell.tsx,insights.css},
 docs/agent/decisions/ADR-0013-color-debt-p0.md
 
+### CHG-20260826-022 — STYLE — '구름빛 클린' 전환 + 달력 한색 층 (ADR-0013 후속)
+
+- 눈 편한 테마(전역 sepia) 기본 ON → 옵트인: 시청자 화면 색 왜곡의 숨은 원인 제거.
+- 달력 그리드 한색 층: --cal-*(surface/dim/line/frame/head/head-ink) 토큰 신설,
+  포스터·편집실 동일 적용. 일/토 색·오늘 금테·태그색 불변.
+- 사용자 '다른 편안하고 깔끔' 요청 → 중립 토큰 쿨 전환(--paper/--surface/--surface-2/
+  --line/--studio-workbench) + 포스터/모바일 아젠다 웜 크림 리터럴 쿨 치환(60여 곳).
+  골드는 포인트(오늘·화살표·선택·D+)로 유지. 캡쳐-판단 반복으로 검증.
+Files: app/globals.css, lib/ui/motion.ts, app/layout.tsx,
+components/poster/public-poster.css, components/studio/studio-shell.css
+

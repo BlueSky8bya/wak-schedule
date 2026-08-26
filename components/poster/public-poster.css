@@ -535,7 +535,7 @@
 }
 /* 방송 중 + 이미 오늘 달이면 '오늘' 버튼을 LIVE(보러가기)로 재활용 — 빨강 채움 + 맥박 점. */
 .agenda-monthbar .mb-act.live {
-  background: linear-gradient(135deg, #d90f45, #a90f36);
+  background: linear-gradient(135deg, var(--live), var(--live-strong));
   color: #fff;
   box-shadow: 0 3px 12px rgb(169 15 54 / 38%);
   letter-spacing: 0.04em;
@@ -1697,7 +1697,7 @@ body.cell-range-dragging {
 /* 🔮 떡밥(가림) 카드 — 보라 미스터리 룩 + ??? + 공개까지 카운트다운. 제목·태그는 서버에서
    안 내려오므로 여기엔 실제 내용이 없다(유출 0). */
 .public-event.teaser {
-  background: linear-gradient(135deg, #5b4aa6 0%, var(--violet) 100%);
+  background: linear-gradient(135deg, var(--teaser) 0%, var(--violet) 100%);
   border: 1px dashed rgba(255, 255, 255, 0.55);
   color: #fff;
   overflow: hidden;
@@ -1922,7 +1922,7 @@ html[data-reduce-motion] .agenda-event.just-revealed .reveal-shock {
   gap: 6px;
   padding: 7px 10px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #5b4aa6 0%, var(--violet) 100%);
+  background: linear-gradient(135deg, var(--teaser) 0%, var(--violet) 100%);
   border: 1px dashed rgba(255, 255, 255, 0.55);
   color: #fff;
 }
@@ -2194,7 +2194,7 @@ p.agenda-sub.hope-badge {
   border-radius: 999px;
   background: #fff;
   padding: 0 18px;
-  color: #5b4aa6;
+  color: var(--teaser);
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
@@ -2211,7 +2211,7 @@ p.agenda-sub.hope-badge {
   transform: scale(0.93);
 }
 .detail-teaser .dt-hope.on {
-  background: linear-gradient(135deg, var(--violet), #5b4aa6);
+  background: linear-gradient(135deg, var(--violet), var(--teaser));
   border-color: transparent;
   color: #fff;
   box-shadow: 0 3px 12px rgb(91 74 166 / 40%);
@@ -2907,7 +2907,7 @@ html[data-reduce-motion] .dt-ring-ticks line {
     rgb(154 88 0 / 62%)
   );
   background: color-mix(in srgb, #fff calc((1 - var(--hy-gold, 0)) * 100%), #fffaf0);
-  color: color-mix(in srgb, #5b4aa6 calc((1 - var(--hy-gold, 0)) * 100%), #6b3d00);
+  color: color-mix(in srgb, var(--teaser) calc((1 - var(--hy-gold, 0)) * 100%), #6b3d00);
   box-shadow: 0 calc(2px + var(--hy-final, 0) * 3px)
     calc(6px + var(--hy-final, 0) * 12px)
     color-mix(in srgb, rgb(var(--violet-rgb) / 18%) calc((1 - var(--hy-gold, 0)) * 100%), rgb(154 88 0 / 26%));
@@ -2918,7 +2918,7 @@ html[data-reduce-motion] .dt-ring-ticks line {
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--violet) calc((1 - var(--hy-gold, 0)) * 100%), #d98a1a),
-    color-mix(in srgb, #5b4aa6 calc((1 - var(--hy-gold, 0)) * 100%), #8a4f04)
+    color-mix(in srgb, var(--teaser) calc((1 - var(--hy-gold, 0)) * 100%), #8a4f04)
   );
   color: #fff;
 }
@@ -4038,7 +4038,7 @@ html[data-reduce-motion] .slc-player img {
   gap: 5px;
   padding: 3px 9px;
   border-radius: var(--r-pill);
-  background: linear-gradient(135deg, #d90f45, #a90f36);
+  background: linear-gradient(135deg, var(--live), var(--live-strong));
   color: #fff;
   font-size: 11.5px;
   font-weight: 900;

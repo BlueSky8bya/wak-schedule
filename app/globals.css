@@ -93,6 +93,20 @@
   --brand-violet: var(--violet);
   --tori-pink: var(--pink);
 
+  /* ── 의미 토큰(색 부채 P0-①) — '색 하나 = 의미 하나' 계약의 선언부.
+     새 코드는 기반색(--violet 등) 대신 이 이름을 쓴다. 기존 소비처는 화면 단위로
+     점진 이관(P1). live·teaser는 이 커밋에서 실제 소비 시작. */
+  --interactive: var(--violet); /* 누를 수 있음/선택/포커스 */
+  --interactive-soft: var(--violet-soft);
+  --today: var(--accent); /* 오늘 표시(금) */
+  --today-soft: var(--accent-soft);
+  --on-today: var(--on-accent);
+  --heart: var(--pink); /* 하트·팬 반응 전용 — 오류/삭제에 쓰지 말 것 */
+  --heart-soft: var(--pink-soft);
+  --live: #d90f45; /* 방송 중(LIVE) — 즉시 주의 빨강 */
+  --live-strong: #a90f36;
+  --teaser: #5b4aa6; /* 떡밥(최초공개) — 저채도 보라, 상호작용 보라와 구분 */
+
   /* 글래스(떠 있는 표면) */
   --glass: rgb(255 255 255 / 72%);
   --glass-strong: rgb(255 255 255 / 86%);

@@ -3042,8 +3042,8 @@ export function PublicPoster({
             const pos = anchor ? detailManual ?? detailPos : null;
             // 업도움은 띠와 같은 초록 계열로 액센트·선 색을 통일(카드 ↔ 띠 조화).
             const accent1 = support ? "#9cc46f" : teaserActive ? "#c4b5fd" : (detailTags[0]?.bg ?? "#f4b740");
-            const accent2 = support ? "#7fb04e" : teaserActive ? "#8b5cf6" : (detailTags[1]?.bg ?? accent1);
-            const lineColor = support ? "#6a9c3d" : teaserActive ? "#7c6cf0" : (detailTags[0]?.border ?? "#d3a94f");
+            const accent2 = support ? "#7fb04e" : teaserActive ? "#6b5bd6" : (detailTags[1]?.bg ?? accent1);
+            const lineColor = support ? "#6a9c3d" : teaserActive ? "#6b5bd6" : (detailTags[0]?.border ?? "#d3a94f");
             const popStyle: CSSProperties | undefined = anchor
               ? pos
                 ? ({

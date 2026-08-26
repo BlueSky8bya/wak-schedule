@@ -67,7 +67,11 @@
   --green-soft: #e9fff2;
   --coral: #f26d5b;
   --amber: #f4b740;
-  --violet: #5b34f0; /* 무대/선택/포커스(흰 글자). 기존보다 채도↑ */
+  /* 보라 수렴(2026-08-26, 색 부채 P0): 흩어져 있던 상호작용 보라 6종을 최다 출현값
+     하나(hsl 248,60%,60%)로 통일. 텍스트용 진보라는 --violet-strong. */
+  --violet: #6b5bd6; /* 무대/선택/포커스(흰 글자) */
+  --violet-strong: #5b4bd0; /* 밝은 배경 위 보라 텍스트(대비용) */
+  --violet-rgb: 107 91 214; /* rgb(var(--violet-rgb) / a%) 알파 조합용 */
   --violet-soft: #f3eeff;
   --pink: #ff5f8f; /* 토리 핑크 — 하트·팬 반응 */
   --pink-soft: #ffe8f1;
@@ -303,11 +307,11 @@
 /* 일관된 포커스 링(키보드 이동 시) — 특이도 0이라 컴포넌트가 자유로이 덮을 수 있다. */
 :where(input, select, textarea):focus-visible {
   outline: none;
-  border-color: var(--accent, #7c5cf5);
+  border-color: var(--accent, #ffc83d);
   box-shadow: 0 0 0 3px rgb(124 92 245 / 18%);
 }
 :where(a, button, [role="button"], [role="tab"], [role="switch"], summary):focus-visible {
-  outline: 2px solid var(--accent, #7c5cf5);
+  outline: 2px solid var(--accent, #ffc83d);
   outline-offset: 2px;
 }
 

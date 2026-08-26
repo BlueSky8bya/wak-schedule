@@ -283,3 +283,10 @@ Files: lib/ui/motion.ts, app/layout.tsx, app/globals.css, components/poster/publ
 Files: lib/tags/reorder.ts, tests/unit/tag-reorder.test.ts,
 components/tags/tag-legend-editor.tsx, components/studio/{studio-shell.tsx,studio-shell.css}
 
+### CHG-20260826-025 — TUNE — 하트 배지 임계값 규모 보정 (T-8 1차)
+
+- VIC 임시값(5/12/25/10) → 실활동 2,400명(구독 4,800의 절반, 사용자 지정) 참여율 기준:
+  ACTIVE_FAN_BASE(2400) × 1%/3%/8%/2% = 24/72/192/48. 판정은 여전히 절대 수(단조 원칙).
+- 재보정 계약: 실분포 확인 후 모수·비율만 수정(lib/schedules/heart-tiers.ts 단일 출처).
+Files: lib/schedules/heart-tiers.ts
+

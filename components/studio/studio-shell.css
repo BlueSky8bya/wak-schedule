@@ -17,11 +17,12 @@ html {
 
 .studio-shell {
   min-height: 100vh;
-  /* 밝고 귀여운 톤: 거의 흰 바탕 + 위쪽에 은은한 핑크·라벤더·하늘빛 글로우(파스텔 태그가 잘 살게). */
+  /* 연한 잎빛 바탕(페리도트 계열, CHG-20260826-012) + 위쪽 핑크·하늘 파스텔 글로우 유지
+     (파스텔 태그가 잘 살게). 흰 바탕 비선호(사용자). */
   background:
     radial-gradient(120% 55% at 12% -6%, #ffeef7 0%, transparent 46%),
-    radial-gradient(120% 55% at 88% -6%, #eaf1ff 0%, transparent 46%),
-    linear-gradient(180deg, #fffafd 0%, #f5f7ff 100%);
+    radial-gradient(120% 55% at 88% -6%, #eaf4ff 0%, transparent 46%),
+    linear-gradient(180deg, #f4f8e6 0%, #eaf1d6 100%);
   color: #2c2740;
 }
 
@@ -13615,6 +13616,9 @@ html[data-reduce-motion] .event-drag-ghost {
   align-items: stretch;
   justify-content: stretch;
   padding: 12px;
+  /* 노란 스티키 노트(사용자 결정 2026-08-26) — 흰 판 대신 메모지 느낌. */
+  border: 1.5px dashed rgb(196 168 78 / 45%);
+  background: #fdf3bd;
 }
 .month-memo {
   display: flex;
@@ -13632,13 +13636,13 @@ html[data-reduce-motion] .event-drag-ghost {
 .month-memo-title {
   font-size: 14px;
   font-weight: 800;
-  color: #5b4a86;
+  color: #7a621a;
   user-select: none;
 }
 .month-memo-status {
   font-size: 12px;
   font-weight: 600;
-  color: rgb(91 74 134 / 55%);
+  color: rgb(122 98 26 / 60%);
 }
 .month-memo-status.is-error {
   color: var(--status-danger, #c0392b);
@@ -13649,21 +13653,21 @@ html[data-reduce-motion] .event-drag-ghost {
   resize: none;
   border: 0;
   border-radius: 12px;
-  background: rgb(255 255 255 / 65%);
+  background: #fff9d8;
   padding: 10px 12px;
   font: inherit;
   font-size: 14px;
   line-height: 1.6;
-  color: #3a3245;
+  color: #4a3d14;
   outline: none;
   transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 .month-memo-input:focus {
-  background: #fff;
-  box-shadow: 0 0 0 2px var(--focus-ring, rgb(120 100 200 / 35%));
+  background: #fffce8;
+  box-shadow: 0 0 0 2px rgb(214 178 62 / 45%);
 }
 .month-memo-input::placeholder {
-  color: rgb(91 74 134 / 40%);
+  color: rgb(122 98 26 / 45%);
 }
 
 /* ── 월별 인사이트(ADR-0011) ─────────────────────────────────────────────── */

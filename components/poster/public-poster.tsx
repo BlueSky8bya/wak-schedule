@@ -25,7 +25,7 @@ import {
   useState
 } from "react";
 import type { PublicSchedule, PublicScheduleEvent } from "@/lib/domain/schedule-types";
-import { STREAMER_NAME } from "@/lib/config/site";
+import { STREAMER_NAME, TITLE_SPARK } from "@/lib/config/site";
 import { reduceMotionEnabled } from "@/lib/ui/motion"; // OS reduce-motion 무시, 앱 토글만 존중
 import { getAnonHeartIdsAction, type HeartResult } from "@/lib/schedules/heart-actions";
 import { revealTeaserAction } from "@/lib/schedules/teaser-actions";
@@ -3426,9 +3426,9 @@ export function PublicPoster({
             {/* 시청자 미리보기 진입 시 — 제목 왼쪽 여백 칸에 안내(작게). */}
             {previewNote ? <span className="agenda-preview-left">{previewNote}</span> : null}
             <h1 className="agenda-title">
-              <span className="title-spark" aria-hidden="true">✨️</span>
+              <span className="title-spark" aria-hidden="true">{TITLE_SPARK}</span>
               우왁굳 일정표
-              <span className="title-spark" aria-hidden="true">✨️</span>
+              <span className="title-spark" aria-hidden="true">{TITLE_SPARK}</span>
             </h1>
             {/* 미리보기 이동 버튼(편집실)은 제목 우측이 아니라 색상 필터 박스 아래로 옮겼다(엄지존). */}
             {accountSwitch ? (
@@ -3504,9 +3504,9 @@ export function PublicPoster({
                 {/* 서비스 제목 — 포스터 표면에서 크롬 중앙(내 관심 ↔ 이 달 기록 사이)으로 이동
                     (2026-07-31). 표면 밖이라 캡쳐에 안 찍히고(PNG는 연·월만), 스티커 좌표 불침범. */}
                 <h1 className="poster-chrome-title">
-                  <span aria-hidden="true" className="title-spark">✨️</span>
+                  <span aria-hidden="true" className="title-spark">{TITLE_SPARK}</span>
                   {schedule.calendar.title}
-                  <span aria-hidden="true" className="title-spark">✨️</span>
+                  <span aria-hidden="true" className="title-spark">{TITLE_SPARK}</span>
                 </h1>
                 {/* '이 달 기록' — 비로그인 시청자도 볼 수 있다. 좌상단(미니게임·아바타)·우상단(로그인)·
                     좌우 화살표(월 이동)·하단(미니게임 컨트롤)과 안 겹치는 상단 중앙 크롬 자리. */}

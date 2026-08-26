@@ -16,6 +16,10 @@ export const STREAMER_NAME = "우왁굳";
 // 브라우저 탭/문서 메타데이터용 사이트 이름 (사용자 확정 2026-08-26).
 export const SITE_NAME = "Wak Schedule";
 
+// 제목 양옆 장식 이모지. 🌿 = 왁굳형 상징 계열(팬덤 유래의 '나무', 숲(SOOP), 왁물원,
+// 페리도트 그린)을 잇는 잎사귀. 바꾸고 싶으면 여기 하나만 고친다(🌳·🍃·🐵 등).
+export const TITLE_SPARK = "🌿";
+
 // 포스터/스켈레톤/문서 제목. DB `calendars.title`이 있으면 그쪽이 우선이고, 이건 폴백·로딩 문구용.
 export const POSTER_TITLE = `${STREAMER_NAME} 일정표`;
 

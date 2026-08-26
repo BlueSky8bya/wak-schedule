@@ -73,11 +73,15 @@
   --ink: #1c2433;
   --ink-soft: #3b4255;
   --muted: #6b7384;
-  --line: #ece0c9;
-  --line-soft: #f4ecdb;
-  --paper: #f8efda;
-  --surface: #fffdf6;
-  --surface-2: #fdf6e8;
+  /* [WH-CHANGE v0.1.0 | STYLE | 2026-08-26 | CHG-20260826-012]
+     Reason: 배경을 VIC 크림에서 왁굳형 상징(페리도트 그린) 계열의 연한 잎빛으로.
+       흰색·크림 계열 비선호(사용자). 원색 페리도트(#B4C424)는 강렬해 배경엔 안 쓰고,
+       채도를 낮춘 연둣빛 종이 톤으로 은은하게 깔았다 — 숲(SOOP)·왁물원과도 결이 맞는다. */
+  --line: #dde4c6;
+  --line-soft: #eaf0d8;
+  --paper: #eef3dd;
+  --surface: #fcfdf5;
+  --surface-2: #f4f8e6;
   --studio-workbench: #eae6e0;
   /* 브랜드 시그니처 팔레트 — TODO(색 확정): 지금 값은 VIC에서 물려받은 것이다.
      보라=무대/선택, 핑크=팬심/하트). 노랑·초록 위 글자는 흰색 금지(짙은 잉크 사용). */

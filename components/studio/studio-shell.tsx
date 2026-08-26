@@ -3,6 +3,7 @@
 // 인사이트 차트·타일 스타일(편집실·시청자 공용) — studio-shell.css에서 분리된 파일.
 
 import dynamic from "next/dynamic";
+import { TITLE_SPARK } from "@/lib/config/site";
 import {
   CalendarCheck,
   ChevronDown,
@@ -4976,9 +4977,9 @@ export function StudioShell({
         {/* 왼쪽 칸: 큰 제목 + 그 옆에 배포 버전 배지(헤더 세로 중앙, 클릭=버전 복사). */}
         <div className="studio-left">
           <h1 className="studio-poster-title">
-            <span aria-hidden="true">✨️</span>
+            <span aria-hidden="true">{TITLE_SPARK}</span>
             {schedule.calendar.title}
-            <span aria-hidden="true">✨️</span>
+            <span aria-hidden="true">{TITLE_SPARK}</span>
           </h1>
           <button
             aria-label={`배포 버전 ${buildSha} 복사`}

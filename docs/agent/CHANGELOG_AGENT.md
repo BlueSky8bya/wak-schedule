@@ -112,3 +112,19 @@ Root Cause: 칩 스타일(.tag-legend-filter 일가)이 VIC의 insights-charts.c
 Change: VIC 원본에서 규칙 복원(+modifier 원형 견본·hover·tag-legend-clear).
 Files: `components/studio/studio-shell.css`
 Validation: 게이트 4종 + fixture 스크린샷(견본·켜짐 악센트 바) 확인
+
+### CHG-20260826-012 — STYLE — 왁굳형 브랜딩 1차: 🌿·잎빛 배경·노란 메모지
+
+Change (사용자 요청):
+- 제목 장식 ✨ → 🌿 (TITLE_SPARK 상수, site.ts 단일 출처 — 포스터·편집실·스켈레톤·
+  로그인·월 카드 장식). 근거: 팬덤 유래의 '나무'(침팬치 vs 가만히 선 나무=왁굳형),
+  숲(SOOP)·왁물원·페리도트 그린 연결.
+- 배경: VIC 크림 → 연한 페리도트 잎빛. 원색 페리도트(#B4C424)는 강렬해 배경 부적합 —
+  채도 낮춘 톤(globals 토큰 + 포스터 페이지·판·그리드·셀·요일줄 + 편집실 바탕).
+  이벤트 색 대비 유지 확인(fixture 스크린샷).
+- 메모: 흰 판 → 노란 스티키 노트(#fdf3bd 판 + #fff9d8 입력).
+Files: `lib/config/site.ts`, `app/globals.css`, `components/poster/public-poster.{tsx,css}`,
+`components/studio/studio-shell.{tsx,css}`, `components/skeleton/calendar-skeleton.tsx`,
+`app/(auth)/login/page.tsx`
+Validation: 게이트 4종(214) + fixture 스크린샷(포스터·편집실)
+Rollback: 커밋 revert

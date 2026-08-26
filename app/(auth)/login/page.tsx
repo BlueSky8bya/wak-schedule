@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { SITE_NAME } from "@/lib/config/site";
+import { SITE_NAME, TITLE_SPARK } from "@/lib/config/site";
 import { isSupabaseConfigured } from "@/lib/auth/config";
 import { InAppBrowserNotice } from "@/components/auth/in-app-browser-notice";
 import { detectInAppBrowser } from "@/lib/auth/in-app-browser";
@@ -23,7 +23,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <main className="auth-page">
       <section className="auth-panel auth-panel-login">
         <div className="auth-brand" aria-hidden="true">
-          🗓️<span className="auth-brand-spark">✨</span>
+          🗓️<span className="auth-brand-spark">{TITLE_SPARK}</span>
         </div>
         <p className="eyebrow">{SITE_NAME}</p>
         <h1>Google 로그인</h1>

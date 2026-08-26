@@ -1,4 +1,5 @@
 import "./calendar-skeleton.css";
+import { TITLE_SPARK } from "@/lib/config/site";
 
 // 라우트 레벨 로딩 스켈레톤. loading.tsx(서버, JS 없음)에서 즉시 렌더된다.
 //
@@ -26,9 +27,9 @@ export function CalendarSkeleton({
 
         <div className="cal-skel-main">
           <div className="cal-skel-heading">
-            <span className="cal-skel-spark">✨️</span>
+            <span className="cal-skel-spark">{TITLE_SPARK}</span>
             <strong className="cal-skel-title">우왁굳 일정표</strong>
-            <span className="cal-skel-spark">✨️</span>
+            <span className="cal-skel-spark">{TITLE_SPARK}</span>
           </div>
           <div className="cal-skel-monthbar">
             <span className="cal-skel-month" />

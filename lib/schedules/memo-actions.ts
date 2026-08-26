@@ -6,9 +6,9 @@ import { canEditSchedule } from "@/lib/permissions/roles";
 import { safeActionError } from "@/lib/utils/safe-action-error";
 import { CALENDAR_SLUG } from "@/lib/config/site";
 
-// 월별 메모 (ADR-0009 3차) — 달을 넘기면 그 달의 메모가 뜬다. 저장소는
-// calendar_month_memos(0061), 편집실 전용이라 공개 캐시와 무관하다(BR-CACHE-001 스윕의
-// EXCEPT 등록 사유 — 공개 DTO에 실리지 않는 데이터의 쓰기).
+// 월별 메모 (ADR-0009 3차, 0063으로 계정별) — (calendar, user, ym) 단위. 개발자·관리자,
+// 관리자 계정끼리도 서로의 메모를 보지 않는다(RLS도 user_id = auth.uid() 강제 — 이중 방어).
+// 편집실 전용이라 공개 캐시와 무관(BR-CACHE-001 EXCEPT 사유).
 // 게이트: canEditSchedule(owner+developer) 서버 재검사(BR-AUTHZ-001).
 
 export type MemoSaveResult = { ok: true } | { ok: false; error: string };
@@ -19,7 +19,7 @@ const YM_RE = /^\d{4}-\d{2}$/;
 
 type MemoCtx =
   | { error: string }
-  | { error?: undefined; supabase: NonNullable<Awaited<ReturnType<typeof createSupabaseServerClient>>>; calendarId: string };
+  | { error?: undefined; supabase: NonNullable<Awaited<ReturnType<typeof createSupabaseServerClient>>>; calendarId: string; userId: string };
 
 async function memoContext(): Promise<MemoCtx> {
   const actor = await resolveCurrentActor();
@@ -30,6 +30,11 @@ async function memoContext(): Promise<MemoCtx> {
   if (!supabase) {
     return { error: "저장소 연결이 설정되지 않았습니다." };
   }
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData?.user?.id;
+  if (!userId) {
+    return { error: "로그인이 필요합니다." };
+  }
   const { data: calendar } = await supabase
     .from("calendars")
     .select("id")
@@ -38,7 +43,7 @@ async function memoContext(): Promise<MemoCtx> {
   if (!calendar) {
     return { error: "캘린더를 찾을 수 없습니다." };
   }
-  return { supabase, calendarId: calendar.id as string };
+  return { supabase, calendarId: calendar.id as string, userId };
 }
 
 export async function getMonthMemoAction(ym: string): Promise<MemoLoadResult> {
@@ -53,6 +58,7 @@ export async function getMonthMemoAction(ym: string): Promise<MemoLoadResult> {
     .from("calendar_month_memos")
     .select("body")
     .eq("calendar_id", ctx.calendarId)
+    .eq("user_id", ctx.userId)
     .eq("ym", ym)
     .maybeSingle();
   if (error) {
@@ -78,8 +84,14 @@ export async function saveMonthMemoAction(ym: string, body: string): Promise<Mem
   const { error } = await ctx.supabase
     .from("calendar_month_memos")
     .upsert(
-      { calendar_id: ctx.calendarId, ym, body, updated_at: new Date().toISOString() },
-      { onConflict: "calendar_id,ym" }
+      {
+        calendar_id: ctx.calendarId,
+        user_id: ctx.userId,
+        ym,
+        body,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: "calendar_id,user_id,ym" }
     );
   if (error) {
     return { ok: false, error: safeActionError("메모 저장", error) };

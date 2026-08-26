@@ -29,7 +29,7 @@ async function gateContext() {
   }
   const { data } = await admin
     .from("calendars")
-    .select("id, gate_pass_hash")
+    .select("id, gate_pass_hash, gate_pass_updated_at")
     .eq("slug", CALENDAR_SLUG)
     .maybeSingle();
   if (!data) {
@@ -38,7 +38,8 @@ async function gateContext() {
   return {
     admin,
     calendarId: data.id as string,
-    storedHash: (data.gate_pass_hash as string | null) ?? null
+    storedHash: (data.gate_pass_hash as string | null) ?? null,
+    updatedAt: (data.gate_pass_updated_at as string | null) ?? null
   } as const;
 }
 
@@ -58,7 +59,14 @@ export async function verifyGatePass(pass: string): Promise<{ ok: boolean; error
   return { ok: true };
 }
 
-export type GateInfoResult = { ok: true; isInitial: boolean } | { ok: false; error: string };
+export type GateAccessPerson = { email: string; role: "owner" | "developer" };
+export type GateInfo = {
+  isInitial: boolean;
+  updatedAt: string | null; // 마지막 변경(없으면 초기 상태)
+  owners: GateAccessPerson[];
+  developers: GateAccessPerson[];
+};
+export type GateInfoResult = { ok: true; data: GateInfo } | { ok: false; error: string };
 
 // 보안 탭 표시용 — 아직 초기 비밀번호(0724)인지.
 export async function getGateInfoAction(): Promise<GateInfoResult> {
@@ -71,7 +79,37 @@ export async function getGateInfoAction(): Promise<GateInfoResult> {
   }
   const isInitial =
     ctx.storedHash === null || ctx.storedHash === hashPass(ctx.calendarId, INITIAL_PASS);
-  return { ok: true, isInitial };
+  // 접근 자격자 — 게이트 비밀번호를 아는 사람(관리자 OWNER_EMAIL 목록·공동 소유자 + 개발자).
+  const { getOwnerEmails } = await import("@/lib/auth/config");
+  const owners = new Set<string>(getOwnerEmails());
+  const { data: coRows } = await ctx.admin
+    .from("calendar_co_owners")
+    .select("owner_id")
+    .eq("calendar_id", ctx.calendarId);
+  const coIds = (((coRows ?? []) as { owner_id: string }[]) ?? []).map((r) => r.owner_id);
+  for (const id of coIds.slice(0, 10)) {
+    try {
+      const { data: u } = await ctx.admin.auth.admin.getUserById(id);
+      const email = u?.user?.email?.toLowerCase();
+      if (email) owners.add(email);
+    } catch {
+      /* 조회 실패한 계정은 목록에서 생략 */
+    }
+  }
+  const { data: devRows } = await ctx.admin.from("platform_admins").select("email");
+  const developers = (((devRows ?? []) as { email: string }[]) ?? []).map((r) => ({
+    email: r.email,
+    role: "developer" as const
+  }));
+  return {
+    ok: true,
+    data: {
+      isInitial,
+      updatedAt: ctx.updatedAt,
+      owners: [...owners].map((email) => ({ email, role: "owner" as const })),
+      developers
+    }
+  };
 }
 
 export type GatePassChangeResult = { ok: true } | { ok: false; error: string };
@@ -98,7 +136,10 @@ export async function changeGatePassAction(input: {
   }
   const { error } = await ctx.admin
     .from("calendars")
-    .update({ gate_pass_hash: hashPass(ctx.calendarId, next) })
+    .update({
+      gate_pass_hash: hashPass(ctx.calendarId, next),
+      gate_pass_updated_at: new Date().toISOString()
+    })
     .eq("id", ctx.calendarId);
   if (error) {
     return { ok: false, error: "저장에 실패했습니다. 잠시 후 다시 시도해 주세요." };

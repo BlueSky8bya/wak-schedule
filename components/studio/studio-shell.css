@@ -573,14 +573,14 @@ html {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   margin-left: 6px;
   border: 1px solid currentColor;
   border-radius: var(--r-pill);
   background: transparent;
   color: var(--muted, #8a8077);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 800;
   line-height: 1;
   cursor: pointer;
@@ -11811,11 +11811,12 @@ html[data-reduce-motion] .m-edit-actions .button:active {
 }
 
 .role-help-q {
-  width: var(--space-5);
-  height: var(--space-5);
+  /* 배지 높이에 꽉 차던 원 축소(사용자 요청) — 배지보다 확실히 작게. */
+  width: 14px;
+  height: 14px;
   margin-left: var(--space-2);
   border: var(--stroke-hairline) solid currentColor;
-  font-size: var(--text-label);
+  font-size: 10px;
 }
 
 .role-help-pop {

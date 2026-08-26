@@ -195,3 +195,18 @@ lib/schedules/insights-actions.ts, app/globals.css, studio-shell.css
 - 관리자(?) 배지·로그아웃을 헤더→액션바 우측(단축키 오른쪽)으로, 높이 30px 통일.
 - 문구 축약: D+ 툴팁 "2008년 11월 1일 기준", 떡밥 힌트·트렌드 노트·보안 설명 압축.
 Files: month-insights.tsx, insights.css, studio-shell.{tsx,css}, public-poster.{tsx,css}, globals.css
+
+### CHG-20260826-018 — FEAT/STYLE — 보안 탭 VIC 구조·계정별 메모·시청자 하이라이트 제거·화사한 파스텔
+
+- 보안 탭: 자작 폼 폐기 → VIC SecurityPanel 구조(상태 배너 ok/warn + KPI 3타일
+  [상태/마지막 변경/잠금 대상] + 비밀번호 변경 버튼→폼 + 관리자·개발자 접근 자격자
+  카드). 데이터만 이 프로젝트 실체(떡밥 게이트). 0063: gate_pass_updated_at.
+- 메모 계정별 분리(0063): (calendar, user, ym) PK + RLS user_id=auth.uid() —
+  개발자/관리자, 관리자 계정끼리도 서로 안 보인다. 액션도 uid 스코프(이중 방어).
+- 시청자 '이 달 기록'에서 하이라이트 카드 제거(4탭 정합).
+- 색: 페이지·표면 전반 밝고 화사하게(칙칙한 회녹 탈출), 인사이트 활성 탭은 쨍한
+  그라데이션 → 파스텔 필+진한 글자. 역할 배지 ? 원 14px로 축소.
+Files: db/migrations/0063, lib/schedules/{memo,security}-actions.ts,
+components/studio/{month-insights.tsx,insights.css,studio-shell.css},
+components/poster/{public-insights.tsx,public-poster.css}, app/globals.css
+Related: ADR-0009(4차 — 계정별)

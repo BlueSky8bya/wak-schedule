@@ -7,6 +7,8 @@ import { type FormEvent, useCallback, useEffect, useRef, useState } from "react"
 import type { MonthInsights, MonthInsightsResult } from "@/lib/schedules/insights-actions";
 import {
   changeGatePassAction,
+  type GateAccessPerson,
+  type GateInfo,
   getGateInfoAction
 } from "@/lib/schedules/security-actions";
 import { hapticError, hapticSuccess, hapticTick } from "@/lib/ui/haptics";
@@ -381,9 +383,11 @@ export function MonthInsightsPanel({ initialYear, initialMonth, loadAction }: Pr
   );
 }
 
-// 보안 탭 — 최초공개(떡밥) 편집 게이트 비밀번호 변경. 초기 비밀번호 0724(왁굳형 생일).
+// 보안 탭 — VIC SecurityPanel 구조 이식(배너 + KPI + 비밀번호 변경 + 접근 자격자 카드).
+// 데이터만 이 프로젝트 실체(떡밥 게이트, 잠금 세션 없음)에 맞춘다. 초기 비밀번호 0724.
 function SecurityPanel() {
-  const [isInitial, setIsInitial] = useState<boolean | null>(null);
+  const [info, setInfo] = useState<GateInfo | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [busy, setBusy] = useState(false);
@@ -391,7 +395,7 @@ function SecurityPanel() {
 
   useEffect(() => {
     void getGateInfoAction().then((r) => {
-      if (r.ok) setIsInitial(r.isInitial);
+      if (r.ok) setInfo(r.data);
     });
   }, []);
 
@@ -408,54 +412,118 @@ function SecurityPanel() {
       setMsg({ ok: true, text: "비밀번호를 바꿨어요." });
       setCurrent("");
       setNext("");
-      setIsInitial(false);
+      setFormOpen(false);
+      setInfo((v) => (v ? { ...v, isInitial: false, updatedAt: new Date().toISOString() } : v));
     } else {
       hapticError();
       setMsg({ ok: false, text: res.error });
     }
   }
 
+  const fmtDate = (iso: string | null) => {
+    if (!iso) return "—";
+    const k = new Date(new Date(iso).getTime() + 9 * 3600 * 1000);
+    return `${k.getUTCFullYear()}.${k.getUTCMonth() + 1}.${k.getUTCDate()}`;
+  };
+
+  const renderSection = (
+    title: string,
+    roleLabel: string,
+    roleClass: string,
+    people: GateAccessPerson[]
+  ) => (
+    <>
+      <h4 className="insight-subhead">
+        {title} ({people.length})
+      </h4>
+      {people.length === 0 ? (
+        <p className="insight-empty">없어요.</p>
+      ) : (
+        <ul className="access-list">
+          {people.map((pp) => (
+            <li className="access-card" key={`${roleClass}-${pp.email}`}>
+              <div className="access-top">
+                <span className="access-email">{pp.email}</span>
+                <em className={`rt ${roleClass}`}>{roleLabel}</em>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+
   return (
-    <div className="gate-security">
-      <p className="insight-subhead" style={{ marginTop: 0 }}>
-        🔒 최초공개 게이트 비밀번호
-      </p>
-      <p className="gate-security-note">
-        떡밥 일정을 열 때 묻는 비밀번호.
-        {isInitial ? " 지금은 초기값(0724) — 변경 추천." : ""}
-      </p>
-      <form className="gate-security-form" onSubmit={submit}>
-        <label>
-          <span>현재 비밀번호</span>
-          <input
-            autoComplete="off"
-            inputMode="numeric"
-            onChange={(e) => setCurrent(e.target.value)}
-            placeholder={isInitial ? "0724" : "현재 비밀번호"}
-            type="password"
-            value={current}
-          />
-        </label>
-        <label>
-          <span>새 비밀번호 (숫자 4~12자리)</span>
-          <input
-            autoComplete="off"
-            inputMode="numeric"
-            onChange={(e) => setNext(e.target.value)}
-            placeholder="새 비밀번호"
-            type="password"
-            value={next}
-          />
-        </label>
-        <button className="button primary" disabled={busy || !current || !next} type="submit">
-          {busy ? "바꾸는 중…" : "비밀번호 바꾸기"}
-        </button>
-        {msg ? (
-          <p className={`gate-security-msg${msg.ok ? "" : " is-error"}`} role="status">
-            {msg.text}
-          </p>
-        ) : null}
-      </form>
-    </div>
+    <>
+      <div className={`insight-banner ${info?.isInitial ? "warn" : "ok"}`}>
+        {info === null
+          ? "게이트 상태 확인 중…"
+          : info.isInitial
+            ? "초기 비밀번호(0724) 사용 중 — 변경 추천"
+            : "사용자 지정 비밀번호 사용 중"}
+      </div>
+      <h4 className="insight-subhead">최초공개 게이트 비밀번호</h4>
+      <ul className="sec-kpis">
+        <li>
+          <b>{info === null ? "—" : info.isInitial ? "초기값" : "변경됨"}</b>
+          <span>상태</span>
+        </li>
+        <li>
+          <b>{fmtDate(info?.updatedAt ?? null)}</b>
+          <span>마지막 변경</span>
+        </li>
+        <li>
+          <b>떡밥</b>
+          <span>잠금 대상</span>
+        </li>
+      </ul>
+      <button
+        className="button insight-change-passcode"
+        onClick={() => {
+          hapticTick();
+          setFormOpen((v) => !v);
+          setMsg(null);
+        }}
+        type="button"
+      >
+        비밀번호 변경
+      </button>
+      {formOpen ? (
+        <form className="gate-security-form" onSubmit={submit}>
+          <label>
+            <span>현재 비밀번호</span>
+            <input
+              autoComplete="off"
+              inputMode="numeric"
+              onChange={(e) => setCurrent(e.target.value)}
+              placeholder={info?.isInitial ? "0724" : "현재 비밀번호"}
+              type="password"
+              value={current}
+            />
+          </label>
+          <label>
+            <span>새 비밀번호 (숫자 4~12자리)</span>
+            <input
+              autoComplete="off"
+              inputMode="numeric"
+              onChange={(e) => setNext(e.target.value)}
+              placeholder="새 비밀번호"
+              type="password"
+              value={next}
+            />
+          </label>
+          <button className="button primary" disabled={busy || !current || !next} type="submit">
+            {busy ? "바꾸는 중…" : "바꾸기"}
+          </button>
+        </form>
+      ) : null}
+      {msg ? (
+        <p className={`gate-security-msg${msg.ok ? "" : " is-error"}`} role="status">
+          {msg.text}
+        </p>
+      ) : null}
+      {renderSection("관리자", "관리자", "owner", info?.owners ?? [])}
+      {renderSection("개발자", "개발자", "developer", info?.developers ?? [])}
+    </>
   );
 }

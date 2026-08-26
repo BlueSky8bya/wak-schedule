@@ -14,7 +14,6 @@ import type {
   PublicScheduleEvent
 } from "@/lib/domain/schedule-types";
 import type { TrendStack } from "@/lib/schedules/insights-actions";
-import { HighlightCards, type HighlightCard } from "@/components/studio/highlight-cards";
 import { StackTrendChart } from "@/components/studio/stack-trend-chart";
 import { hapticTick } from "@/lib/ui/haptics";
 
@@ -177,38 +176,6 @@ export function PublicInsights({ year, month, events, tags, palette, heartCounts
     };
   }, [year, month, events, tags, palette, heartCounts]);
 
-  // 하이라이트 — 공개 데이터만(방송시간·방문 기반 카드는 없다).
-  const highlights: HighlightCard[] = [
-    {
-      key: "top",
-      emoji: "💗",
-      tone: "top",
-      label: ["인기", "컨텐츠"],
-      main: d.popular[0]?.title ?? "—"
-    },
-    {
-      key: "wd",
-      emoji: "🔥",
-      tone: "wd",
-      label: ["컨텐츠", "최다요일"],
-      main: d.busiestWeekday !== null ? `${WEEKDAY[d.busiestWeekday]}요일` : "—"
-    },
-    {
-      key: "days",
-      emoji: "📺",
-      tone: "day",
-      label: ["컨텐츠", "있는 날"],
-      main: `${d.contentDays}일`
-    },
-    {
-      key: "next",
-      emoji: "🗓️",
-      tone: "hour",
-      label: ["다음", "방송"],
-      main: d.next ? `${Number(d.next.dateKey.slice(8, 10))}일 · ${d.next.title}` : "—"
-    }
-  ];
-
   // 백드롭 클릭으로는 닫지 않는다(VIC 신고 반영) — 방송 '같이보기' 위에서 오클릭으로 시트가
   // 닫히는 사고 방지. 닫기는 조준된 행동만: X 버튼 · Esc · (폰) 뒤로가기.
   return (
@@ -299,11 +266,6 @@ export function PublicInsights({ year, month, events, tags, palette, heartCounts
             />
           </div>
 
-          {/* 하이라이트 — 편집실과 같은 카드. */}
-          <div className="pi-card">
-            <span className="pi-label">하이라이트</span>
-            <HighlightCards cards={highlights} />
-          </div>
         </div>
       </section>
     </div>

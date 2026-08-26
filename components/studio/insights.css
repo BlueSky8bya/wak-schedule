@@ -49,10 +49,11 @@
 }
 
 .insights-tab.active {
-  background: linear-gradient(180deg, #a3f06c, #8ed65b);
-  border-color: #8ed65b;
-  color: #fff;
-  box-shadow: 0 4px 12px -4px rgb(107 91 214 / 55%);
+  /* 쨍한 그라데이션 → 파스텔 필(사용자: 탭만 너무 밝음). */
+  background: #e4f2c2;
+  border-color: #b9d488;
+  color: #43571f;
+  box-shadow: 0 2px 8px -3px rgb(120 140 70 / 35%);
 }
 
 .insights-tab-wide {
@@ -358,7 +359,7 @@
   margin: 8px 0 0;
   font-size: 11.5px;
   font-weight: 600;
-  color: #9a93ad;
+  color: #9ead93;
 }
 
 .insight-note.warn {
@@ -399,13 +400,13 @@
 .trend-head > span {
   font-size: 12.5px;
   font-weight: 800;
-  color: #6b6480;
+  color: #708064;
 }
 
 .trend-head > strong {
   font-size: 18px;
   font-weight: 900;
-  color: #3a3550;
+  color: #405035;
 }
 
 .trend-head .insight-trend,
@@ -445,12 +446,12 @@
   width: 100%;
   min-height: 2px;
   border-radius: 4px 4px 1px 1px;
-  background: #d7d0ec;
+  background: #dcecd0;
   transition: height 0.5s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
 }
 
 .trend-bar.cur {
-  background: linear-gradient(180deg, #8b7cf0, #6b5bd6);
+  background: linear-gradient(180deg, #acf07c, #8ed65b);
 }
 
 /* 진행 중인 달(마지막 칸) — 빗금 + 열린 윗면. 끝난 달과 같은 자격으로 읽히면 안 된다.
@@ -486,7 +487,7 @@
 }
 
 .vt-day.partial {
-  color: var(--violet, #5b34f0);
+  color: var(--violet, #82f034);
 }
 
 .trend-bcol > span {
@@ -496,7 +497,7 @@
   text-align: center;
   font-size: 9px;
   font-weight: 700;
-  color: #b3acc6;
+  color: #b7c6ac;
   line-height: 1.15;
 }
 
@@ -504,7 +505,7 @@
   display: block;
   font-style: normal;
   font-size: 7.5px;
-  color: #c5bfd6;
+  color: #c9d6bf;
 }
 
 .vt-bar,
@@ -537,7 +538,7 @@
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
-  background: #3a3550;
+  background: #405035;
   color: #fff;
   font-size: 10px;
   font-weight: 800;
@@ -590,7 +591,7 @@
   width: 100%;
   min-height: 2px;
   border-radius: 5px 5px 2px 2px;
-  background: #f0ecf9;
+  background: #f1f9ec;
   transition: height 0.5s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
 }
 
@@ -613,7 +614,7 @@
   text-align: center;
   font-size: 9px;
   font-weight: 700;
-  color: #9a93ad;
+  color: #9ead93;
 }
 
 .vt-legend {
@@ -631,7 +632,7 @@
   gap: 5px;
   font-size: 11.5px;
   font-weight: 700;
-  color: #6b6480;
+  color: #708064;
 }
 
 .vt-legend li span {
@@ -653,7 +654,7 @@
   gap: 3px;
   min-width: 86px;
   padding: 7px 9px;
-  background: #3a3550;
+  background: #405035;
   color: #fff;
   border-radius: 9px;
   white-space: nowrap;
@@ -697,7 +698,7 @@
 .vt-tip-note {
   font-size: 10px;
   font-weight: 800;
-  color: #cfc9e0;
+  color: #d3e0c9;
 }
 
 .vt-tip-row {
@@ -742,7 +743,7 @@
 }
 
 .insight-tile[data-tone="soon"] strong {
-  color: #5b6bd6;
+  color: #8ed65b;
 }
 
 .insight-tile[data-tone="warn"] {
@@ -758,8 +759,8 @@
   margin: 0 0 10px;
   padding: 8px 14px;
   border-radius: var(--r-md);
-  background: linear-gradient(180deg, #f4f1ff, #efeaff);
-  color: #4b3fb0;
+  background: linear-gradient(180deg, #f7fff1, #f3ffea);
+  color: #6eb03f;
   font-size: 14px;
   font-weight: 900;
   letter-spacing: 0.01em;
@@ -780,21 +781,21 @@
   justify-content: space-between;
   gap: var(--space-2); /* 8 */
   padding: var(--space-2) var(--space-3); /* 8/12 */
-  background: #faf9fe;
-  border: 1px solid #efeaf9;
+  background: #fbfef9;
+  border: 1px solid #f0f9ea;
   border-radius: var(--r-md); /* 12 */
 }
 
 .insight-rows li span {
   font-size: 12.5px;
   font-weight: 700;
-  color: #8a82a6;
+  color: #91a682;
 }
 
 .insight-rows li strong {
   font-size: 13px;
   font-weight: 800;
-  color: #3a3550;
+  color: #405035;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -824,14 +825,14 @@
   flex: none;
   font-size: 11.5px;
   font-weight: 800;
-  color: #5b6bd6;
+  color: #8ed65b;
 }
 
 .insight-next > strong {
   font-size: 15px;
   font-weight: 900;
   line-height: 1.35;
-  color: #2f3a6b;
+  color: #486b2f;
   word-break: break-all;
 }
 
@@ -863,7 +864,7 @@
   border: 1px solid #d7e3fb;
   font-size: 12.5px;
   font-weight: 800;
-  color: #2f3a6b;
+  color: #486b2f;
 }
 
 .insight-rows li span {
@@ -891,7 +892,7 @@
 .highlight-card .hl-main {
   font-size: 16px;
   font-weight: 900;
-  color: #3a3550;
+  color: #405035;
   line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -917,12 +918,12 @@
 }
 
 .highlight-card[data-tone="top"] {
-  background: linear-gradient(155deg, #fff1f5, #ffdfe9);
-  border-color: #fbcdda;
+  background: linear-gradient(155deg, #f7fff1, #ecffdf);
+  border-color: #e0fbcd;
 }
 
 .highlight-card[data-tone="top"] .hl-sub {
-  color: #d11d54;
+  color: #68d11d;
 }
 
 .highlight-card[data-tone="wd"] {
@@ -1043,7 +1044,7 @@ html[data-reduce-motion] .pi-backdrop {
   place-items: center;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--line, #ece9f5);
+  border: 1px solid var(--line, #eef5e9);
   border-radius: var(--r-pill);
   background: #fff;
   color: var(--muted);
@@ -1209,7 +1210,7 @@ html[data-reduce-motion] .pi-skeleton {
 }
 
 .pi-bar.heart i {
-  background: linear-gradient(90deg, #ff8fab, #ff5c8a);
+  background: linear-gradient(90deg, #beff8f, #a0ff5c);
 }
 
 .pi-top {
@@ -1382,4 +1383,26 @@ html[data-reduce-motion] .pi-close:hover,
 html[data-reduce-motion] .pi-close:active,
 html[data-reduce-motion] .pi-retry:active {
   transform: none;
+}
+
+/* ── VIC 보안 패널(배너·KPI·접근 자격자 카드) 이식 ── */
+
+.insight-banner {
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.insight-banner.ok {
+  background: #effaf2;
+  border: 1px solid #c9ecd5;
+  color: #2f7d4f;
+}
+
+.insight-banner.warn {
+  background: #fff7ed;
+  border: 1px solid #f5c98a;
+  color: #b5491d;
 }

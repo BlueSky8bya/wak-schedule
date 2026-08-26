@@ -13976,7 +13976,8 @@ html[data-reduce-motion] .event-drag-ghost {
   font-weight: 800;
   color: #7a621a;
   user-select: none;
-  padding-right: 2px;
+  /* 라벨이 좌/우 버튼 사이 가운데로 왔으므로 좌우 대칭 여백. */
+  padding: 0 2px;
 }
 .memo-side-center button {
   border: 0;

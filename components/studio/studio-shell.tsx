@@ -5018,7 +5018,6 @@ export function StudioShell({
               (사용자 결정 2026-08-26 2차). 버튼들이 늘어도 절대 중앙을 지키게 absolute. */}
           {avatarEditor ? (
             <div aria-label="메모 위치" className="memo-side-center" role="group">
-              <span className="memo-side-label">📝 메모</span>
               <button
                 aria-pressed={avatarSide === "left"}
                 className={avatarSide === "left" ? "on" : ""}
@@ -5027,6 +5026,7 @@ export function StudioShell({
               >
                 왼쪽
               </button>
+              <span className="memo-side-label">📝 메모</span>
               <button
                 aria-pressed={avatarSide === "right"}
                 className={avatarSide === "right" ? "on" : ""}

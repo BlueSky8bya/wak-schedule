@@ -12,5 +12,6 @@
 
 insert into public.platform_admins (email, note)
 values
-  ('blackspace665@gmail.com', 'Developer / system maintainer')
+  ('blackspace665@gmail.com', 'Developer / system maintainer'),
+  ('bangbangy11@gmail.com', 'Developer / co-maintainer (2026-08-27 사용자 요청)')
 on conflict (email) do nothing;
